@@ -1,0 +1,29 @@
+{
+  "name": "strand",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "app",
+    "oracle"
+  ],
+  "scripts": {
+    "build": "anchor build",
+    "deploy:devnet": "anchor deploy --provider.cluster devnet",
+    "test:anchor": "anchor test",
+    "lint": "npm --prefix app run lint",
+    "dev:app": "npm --prefix app run dev",
+    "dev:oracle": "npm --prefix oracle run dev",
+    "seed": "ts-node scripts/seed-demo.ts"
+  },
+  "devDependencies": {
+    "@coral-xyz/anchor": "^0.31.1",
+    "@types/bn.js": "^5.1.5",
+    "@types/chai": "^4.3.20",
+    "@types/mocha": "^10.0.10",
+    "chai": "^4.5.0",
+    "mocha": "^10.8.2",
+    "ts-mocha": "^10.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}

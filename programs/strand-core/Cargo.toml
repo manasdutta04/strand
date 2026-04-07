@@ -1,0 +1,21 @@
+[package]
+name = "strand-core"
+version = "0.1.0"
+description = "Strand core job and work history program"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "strand_core"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+
+[dependencies]
+anchor-lang = "0.31.1"
+anchor-spl = "0.31.1"
+strand-score = { path = "../strand-score", features = ["cpi"] }

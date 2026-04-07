@@ -1,0 +1,20 @@
+[package]
+name = "strand-score"
+version = "0.1.0"
+description = "Strand reputation scoring program"
+edition = "2021"
+build = "build.rs"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "strand_score"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+
+[dependencies]
+anchor-lang = "0.31.1"

@@ -1,0 +1,31 @@
+# Node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# Build output
+target/
+dist/
+.next/
+coverage/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Solana / Anchor
+.anchor/
+test-ledger/
+*.so
+*.dylib
+
+# Keys
+oracle/oracle-keypair.json
+scripts/demo-lender.json
+scripts/demo-alice.json
+scripts/demo-bob.json
+
+# OS / editor
+.DS_Store
+.vscode/
