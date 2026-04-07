@@ -45,7 +45,13 @@ is the data is on-chain and verifiable.
 **Reason:** Keeps the oracle flow trust-minimized and on-chain initiated. The oracle can subscribe to a canonical event stream and attest skills deterministically.
 **Date:** 2026-04-07
 
+## D-006: Frontend demo state uses local persistence until devnet IDs are deployed
+**Decision:** Use localStorage-backed hooks for score/work/credit views in the Next.js UI scaffold.
+**Alternatives:** Hard-block UI until all program IDs are deployed and seeded on devnet.
+**Reason:** Keeps UX and flow testable immediately during scaffold stage while preserving clear integration points (`lib/programs.ts`, env IDs) for on-chain wiring.
+**Date:** 2026-04-07
+
 <!-- Add new decisions here as you make them during the build -->
 
 ---
-*Last updated: 2026-04-07 08:51 IST*
+*Last updated: 2026-04-07 09:19 IST*

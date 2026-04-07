@@ -19,7 +19,7 @@
 - **Response:** `{ "response": "{ json string here }" }`
 - **Important:** Always set `stream: false` for oracle use. Parse `response` field as JSON.
 - **Timeout:** Set 30s timeout — local models can be slow on first load
-- **Gotchas discovered:** <!-- update as you find them -->
+- **Gotchas discovered:** If Ollama daemon is not running, `ollama list` can still print model metadata but HTTP calls to `localhost:11434` will fail until `ollama serve` is active.
 
 ## Anchor (Solana program framework)
 - **Version:** 0.31.x
@@ -38,7 +38,7 @@
 - **Next.js:** 14 (App Router)
 - **TypeScript:** strict mode
 - **Tailwind CSS:** v3
-- **Gotchas discovered:** <!-- update as you find them -->
+- **Gotchas discovered:** Next.js 14 build on Node.js v24 can fail with React server runtime errors; prefer Node.js 20 LTS for stable CI builds.
 
 ---
-*Last updated: 2026-04-07 08:51 IST*
+*Last updated: 2026-04-07 09:19 IST*

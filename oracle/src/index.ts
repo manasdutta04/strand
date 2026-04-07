@@ -73,8 +73,11 @@ async function main(): Promise<void> {
   const coreProgramId = new PublicKey(requireEnv("STRAND_CORE_PROGRAM_ID"));
   const scoreProgramId = new PublicKey(requireEnv("STRAND_SCORE_PROGRAM_ID"));
 
-  const coreProgram = new anchor.Program(coreIdl, coreProgramId, provider) as AnyProgram;
-  const scoreProgram = new anchor.Program(scoreIdl, scoreProgramId, provider) as AnyProgram;
+  (coreIdl as any).address = coreProgramId.toBase58();
+  (scoreIdl as any).address = scoreProgramId.toBase58();
+
+  const coreProgram: any = new anchor.Program(coreIdl as any, provider as any);
+  const scoreProgram: any = new anchor.Program(scoreIdl as any, provider as any);
 
   const computeScore = async (workerKey: PublicKey): Promise<string> => {
     const [scoreStatePda] = PublicKey.findProgramAddressSync(
@@ -87,7 +90,7 @@ async function main(): Promise<void> {
     );
 
     return withRetry("compute_score", async () => {
-      const signature = await scoreProgram.methods
+      const signature = await (scoreProgram as any).methods
         .computeScore(workerKey)
         .accounts({
           payer: wallet.publicKey,

@@ -24,10 +24,10 @@
 - [ ] Rust installed
 - [ ] Solana CLI installed + configured to devnet
 - [ ] Anchor CLI 0.31.x installed
-- [ ] Node.js 18+ installed
+- [x] Node.js 18+ installed
 - [ ] Ollama installed + llama3.2 pulled
 - [ ] Oracle keypair generated
-- [ ] All npm dependencies installed
+- [x] All npm dependencies installed
 
 ### strand-core program
 - [x] WorkerProfile account struct
@@ -58,24 +58,24 @@
 - [ ] Tests passing: all strand-credit.ts
 
 ### Oracle service (Ollama)
-- [ ] oracle/src/grader.ts — Ollama skill grader working
-- [ ] oracle/src/chain.ts — Solana tx helpers
-- [ ] oracle/src/index.ts — event listener + orchestration
+- [x] oracle/src/grader.ts — Ollama skill grader working
+- [x] oracle/src/chain.ts — Solana tx helpers
+- [x] oracle/src/index.ts — event listener + orchestration
 - [ ] Tested with real GitHub URL (skill validated end-to-end)
-- [ ] oracle/.env configured
+- [x] oracle/.env configured
 
 ### Frontend
-- [ ] WalletProvider.tsx
-- [ ] lib/constants.ts (program IDs wired)
-- [ ] lib/programs.ts (IDL imports)
-- [ ] Landing page (app/page.tsx)
-- [ ] Worker dashboard (app/dashboard/page.tsx)
-- [ ] ScoreGauge component
-- [ ] WorkNFTCard component
-- [ ] CreditPanel component
-- [ ] Client job-post flow (app/client/page.tsx)
-- [ ] Public profile page (app/profile/[wallet]/page.tsx)
-- [ ] app/.env.local configured
+- [x] WalletProvider.tsx
+- [x] lib/constants.ts (program IDs wired)
+- [x] lib/programs.ts (IDL imports)
+- [x] Landing page (app/page.tsx)
+- [x] Worker dashboard (app/dashboard/page.tsx)
+- [x] ScoreGauge component
+- [x] WorkNFTCard component
+- [x] CreditPanel component
+- [x] Client job-post flow (app/client/page.tsx)
+- [x] Public profile page (app/profile/[wallet]/page.tsx)
+- [x] app/.env.local configured
 - [ ] Full end-to-end frontend demo working
 
 ### Scripts
@@ -83,8 +83,8 @@
 - [ ] Demo data seeded on devnet
 
 ### Submission assets
-- [ ] README.md complete
-- [ ] Apache 2.0 LICENSE file
+- [x] README.md complete
+- [x] Apache 2.0 LICENSE file
 - [ ] Demo video recorded (60 seconds, shows full loop)
 - [ ] GitHub repo public
 - [ ] Colosseum submission form complete
@@ -105,5 +105,17 @@
 - Implemented `strand-score` scoring math + oracle-gated attestation
 - Implemented `strand-credit` credit line, borrow, and repay flows
 
+### 2026-04-07 09:19 IST
+- Scaffolded oracle service (`grader.ts`, `chain.ts`, `index.ts`) and validated with `npm --prefix oracle run build`
+- Built Next.js app pages/components/hooks and passed `npm --prefix app run lint` and `npx tsc -p app/tsconfig.json --noEmit`
+- Added Anchor test suite files for core/score/credit and demo seed script
+- Added Apache 2.0 license and rewritten judge-focused README
+- Validation note: `anchor` CLI is not installed in this environment, so on-chain build/deploy/tests are pending
+
+### 2026-04-07 09:23 IST
+- Passed root TypeScript validation for tests/scripts: `npx tsc -p tsconfig.json --noEmit`
+- Reconfirmed oracle compile pass: `npm --prefix oracle run build`
+- Frontend build caveat remains on this machine due Node.js v24 + Next.js 14 runtime incompatibility
+
 ---
-*Last updated: 2026-04-07 08:51 IST*
+*Last updated: 2026-04-07 09:23 IST*

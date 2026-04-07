@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "lib": [
       "ES2022",
       "DOM"
@@ -10,6 +10,7 @@
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "ignoreDeprecations": "5.0",
     "skipLibCheck": true,
     "outDir": "dist",
     "rootDir": "src",

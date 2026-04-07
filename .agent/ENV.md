@@ -6,9 +6,13 @@
 | Rust | stable (1.75+) | `rustc --version` | [ ] |
 | Solana CLI | 1.18+ | `solana --version` | [ ] |
 | Anchor CLI | 0.31.x | `anchor --version` | [ ] |
-| Node.js | 18+ | `node --version` | [ ] |
-| Ollama | latest | `ollama --version` | [ ] |
+| Node.js | 18+ | `node --version` | [x] |
+| Ollama | latest | `ollama --version` | [x] |
 | llama3.2 model | — | `ollama list` | [ ] |
+
+## Observed tool versions
+- Node.js: `v24.9.0`
+- Ollama client: `0.17.7`
 
 ## Wallet configuration
 - **Default keypair:** `~/.config/solana/id.json`
@@ -31,6 +35,7 @@ STRAND_CREDIT_PROGRAM_ID=
 - **Model in use:** `llama3.2`
 - **Start command:** `ollama serve` (if not running as daemon)
 - **Pull model:** `ollama pull llama3.2`
+- **Models currently present:** `qwen2.5-coder:7b`, `deepseek-r1:8b`, `qwen3-coder:480b-cloud`
 
 ## Environment variables (.env files)
 
@@ -85,4 +90,4 @@ anchor deploy --provider.cluster devnet
 ```
 
 ---
-*Last updated: 2026-04-07 08:42 IST*
+*Last updated: 2026-04-07 09:19 IST*

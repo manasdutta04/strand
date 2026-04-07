@@ -91,6 +91,6 @@ export async function getScoreState(
     scoreProgram.programId
   );
 
-  const account = await scoreProgram.account.scoreState.fetchNullable(scoreStatePda);
+  const account = await (scoreProgram.account as any).scoreState.fetchNullable(scoreStatePda);
   return account ?? null;
 }
