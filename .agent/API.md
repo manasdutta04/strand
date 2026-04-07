@@ -26,7 +26,7 @@
 - **CLI:** `anchor build`, `anchor deploy`, `anchor test`
 - **IDL output:** `target/idl/*.json` — import into frontend via `@coral-xyz/anchor`
 - **Devnet USDC mint:** `Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr`
-- **Gotchas discovered:** <!-- update as you find them -->
+- **Gotchas discovered:** PDA seeds are capped at 32 bytes per seed; dynamic strings used as seeds (e.g., `skill_tag`) must be length-limited or pre-hashed.
 
 ## Solana Web3.js + Wallet Adapter
 - **@solana/web3.js:** v1.x (not v2 — breaking changes)
@@ -41,4 +41,4 @@
 - **Gotchas discovered:** <!-- update as you find them -->
 
 ---
-*Last updated: 2026-04-07 08:42 IST*
+*Last updated: 2026-04-07 08:51 IST*

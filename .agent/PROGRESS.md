@@ -30,30 +30,30 @@
 - [ ] All npm dependencies installed
 
 ### strand-core program
-- [ ] WorkerProfile account struct
-- [ ] WorkNFT account struct
-- [ ] JobEscrow account struct + JobState enum
-- [ ] initialize_worker_profile instruction
-- [ ] create_job instruction + USDC escrow transfer
-- [ ] complete_job instruction (dual-sig + WorkNFT mint + CPI to score)
-- [ ] open_dispute instruction
+- [x] WorkerProfile account struct
+- [x] WorkNFT account struct
+- [x] JobEscrow account struct + JobState enum
+- [x] initialize_worker_profile instruction
+- [x] create_job instruction + USDC escrow transfer
+- [x] complete_job instruction (dual-sig + WorkNFT mint + CPI to score)
+- [x] open_dispute instruction
 - [ ] Deployed to devnet → program ID recorded in ENV.md
 - [ ] Tests passing: all strand-core.ts
 
 ### strand-score program
-- [ ] ScoreState account struct
-- [ ] SkillAttestation account struct
-- [ ] compute_score instruction (permissionless)
-- [ ] attest_skill instruction (oracle-gated)
+- [x] ScoreState account struct
+- [x] SkillAttestation account struct
+- [x] compute_score instruction (permissionless)
+- [x] attest_skill instruction (oracle-gated)
 - [ ] Deployed to devnet → program ID recorded in ENV.md
 - [ ] Tests passing: all strand-score.ts
 
 ### strand-credit program
-- [ ] CreditLine account struct
-- [ ] LoanPosition account struct
-- [ ] open_credit_line instruction
-- [ ] borrow instruction (with score CPI check)
-- [ ] repay instruction
+- [x] CreditLine account struct
+- [x] LoanPosition account struct
+- [x] open_credit_line instruction
+- [x] borrow instruction (with score CPI check)
+- [x] repay instruction
 - [ ] Deployed to devnet → program ID recorded in ENV.md
 - [ ] Tests passing: all strand-credit.ts
 
@@ -100,5 +100,10 @@
 - Verified and read all .agent files
 - Checked off .agent creation milestones
 
+### 2026-04-07 08:51 IST
+- Implemented `strand-core` accounts + instructions (including score CPI and skill claim event)
+- Implemented `strand-score` scoring math + oracle-gated attestation
+- Implemented `strand-credit` credit line, borrow, and repay flows
+
 ---
-*Last updated: 2026-04-07 08:42 IST*
+*Last updated: 2026-04-07 08:51 IST*

@@ -23,6 +23,7 @@ User (Phantom wallet)
 - **Purpose:** Job lifecycle, escrow, WorkNFT minting, WorkerProfile tracking
 - **Program ID:** <!-- fill in after: anchor deploy -->
 - **Location:** `programs/strand-core/src/lib.rs`
+- **Instruction note:** Emits `WorkCompleted` and `SkillClaim` events for oracle subscription
 
 ### strand-score  
 - **Purpose:** Reputation scoring, skill attestations, score history
@@ -89,4 +90,4 @@ oracle/src/index.ts (Node.js, websocket subscriber)
 | LoanPosition | ~90 |
 
 ---
-*Last updated: 2026-04-07 08:42 IST*
+*Last updated: 2026-04-07 08:51 IST*

@@ -39,7 +39,13 @@ Metaplex NFTs post-hackathon for marketplace composability. For the demo, what m
 is the data is on-chain and verifiable.
 **Date:** 2026-04-07
 
+## D-005: Add explicit skill-claim event instruction in strand-core
+**Decision:** Add `claim_skill(skill_tag, work_sample_url)` instruction that emits a `SkillClaim` event.
+**Alternatives:** Have frontend call oracle directly; infer claims only from completed jobs.
+**Reason:** Keeps the oracle flow trust-minimized and on-chain initiated. The oracle can subscribe to a canonical event stream and attest skills deterministically.
+**Date:** 2026-04-07
+
 <!-- Add new decisions here as you make them during the build -->
 
 ---
-*Last updated: 2026-04-07 08:42 IST*
+*Last updated: 2026-04-07 08:51 IST*
