@@ -144,7 +144,7 @@ describe("strand-score", () => {
       )[0];
       const escrowToken = PublicKey.findProgramAddressSync(
         [
-          Buffer.from("escrow_token"),
+          Buffer.from("escrow_vault"),
           client.publicKey.toBuffer(),
           new BN(jobId).toArrayLike(Buffer, "le", 8)
         ],

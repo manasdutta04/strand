@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { JobFlow } from "@/components/JobFlow";
+import { JobFlow } from "../components/JobFlow";
 
 const FEATURES = [
   {

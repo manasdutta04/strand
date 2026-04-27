@@ -5,7 +5,7 @@ declare_id!("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
 
 const USDC_SCALE: u64 = 1_000_000;
 const SECONDS_PER_MONTH: i64 = 30 * 24 * 3600;
-const ORACLE_PUBKEY_STR: &str = env!("ORACLE_PUBKEY");
+const ORACLE_PUBKEY_STR: &str = option_env!("ORACLE_PUBKEY").unwrap_or("11111111111111111111111111111111");
 
 #[program]
 pub mod strand_score {

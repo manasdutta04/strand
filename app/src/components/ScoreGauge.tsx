@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ScoreBreakdown } from "@/lib/score";
+import { ScoreBreakdown } from "../lib/score";
 
 interface ScoreGaugeProps {
   score: number;

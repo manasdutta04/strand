@@ -4,12 +4,12 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { CreditPanel } from "@/components/CreditPanel";
-import { ScoreGauge } from "@/components/ScoreGauge";
-import { WorkNFTCard } from "@/components/WorkNFTCard";
-import { useCreditLine } from "@/hooks/useCreditLine";
-import { useStrandScore } from "@/hooks/useStrandScore";
-import { useWorkNFTs } from "@/hooks/useWorkNFTs";
+import { CreditPanel } from "../../components/CreditPanel";
+import { ScoreGauge } from "../../components/ScoreGauge";
+import { WorkNFTCard } from "../../components/WorkNFTCard";
+import { useCreditLine } from "../../hooks/useCreditLine";
+import { useStrandScore } from "../../hooks/useStrandScore";
+import { useWorkNFTs } from "../../hooks/useWorkNFTs";
 
 type TabId = "history" | "skills" | "credit";
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { WorkNFTCardData } from "@/components/WorkNFTCard";
-import { ScoreBreakdown, scoreFromBreakdown, tierFromScore } from "@/lib/score";
+import { WorkNFTCardData } from "../../../components/WorkNFTCard";
+import { ScoreBreakdown, scoreFromBreakdown, tierFromScore } from "../../../lib/score";
 
 interface SkillItem {
   name: string;

@@ -6,7 +6,7 @@ import {
   deriveScoreBreakdown,
   scoreFromBreakdown,
   tierFromScore
-} from "@/lib/score";
+} from "../lib/score";
 
 export interface WorkerStats {
   jobsDone: number;

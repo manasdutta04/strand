@@ -1,4 +1,4 @@
-import { WorkerStats } from "@/hooks/useStrandScore";
+import { WorkerStats } from "../hooks/useStrandScore";
 
 export interface ScoreBreakdown {
   label: string;

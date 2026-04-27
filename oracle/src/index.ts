@@ -143,7 +143,7 @@ async function main(): Promise<void> {
     });
   };
 
-  const workCompletedListener = await coreProgram.addEventListener(
+  const workCompletedListener = coreProgram.addEventListener(
     "WorkCompleted",
     async (event: any, _slot: number, signature: string) => {
       const workerKey = new PublicKey(event.worker);
@@ -156,7 +156,7 @@ async function main(): Promise<void> {
     }
   );
 
-  const skillClaimListener = await coreProgram.addEventListener(
+  const skillClaimListener = coreProgram.addEventListener(
     "SkillClaim",
     async (event: any, _slot: number, signature: string) => {
       const workerKey = new PublicKey(event.worker);
@@ -204,8 +204,8 @@ async function main(): Promise<void> {
   );
 
   const cleanup = async (): Promise<void> => {
-    await coreProgram.removeEventListener(workCompletedListener);
-    await coreProgram.removeEventListener(skillClaimListener);
+    coreProgram.removeEventListener(workCompletedListener);
+    coreProgram.removeEventListener(skillClaimListener);
   };
 
   process.on("SIGINT", async () => {

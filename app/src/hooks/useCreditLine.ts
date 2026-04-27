@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { aprFromScore } from "@/lib/score";
-import { CreditLineView } from "@/components/CreditPanel";
+import { aprFromScore } from "../lib/score";
+import { CreditLineView } from "../components/CreditPanel";
 
 export function useCreditLine(walletAddress?: string | null, score = 0) {
   const [creditLine, setCreditLine] = useState<CreditLineView | null>(null);

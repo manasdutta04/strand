@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { WalletProvider } from "@/components/WalletProvider";
+import { WalletProvider } from "../components/WalletProvider";
 import "./globals.css";
 
 const inter = Inter({

@@ -1,8 +1,13 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "Node16",
-    "moduleResolution": "node16",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@coral-xyz/anchor": ["../node_modules/@coral-xyz/anchor"],
+      "@solana/web3.js": ["../node_modules/@solana/web3.js"]
+    },
     "lib": [
       "ES2022",
       "DOM"
@@ -10,7 +15,6 @@
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "ignoreDeprecations": "5.0",
     "skipLibCheck": true,
     "outDir": "dist",
     "rootDir": "src",

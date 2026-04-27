@@ -205,7 +205,7 @@ async function main(): Promise<void> {
     )[0];
 
     const escrowTokenPda = PublicKey.findProgramAddressSync(
-      [Buffer.from("escrow_token"), bob.publicKey.toBuffer(), leJobId],
+      [Buffer.from("escrow_vault"), bob.publicKey.toBuffer(), leJobId],
       coreProgram.programId
     )[0];
 

@@ -47,10 +47,10 @@ describe("strand-core", () => {
     )[0];
   }
 
-  function deriveEscrowToken(jobId: number): PublicKey {
+  function deriveEscrowVault(jobId: number): PublicKey {
     return PublicKey.findProgramAddressSync(
       [
-        Buffer.from("escrow_token"),
+        Buffer.from("escrow_vault"),
         client.publicKey.toBuffer(),
         new BN(jobId).toArrayLike(Buffer, "le", 8)
       ],
@@ -133,7 +133,7 @@ describe("strand-core", () => {
         client: client.publicKey,
         worker: worker.publicKey,
         escrow: deriveEscrow(jobId),
-        escrowTokenAccount: deriveEscrowToken(jobId),
+        escrowTokenAccount: deriveEscrowVault(jobId),
         clientTokenAccount: clientUsdcAta,
         usdcMint,
         tokenProgram: TOKEN_PROGRAM_ID,
@@ -154,7 +154,7 @@ describe("strand-core", () => {
         client: client.publicKey,
         worker: worker.publicKey,
         escrow: deriveEscrow(jobId),
-        escrowTokenAccount: deriveEscrowToken(jobId),
+        escrowTokenAccount: deriveEscrowVault(jobId),
         workerTokenAccount: workerUsdcAta,
         usdcMint,
         workNft: deriveWorkNft(jobId),
@@ -184,7 +184,7 @@ describe("strand-core", () => {
     await createJob(1, 500);
 
     const clientAfter = await getAccount(provider.connection, clientUsdcAta);
-    const escrowAfter = await getAccount(provider.connection, deriveEscrowToken(1));
+    const escrowAfter = await getAccount(provider.connection, deriveEscrowVault(1));
 
     assert.equal(Number(escrowAfter.amount), usdc(500).toNumber());
     assert.equal(

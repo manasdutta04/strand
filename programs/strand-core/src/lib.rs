@@ -54,7 +54,7 @@ pub mod strand_core {
         escrow.created_at = Clock::get()?.unix_timestamp;
         escrow.bump = ctx.bumps.escrow;
 
-        emit!(JobCreated {
+        emit!(WorkCreated {
             client: ctx.accounts.client.key(),
             worker: ctx.accounts.worker.key(),
             job_id,
@@ -219,7 +219,7 @@ pub struct CreateJob<'info> {
         payer = client,
         token::mint = usdc_mint,
         token::authority = escrow,
-        seeds = [b"escrow_token", client.key().as_ref(), &job_id.to_le_bytes()],
+        seeds = [b"escrow_vault", client.key().as_ref(), &job_id.to_le_bytes()],
         bump
     )]
     pub escrow_token_account: Account<'info, TokenAccount>,
@@ -249,7 +249,7 @@ pub struct CompleteJob<'info> {
     pub escrow: Account<'info, JobEscrow>,
     #[account(
         mut,
-        seeds = [b"escrow_token", client.key().as_ref(), &job_id.to_le_bytes()],
+        seeds = [b"escrow_vault", client.key().as_ref(), &job_id.to_le_bytes()],
         bump
     )]
     pub escrow_token_account: Account<'info, TokenAccount>,
@@ -361,7 +361,7 @@ pub enum JobState {
 }
 
 #[event]
-pub struct JobCreated {
+pub struct WorkCreated {
     pub client: Pubkey,
     pub worker: Pubkey,
     pub job_id: u64,

@@ -1,12 +1,12 @@
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
-import coreIdl from "@/lib/idl/strand_core.json";
-import scoreIdl from "@/lib/idl/strand_score.json";
-import creditIdl from "@/lib/idl/strand_credit.json";
+import coreIdl from "./idl/strand_core.json";
+import scoreIdl from "./idl/strand_score.json";
+import creditIdl from "./idl/strand_credit.json";
 import {
   STRAND_CORE_PROGRAM_ID,
   STRAND_CREDIT_PROGRAM_ID,
   STRAND_SCORE_PROGRAM_ID
-} from "@/lib/constants";
+} from "./constants";
 
 export function getPrograms(provider: AnchorProvider) {
   const core = {

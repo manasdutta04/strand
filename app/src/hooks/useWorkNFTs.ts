@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { WorkNFTCardData } from "@/components/WorkNFTCard";
+import { WorkNFTCardData } from "../components/WorkNFTCard";
 
 const FALLBACK_NFTS: WorkNFTCardData[] = [];
 
