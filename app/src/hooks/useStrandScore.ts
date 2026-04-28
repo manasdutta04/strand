@@ -32,7 +32,7 @@ const EMPTY_STATS: WorkerStats = {
   memberSince: new Date().toISOString()
 };
 
-export function useStrandScore(walletAddress?: string | null): StrandScoreState {
+export function useStrandScore(walletAddress?: string | null, refreshToken?: number): StrandScoreState {
   const [stats, setStats] = useState<WorkerStats>(EMPTY_STATS);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -63,7 +63,7 @@ export function useStrandScore(walletAddress?: string | null): StrandScoreState 
     }
 
     setIsLoading(false);
-  }, [walletAddress]);
+  }, [walletAddress, refreshToken]);
 
   const breakdown = useMemo(() => deriveScoreBreakdown(stats), [stats]);
   const score = useMemo(() => scoreFromBreakdown(breakdown), [breakdown]);

@@ -5,7 +5,7 @@ import { WorkNFTCardData } from "../components/WorkNFTCard";
 
 const FALLBACK_NFTS: WorkNFTCardData[] = [];
 
-export function useWorkNFTs(walletAddress?: string | null) {
+export function useWorkNFTs(walletAddress?: string | null, refreshToken?: number) {
   const [workNfts, setWorkNfts] = useState<WorkNFTCardData[]>(FALLBACK_NFTS);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -32,7 +32,7 @@ export function useWorkNFTs(walletAddress?: string | null) {
     }
 
     setIsLoading(false);
-  }, [walletAddress]);
+  }, [walletAddress, refreshToken]);
 
   return {
     workNfts,

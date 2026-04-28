@@ -47,10 +47,12 @@ export default function DashboardPage() {
   const [skillName, setSkillName] = useState("");
   const [skillUrl, setSkillUrl] = useState("");
   const [skills, setSkills] = useState<SkillItem[]>([]);
+  const [refreshTick, setRefreshTick] = useState(0);
+  const [demoStatus, setDemoStatus] = useState<string | null>(null);
 
-  const { score, tier, breakdown, stats } = useStrandScore(wallet);
-  const { workNfts } = useWorkNFTs(wallet);
-  const { creditLine, borrow, repay } = useCreditLine(wallet, score);
+  const { score, tier, breakdown, stats } = useStrandScore(wallet, refreshTick);
+  const { workNfts } = useWorkNFTs(wallet, refreshTick);
+  const { creditLine, borrow, repay } = useCreditLine(wallet, score, refreshTick);
 
   useEffect(() => {
     if (!connected) {
@@ -124,11 +126,67 @@ export default function DashboardPage() {
     setSkillName("");
     setSkillUrl("");
     setShowSkillModal(false);
+    setRefreshTick((value) => value + 1);
+  }
+
+  function runDemoDataSetup(): void {
+    if (!wallet) {
+      return;
+    }
+
+    const now = new Date();
+    const profile = {
+      jobsDone: 2,
+      totalEarnedUsdc: 1800,
+      uniqueClients: 2,
+      onTimeCompletions: 2,
+      memberSince: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 60).toISOString()
+    };
+
+    const demoNfts = [
+      {
+        client: "8f6MvgGQkW4J2CwQRLjce6aUukTWW6xwRC2d5GWk6Hu6",
+        amountUsdc: 950,
+        skills: ["Next.js", "UI Design"],
+        clientRating: 5,
+        completedAt: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+        explorerUrl: "https://solana.fm/"
+      },
+      {
+        client: "Ez95eoXqyaq3Tz4HuM4Pi8J5ubk6cmDMHqvQ7hccYiS6",
+        amountUsdc: 850,
+        skills: ["TypeScript", "API Integration"],
+        clientRating: 4,
+        completedAt: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+        explorerUrl: "https://solana.fm/"
+      }
+    ];
+
+    const demoSkills: SkillItem[] = [
+      { name: "Next.js", confidence: 91 },
+      { name: "TypeScript", confidence: 88 }
+    ];
+
+    localStorage.setItem(`strand-profile:${wallet}`, JSON.stringify(profile));
+    localStorage.setItem(`strand-worknfts:${wallet}`, JSON.stringify(demoNfts));
+    localStorage.setItem(`strand-skills:${wallet}`, JSON.stringify(demoSkills));
+    setSkills(demoSkills);
+
+    setRefreshTick((value) => value + 1);
+    setDemoStatus("Demo data added. Your score and tabs are now populated for product walkthroughs.");
   }
 
   if (!connected || !wallet) {
     return null;
   }
+
+  const onboarding = [
+    { id: "connect", label: "Connect wallet", done: connected, action: () => setActiveTab("history") },
+    { id: "first-job", label: "Complete first job", done: stats.jobsDone > 0, action: () => setActiveTab("history") },
+    { id: "skill", label: "Claim first skill", done: skills.length > 0, action: () => setShowSkillModal(true) },
+    { id: "credit", label: "Unlock credit line", done: creditLine !== null, action: () => setActiveTab("credit") }
+  ];
+  const completedSteps = onboarding.filter((step) => step.done).length;
 
   return (
     <main className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
@@ -169,6 +227,39 @@ export default function DashboardPage() {
         </aside>
 
         <section className="panel min-h-[680px] p-5">
+          <div className="mb-5 rounded-xl border border-border bg-[#141414] p-4">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-base font-semibold">First-Time Setup</h2>
+              <span className="rounded-full border border-accent/40 px-2 py-1 text-xs text-accent">
+                {completedSteps}/4 done
+              </span>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {onboarding.map((step, index) => (
+                <button
+                  key={step.id}
+                  className="flex items-center justify-between rounded-lg border border-border bg-[#101010] px-3 py-2 text-left text-sm"
+                  onClick={step.action}
+                  type="button"
+                >
+                  <span className="text-muted">
+                    {index + 1}. {step.label}
+                  </span>
+                  <span className={step.done ? "text-accent" : "text-zinc-400"}>{step.done ? "Done" : "Next"}</span>
+                </button>
+              ))}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button className="btn-accent px-3 py-2 text-sm" onClick={runDemoDataSetup} type="button">
+                Try Demo Data
+              </button>
+              <button className="btn-subtle px-3 py-2 text-sm" onClick={() => setActiveTab("history")} type="button">
+                Open Work History
+              </button>
+            </div>
+            {demoStatus ? <p className="mt-2 text-xs text-accent">{demoStatus}</p> : null}
+          </div>
+
           <div className="mb-5 flex gap-2">
             {TAB_META.map((tab) => (
               <button
@@ -189,7 +280,15 @@ export default function DashboardPage() {
             <div>
               {workNfts.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
-                  Complete your first job to mint your first Work NFT.
+                  <p className="mb-3">Complete your first job to mint your first Work NFT.</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    <Link className="btn-accent px-3 py-2 text-sm" href="/client">
+                      Post a Job
+                    </Link>
+                    <button className="btn-subtle px-3 py-2 text-sm" onClick={runDemoDataSetup} type="button">
+                      Use Demo Data
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="grid gap-3 md:grid-cols-2">
@@ -208,7 +307,10 @@ export default function DashboardPage() {
             <div className="space-y-3">
               {skills.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
-                  No verified skills yet. Claim one to trigger oracle verification.
+                  <p className="mb-3">No verified skills yet. Claim one to trigger oracle verification.</p>
+                  <button className="btn-accent px-3 py-2 text-sm" onClick={() => setShowSkillModal(true)} type="button">
+                    Add Skill Claim
+                  </button>
                 </div>
               ) : (
                 skills.map((skill) => (

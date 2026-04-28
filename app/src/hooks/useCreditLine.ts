@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { aprFromScore } from "../lib/score";
 import { CreditLineView } from "../components/CreditPanel";
 
-export function useCreditLine(walletAddress?: string | null, score = 0) {
+export function useCreditLine(walletAddress?: string | null, score = 0, refreshToken?: number) {
   const [creditLine, setCreditLine] = useState<CreditLineView | null>(null);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export function useCreditLine(walletAddress?: string | null, score = 0) {
     } else {
       setCreditLine(null);
     }
-  }, [walletAddress, score]);
+  }, [walletAddress, score, refreshToken]);
 
   const persist = useCallback(
     (next: CreditLineView | null) => {
