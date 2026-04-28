@@ -3,14 +3,14 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-strand_core = "StrandCore111111111111111111111111111111111"
-strand_score = "StrandScore11111111111111111111111111111111"
-strand_credit = "StrandCredit111111111111111111111111111111"
+strand_core = "DFb1tb7GHPYaswdhjM2JA4HpHjnCzxJcRZEXzyAvmJ1q"
+strand_score = "DF89vhYKM3Rj9KMhWiM2pjdknYrd8YafYq2TBMK6evEA"
+strand_credit = "AVSZ1XY45nhYtcqUMUboHhXLLoR2hzSGz95oCRqbyn7x"
 
 [programs.devnet]
-strand_core = "StrandCore111111111111111111111111111111111"
-strand_score = "StrandScore11111111111111111111111111111111"
-strand_credit = "StrandCredit111111111111111111111111111111"
+strand_core = "DFb1tb7GHPYaswdhjM2JA4HpHjnCzxJcRZEXzyAvmJ1q"
+strand_score = "DF89vhYKM3Rj9KMhWiM2pjdknYrd8YafYq2TBMK6evEA"
+strand_credit = "AVSZ1XY45nhYtcqUMUboHhXLLoR2hzSGz95oCRqbyn7x"
 
 [registry]
 url = "https://api.apr.dev"

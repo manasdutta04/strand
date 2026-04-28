@@ -3,7 +3,7 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 use strand_score::program::StrandScore;
 use strand_score::ScoreState;
 
-declare_id!("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+declare_id!("AVSZ1XY45nhYtcqUMUboHhXLLoR2hzSGz95oCRqbyn7x");
 
 #[program]
 pub mod strand_credit {

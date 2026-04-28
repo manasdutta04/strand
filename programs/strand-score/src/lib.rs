@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use std::str::FromStr;
 
-declare_id!("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+declare_id!("DF89vhYKM3Rj9KMhWiM2pjdknYrd8YafYq2TBMK6evEA");
 
 const USDC_SCALE: u64 = 1_000_000;
 const SECONDS_PER_MONTH: i64 = 30 * 24 * 3600;

@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 use strand_score::program::StrandScore;
 
-declare_id!("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
+declare_id!("DFb1tb7GHPYaswdhjM2JA4HpHjnCzxJcRZEXzyAvmJ1q");
 
 #[program]
 pub mod strand_core {
