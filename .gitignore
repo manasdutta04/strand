@@ -29,3 +29,6 @@ scripts/demo-bob.json
 # OS / editor
 .DS_Store
 .vscode/
+
+# Tooling
+.codex-logs/

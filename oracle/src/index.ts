@@ -5,6 +5,7 @@ import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { gradeWorkSample } from "./grader";
 import { getScoreState, isoNow, loadOracleKeypair, sleep } from "./chain";
 
@@ -66,7 +67,9 @@ async function main(): Promise<void> {
   );
   anchor.setProvider(provider);
 
-  const rootDir = path.resolve(__dirname, "..", "..");
+  const currentFile = fileURLToPath(import.meta.url);
+  const currentDir = path.dirname(currentFile);
+  const rootDir = path.resolve(currentDir, "..", "..");
   const coreIdl = loadIdl(path.join(rootDir, "target", "idl", "strand_core.json"));
   const scoreIdl = loadIdl(path.join(rootDir, "target", "idl", "strand_score.json"));
 
