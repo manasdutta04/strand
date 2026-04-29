@@ -4,12 +4,13 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { CreditPanel } from "../../components/CreditPanel";
+import { CreditLineView, CreditPanel } from "../../components/CreditPanel";
 import { ScoreGauge } from "../../components/ScoreGauge";
-import { WorkNFTCard } from "../../components/WorkNFTCard";
+import { WorkNFTCard, WorkNFTCardData } from "../../components/WorkNFTCard";
 import { useCreditLine } from "../../hooks/useCreditLine";
-import { useStrandScore } from "../../hooks/useStrandScore";
+import { useStrandScore, WorkerStats } from "../../hooks/useStrandScore";
 import { useWorkNFTs } from "../../hooks/useWorkNFTs";
+import { deriveScoreBreakdown, scoreFromBreakdown, tierFromScore } from "../../lib/score";
 
 type TabId = "history" | "skills" | "credit";
 
@@ -48,11 +49,75 @@ export default function DashboardPage() {
   const [skillUrl, setSkillUrl] = useState("");
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [refreshTick, setRefreshTick] = useState(0);
+  const [demoMode, setDemoMode] = useState(false);
   const [demoStatus, setDemoStatus] = useState<string | null>(null);
+  const [demoBorrowedUsdc, setDemoBorrowedUsdc] = useState(300);
 
   const { score, tier, breakdown, stats } = useStrandScore(wallet, refreshTick);
   const { workNfts } = useWorkNFTs(wallet, refreshTick);
   const { creditLine, borrow, repay } = useCreditLine(wallet, score, refreshTick);
+
+  const demoProfile = useMemo<WorkerStats>(
+    () => ({
+      jobsDone: 2,
+      totalEarnedUsdc: 1800,
+      uniqueClients: 2,
+      onTimeCompletions: 2,
+      memberSince: new Date(Date.now() - 1000 * 60 * 60 * 24 * 60).toISOString()
+    }),
+    []
+  );
+
+  const demoWorkNfts = useMemo<WorkNFTCardData[]>(
+    () => [
+      {
+        client: "8f6MvgGQkW4J2CwQRLjce6aUukTWW6xwRC2d5GWk6Hu6",
+        amountUsdc: 950,
+        skills: ["Next.js", "UI Design"],
+        clientRating: 5,
+        completedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+        explorerUrl: "https://solana.fm/"
+      },
+      {
+        client: "Ez95eoXqyaq3Tz4HuM4Pi8J5ubk6cmDMHqvQ7hccYiS6",
+        amountUsdc: 850,
+        skills: ["TypeScript", "API Integration"],
+        clientRating: 4,
+        completedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+        explorerUrl: "https://solana.fm/"
+      }
+    ],
+    []
+  );
+
+  const demoSkills = useMemo<SkillItem[]>(
+    () => [
+      { name: "Next.js", confidence: 91 },
+      { name: "TypeScript", confidence: 88 }
+    ],
+    []
+  );
+
+  const demoBreakdown = useMemo(() => deriveScoreBreakdown(demoProfile), [demoProfile]);
+  const demoScore = useMemo(() => scoreFromBreakdown(demoBreakdown), [demoBreakdown]);
+  const demoTier = useMemo(() => tierFromScore(demoScore), [demoScore]);
+
+  const demoCreditLine = useMemo<CreditLineView>(
+    () => ({
+      maxUsdc: demoScore * 10,
+      apr: 9.4,
+      borrowedUsdc: demoBorrowedUsdc
+    }),
+    [demoBorrowedUsdc, demoScore]
+  );
+
+  const displayStats = demoMode ? demoProfile : stats;
+  const displayWorkNfts = demoMode ? demoWorkNfts : workNfts;
+  const displaySkills = demoMode ? demoSkills : skills;
+  const displayScore = demoMode ? demoScore : score;
+  const displayTier = demoMode ? demoTier : tier;
+  const displayBreakdown = demoMode ? demoBreakdown : breakdown;
+  const displayCreditLine = demoMode ? demoCreditLine : creditLine;
 
   useEffect(() => {
     if (!connected) {
@@ -91,6 +156,86 @@ export default function DashboardPage() {
     }
   }, [wallet]);
 
+  useEffect(() => {
+    if (!wallet) {
+      return;
+    }
+
+    const migratedKey = `strand-demo-cleaned:${wallet}`;
+    if (localStorage.getItem(migratedKey) === "1") {
+      return;
+    }
+
+    const profileKey = `strand-profile:${wallet}`;
+    const workNftsKey = `strand-worknfts:${wallet}`;
+    const skillsKey = `strand-skills:${wallet}`;
+    const creditKey = `strand-credit:${wallet}`;
+
+    const profileRaw = localStorage.getItem(profileKey);
+    const nftsRaw = localStorage.getItem(workNftsKey);
+    const skillsRaw = localStorage.getItem(skillsKey);
+
+    let shouldClean = false;
+
+    if (profileRaw) {
+      try {
+        const parsed = JSON.parse(profileRaw) as WorkerStats;
+        if (
+          parsed.jobsDone === 2 &&
+          parsed.totalEarnedUsdc === 1800 &&
+          parsed.uniqueClients === 2 &&
+          parsed.onTimeCompletions === 2
+        ) {
+          shouldClean = true;
+        }
+      } catch {
+        // ignore invalid legacy values
+      }
+    }
+
+    if (!shouldClean && nftsRaw) {
+      try {
+        const parsed = JSON.parse(nftsRaw) as WorkNFTCardData[];
+        const looksLikeLegacyDemo =
+          parsed.length === 2 &&
+          parsed.some((item) => item.client === "8f6MvgGQkW4J2CwQRLjce6aUukTWW6xwRC2d5GWk6Hu6") &&
+          parsed.some((item) => item.client === "Ez95eoXqyaq3Tz4HuM4Pi8J5ubk6cmDMHqvQ7hccYiS6");
+        if (looksLikeLegacyDemo) {
+          shouldClean = true;
+        }
+      } catch {
+        // ignore invalid legacy values
+      }
+    }
+
+    if (!shouldClean && skillsRaw) {
+      try {
+        const parsed = JSON.parse(skillsRaw) as SkillItem[];
+        const looksLikeLegacyDemo =
+          parsed.length === 2 &&
+          parsed.some((item) => item.name === "Next.js" && item.confidence === 91) &&
+          parsed.some((item) => item.name === "TypeScript" && item.confidence === 88);
+        if (looksLikeLegacyDemo) {
+          shouldClean = true;
+        }
+      } catch {
+        // ignore invalid legacy values
+      }
+    }
+
+    if (shouldClean) {
+      localStorage.removeItem(profileKey);
+      localStorage.removeItem(workNftsKey);
+      localStorage.removeItem(skillsKey);
+      localStorage.removeItem(creditKey);
+      setSkills([]);
+      setRefreshTick((value) => value + 1);
+      setDemoStatus("Removed legacy demo data from your account view.");
+    }
+
+    localStorage.setItem(migratedKey, "1");
+  }, [wallet]);
+
   const shareUrl = useMemo(() => {
     if (!wallet || typeof window === "undefined") {
       return "";
@@ -109,6 +254,12 @@ export default function DashboardPage() {
 
   function submitSkillClaim(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
+    if (demoMode) {
+      setShowSkillModal(false);
+      setDemoStatus("Demo overlay is active. Turn it off to save skill claims to your account.");
+      return;
+    }
+
     if (!wallet || skillName.trim().length === 0) {
       return;
     }
@@ -130,50 +281,35 @@ export default function DashboardPage() {
   }
 
   function runDemoDataSetup(): void {
+    setDemoMode((enabled) => !enabled);
+    setDemoStatus((current) =>
+      demoMode
+        ? "Demo overlay is off. You are now viewing your real account data."
+        : "Demo overlay is on. No demo data is written to your account."
+    );
+  }
+
+  async function borrowInDemo(amount: number): Promise<void> {
+    const next = Math.min(demoCreditLine.maxUsdc, demoBorrowedUsdc + amount);
+    setDemoBorrowedUsdc(next);
+  }
+
+  async function repayInDemo(amount: number): Promise<void> {
+    setDemoBorrowedUsdc((value) => Math.max(0, value - amount));
+  }
+
+  function clearAccountData(): void {
     if (!wallet) {
       return;
     }
 
-    const now = new Date();
-    const profile = {
-      jobsDone: 2,
-      totalEarnedUsdc: 1800,
-      uniqueClients: 2,
-      onTimeCompletions: 2,
-      memberSince: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 60).toISOString()
-    };
-
-    const demoNfts = [
-      {
-        client: "8f6MvgGQkW4J2CwQRLjce6aUukTWW6xwRC2d5GWk6Hu6",
-        amountUsdc: 950,
-        skills: ["Next.js", "UI Design"],
-        clientRating: 5,
-        completedAt: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-        explorerUrl: "https://solana.fm/"
-      },
-      {
-        client: "Ez95eoXqyaq3Tz4HuM4Pi8J5ubk6cmDMHqvQ7hccYiS6",
-        amountUsdc: 850,
-        skills: ["TypeScript", "API Integration"],
-        clientRating: 4,
-        completedAt: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-        explorerUrl: "https://solana.fm/"
-      }
-    ];
-
-    const demoSkills: SkillItem[] = [
-      { name: "Next.js", confidence: 91 },
-      { name: "TypeScript", confidence: 88 }
-    ];
-
-    localStorage.setItem(`strand-profile:${wallet}`, JSON.stringify(profile));
-    localStorage.setItem(`strand-worknfts:${wallet}`, JSON.stringify(demoNfts));
-    localStorage.setItem(`strand-skills:${wallet}`, JSON.stringify(demoSkills));
-    setSkills(demoSkills);
-
+    localStorage.removeItem(`strand-profile:${wallet}`);
+    localStorage.removeItem(`strand-worknfts:${wallet}`);
+    localStorage.removeItem(`strand-skills:${wallet}`);
+    localStorage.removeItem(`strand-credit:${wallet}`);
+    setSkills([]);
     setRefreshTick((value) => value + 1);
-    setDemoStatus("Demo data added. Your score and tabs are now populated for product walkthroughs.");
+    setDemoStatus("Account-local demo/test data cleared.");
   }
 
   if (!connected || !wallet) {
@@ -182,9 +318,9 @@ export default function DashboardPage() {
 
   const onboarding = [
     { id: "connect", label: "Connect wallet", done: connected, action: () => setActiveTab("history") },
-    { id: "first-job", label: "Complete first job", done: stats.jobsDone > 0, action: () => setActiveTab("history") },
-    { id: "skill", label: "Claim first skill", done: skills.length > 0, action: () => setShowSkillModal(true) },
-    { id: "credit", label: "Unlock credit line", done: creditLine !== null, action: () => setActiveTab("credit") }
+    { id: "first-job", label: "Complete first job", done: displayStats.jobsDone > 0, action: () => setActiveTab("history") },
+    { id: "skill", label: "Claim first skill", done: displaySkills.length > 0, action: () => setShowSkillModal(true) },
+    { id: "credit", label: "Unlock credit line", done: displayCreditLine !== null, action: () => setActiveTab("credit") }
   ];
   const completedSteps = onboarding.filter((step) => step.done).length;
 
@@ -192,26 +328,26 @@ export default function DashboardPage() {
     <main className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[280px_1fr]">
         <aside className="space-y-4">
-          <ScoreGauge score={score} breakdown={breakdown} />
+          <ScoreGauge score={displayScore} breakdown={displayBreakdown} />
 
           <section className="panel p-4">
             <div className="mb-2 flex items-center justify-between">
               <div className="text-sm text-muted">Strand Score</div>
-              <span className={`rounded-full px-2 py-1 text-xs ${tierBadgeClass(tier)}`}>{tier}</span>
+              <span className={`rounded-full px-2 py-1 text-xs ${tierBadgeClass(displayTier)}`}>{displayTier}</span>
             </div>
-            <div className="text-3xl font-semibold text-accent">{score}</div>
-            <div className="text-sm text-muted">{score} / 1000</div>
+            <div className="text-3xl font-semibold text-accent">{displayScore}</div>
+            <div className="text-sm text-muted">{displayScore} / 1000</div>
           </section>
 
           <section className="panel p-4 text-sm">
             <div className="mb-2 font-medium">Stats</div>
             <div className="grid grid-cols-2 gap-2 text-muted">
               <div>Jobs done</div>
-              <div className="text-right text-primary">{stats.jobsDone}</div>
+              <div className="text-right text-primary">{displayStats.jobsDone}</div>
               <div>Total earned</div>
-              <div className="text-right text-primary">${stats.totalEarnedUsdc.toLocaleString()}</div>
+              <div className="text-right text-primary">${displayStats.totalEarnedUsdc.toLocaleString()}</div>
               <div>Unique clients</div>
-              <div className="text-right text-primary">{stats.uniqueClients}</div>
+              <div className="text-right text-primary">{displayStats.uniqueClients}</div>
             </div>
           </section>
 
@@ -251,10 +387,13 @@ export default function DashboardPage() {
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
               <button className="btn-accent px-3 py-2 text-sm" onClick={runDemoDataSetup} type="button">
-                Try Demo Data
+                {demoMode ? "Deactivate Demo Overlay" : "Activate Demo Overlay"}
               </button>
               <button className="btn-subtle px-3 py-2 text-sm" onClick={() => setActiveTab("history")} type="button">
                 Open Work History
+              </button>
+              <button className="btn-subtle px-3 py-2 text-sm" onClick={clearAccountData} type="button">
+                Clear Account Test Data
               </button>
             </div>
             {demoStatus ? <p className="mt-2 text-xs text-accent">{demoStatus}</p> : null}
@@ -278,7 +417,7 @@ export default function DashboardPage() {
 
           {activeTab === "history" ? (
             <div>
-              {workNfts.length === 0 ? (
+              {displayWorkNfts.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
                   <p className="mb-3">Complete your first job to mint your first Work NFT.</p>
                   <div className="flex flex-wrap justify-center gap-2">
@@ -286,13 +425,13 @@ export default function DashboardPage() {
                       Post a Job
                     </Link>
                     <button className="btn-subtle px-3 py-2 text-sm" onClick={runDemoDataSetup} type="button">
-                      Use Demo Data
+                      {demoMode ? "Hide Demo Overlay" : "Preview Demo Overlay"}
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="grid gap-3 md:grid-cols-2">
-                  {workNfts.map((item) => (
+                  {displayWorkNfts.map((item) => (
                     <WorkNFTCard
                       key={`${item.client}-${item.completedAt}-${item.amountUsdc}`}
                       data={item}
@@ -305,7 +444,7 @@ export default function DashboardPage() {
 
           {activeTab === "skills" ? (
             <div className="space-y-3">
-              {skills.length === 0 ? (
+              {displaySkills.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-border p-8 text-center text-muted">
                   <p className="mb-3">No verified skills yet. Claim one to trigger oracle verification.</p>
                   <button className="btn-accent px-3 py-2 text-sm" onClick={() => setShowSkillModal(true)} type="button">
@@ -313,7 +452,7 @@ export default function DashboardPage() {
                   </button>
                 </div>
               ) : (
-                skills.map((skill) => (
+                displaySkills.map((skill) => (
                   <article key={skill.name} className="rounded-xl border border-border bg-[#141414] p-4">
                     <div className="mb-2 flex items-center justify-between text-sm">
                       <span className="font-medium text-primary">{skill.name}</span>
@@ -330,7 +469,11 @@ export default function DashboardPage() {
           ) : null}
 
           {activeTab === "credit" ? (
-            <CreditPanel creditLine={creditLine} onBorrow={borrow} onRepay={repay} />
+            <CreditPanel
+              creditLine={displayCreditLine}
+              onBorrow={demoMode ? borrowInDemo : borrow}
+              onRepay={demoMode ? repayInDemo : repay}
+            />
           ) : null}
         </section>
       </div>
