@@ -33,6 +33,30 @@ User (Phantom wallet)
 └─► Lender Vault (USDC SPL token account, PDA-owned)
 ```
 
+## SaaS App Routing (Frontend)
+
+The frontend is now role-oriented and multi-page:
+
+- Landing and role entry:
+  - `/` role selection hub
+  - `/login/worker`
+  - `/login/client`
+  - `/login/lender`
+
+- Worker workspace:
+  - `/dashboard` overview
+  - `/dashboard/work`
+  - `/dashboard/skills`
+  - `/dashboard/credit`
+
+- Client workspace:
+  - `/client/dashboard`
+  - `/client/jobs/new`
+
+- Lender workspace:
+  - `/lender/dashboard`
+  - `/lender/dashboard/queue`
+
 ## Quick Start
 1. Install prerequisites: Node.js 18+, Rust 1.75+, Solana CLI 1.18+, Anchor 0.31.x, Ollama.
 2. Pull model:
