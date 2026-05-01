@@ -44,10 +44,10 @@ The frontend is now role-oriented and multi-page:
   - `/login/lender`
 
 - Worker workspace:
-  - `/dashboard` overview
-  - `/dashboard/work`
-  - `/dashboard/skills`
-  - `/dashboard/credit`
+  - `/worker/dashboard` overview
+  - `/worker/work`
+  - `/worker/skills`
+  - `/worker/credit`
 
 - Client workspace:
   - `/client/dashboard`

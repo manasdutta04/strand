@@ -12,7 +12,7 @@ export const ROLE_META: Record<UserRole, RoleMeta> = {
     role: "worker",
     label: "Worker",
     description: "Track completed jobs, skill attestations, and score growth.",
-    dashboardPath: "/dashboard"
+    dashboardPath: "/worker/dashboard"
   },
   client: {
     role: "client",
