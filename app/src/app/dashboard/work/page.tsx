@@ -1,6 +1,7 @@
 "use client";
 
 import { useWallet } from "@solana/wallet-adapter-react";
+import { RequireWallet } from "../../../components/RequireWallet";
 import { SaasShell } from "../../../components/SaasShell";
 import { WorkNFTCard } from "../../../components/WorkNFTCard";
 import { useWorkNFTs } from "../../../hooks/useWorkNFTs";
@@ -18,13 +19,14 @@ export default function WorkerWorkHistoryPage() {
   const { workNfts } = useWorkNFTs(wallet);
 
   return (
-    <SaasShell
-      productLabel="Worker Workspace"
-      title="Work History"
-      subtitle="Immutable records of completed jobs and delivery quality."
-      nav={NAV}
-    >
-      <section className="panel p-4">
+    <RequireWallet redirectTo="/login/worker">
+      <SaasShell
+        productLabel="Worker Workspace"
+        title="Work History"
+        subtitle="Immutable records of completed jobs and delivery quality."
+        nav={NAV}
+      >
+        <section className="panel p-4">
         {workNfts.length === 0 ? (
           <p className="text-sm text-muted">No records yet. Complete jobs to mint your first Work NFT.</p>
         ) : (
@@ -34,7 +36,8 @@ export default function WorkerWorkHistoryPage() {
             ))}
           </div>
         )}
-      </section>
-    </SaasShell>
+        </section>
+      </SaasShell>
+    </RequireWallet>
   );
 }

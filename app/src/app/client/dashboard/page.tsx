@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { RequireWallet } from "../../../components/RequireWallet";
 import { SaasShell } from "../../../components/SaasShell";
 
 const NAV = [
@@ -15,13 +16,14 @@ const ACTIVE_JOBS = [
 
 export default function ClientDashboardPage() {
   return (
-    <SaasShell
-      productLabel="Client Workspace"
-      title="Hiring Operations"
-      subtitle="Manage escrow-backed jobs and completion workflow."
-      nav={NAV}
-    >
-      <section className="grid gap-4 md:grid-cols-3">
+    <RequireWallet redirectTo="/login/client">
+      <SaasShell
+        productLabel="Client Workspace"
+        title="Hiring Operations"
+        subtitle="Manage escrow-backed jobs and completion workflow."
+        nav={NAV}
+      >
+        <section className="grid gap-4 md:grid-cols-3">
         <article className="panel p-4">
           <p className="text-xs uppercase tracking-[0.16em] text-muted">Open Jobs</p>
           <p className="mt-2 text-3xl font-semibold">12</p>
@@ -34,9 +36,9 @@ export default function ClientDashboardPage() {
           <p className="text-xs uppercase tracking-[0.16em] text-muted">Completion Rate</p>
           <p className="mt-2 text-3xl font-semibold">94%</p>
         </article>
-      </section>
+        </section>
 
-      <section className="panel p-4">
+        <section className="panel p-4">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Active Job Queue</h2>
           <Link className="btn-accent" href="/client/jobs/new">
@@ -56,7 +58,8 @@ export default function ClientDashboardPage() {
             </div>
           ))}
         </div>
-      </section>
-    </SaasShell>
+        </section>
+      </SaasShell>
+    </RequireWallet>
   );
 }

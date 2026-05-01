@@ -2,6 +2,7 @@
 
 import { KeyboardEvent, useMemo, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
+import { RequireWallet } from "../../../../components/RequireWallet";
 import { SaasShell } from "../../../../components/SaasShell";
 
 type Step = 1 | 2 | 3 | 4;
@@ -61,13 +62,14 @@ export default function CreateClientJobPage() {
   }
 
   return (
-    <SaasShell
-      productLabel="Client Workspace"
-      title="Create Job"
-      subtitle="Define the worker, escrow amount, and required skill tags."
-      nav={NAV}
-    >
-      <section className="panel p-5">
+    <RequireWallet redirectTo="/login/client">
+      <SaasShell
+        productLabel="Client Workspace"
+        title="Create Job"
+        subtitle="Define the worker, escrow amount, and required skill tags."
+        nav={NAV}
+      >
+        <section className="panel p-5">
         {step === 1 ? (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Select worker wallet</h2>
@@ -141,7 +143,8 @@ export default function CreateClientJobPage() {
             {posted ? <p className="text-sm text-accent">Job created. Share Job ID with the worker.</p> : null}
           </div>
         ) : null}
-      </section>
-    </SaasShell>
+        </section>
+      </SaasShell>
+    </RequireWallet>
   );
 }

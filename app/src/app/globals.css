@@ -42,7 +42,7 @@ body {
 }
 
 .btn-accent {
-  @apply btn bg-accent text-black hover:bg-accent-dim;
+  @apply btn bg-accent text-primary hover:bg-accent-dim;
 }
 
 .btn-subtle {
@@ -52,7 +52,7 @@ body {
 .wallet-adapter-button {
   border-radius: 0.75rem !important;
   background: var(--accent) !important;
-  color: #020202 !important;
+  color: var(--text-primary) !important;
   font-family: var(--font-inter), sans-serif !important;
   transition: all 150ms ease !important;
 }

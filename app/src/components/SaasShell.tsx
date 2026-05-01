@@ -43,7 +43,7 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
                     href={item.href}
                     className={
                       active
-                        ? "block rounded-lg bg-accent px-3 py-2 text-sm font-medium text-black"
+                        ? "block rounded-lg bg-accent px-3 py-2 text-sm font-medium text-primary"
                         : "block rounded-lg px-3 py-2 text-sm text-muted transition hover:bg-card-hover hover:text-primary"
                     }
                   >

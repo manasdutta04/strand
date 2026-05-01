@@ -1,6 +1,7 @@
 "use client";
 
 import { SaasShell } from "../../../../components/SaasShell";
+import { RequireWallet } from "../../../../components/RequireWallet";
 
 const NAV = [
   { label: "Portfolio", href: "/lender/dashboard" },
@@ -15,13 +16,14 @@ const REQUESTS = [
 
 export default function LenderQueuePage() {
   return (
-    <SaasShell
-      productLabel="Lender Workspace"
-      title="Underwriting Queue"
-      subtitle="Evaluate incoming credit requests using score and work proof signals."
-      nav={NAV}
-    >
-      <section className="panel p-4">
+    <RequireWallet redirectTo="/login/lender">
+      <SaasShell
+        productLabel="Lender Workspace"
+        title="Underwriting Queue"
+        subtitle="Evaluate incoming credit requests using score and work proof signals."
+        nav={NAV}
+      >
+        <section className="panel p-4">
         <div className="space-y-2">
           {REQUESTS.map((request) => (
             <div
@@ -39,7 +41,8 @@ export default function LenderQueuePage() {
             </div>
           ))}
         </div>
-      </section>
-    </SaasShell>
+        </section>
+      </SaasShell>
+    </RequireWallet>
   );
 }

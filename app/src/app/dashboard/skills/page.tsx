@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { RequireWallet } from "../../../components/RequireWallet";
 import { SaasShell } from "../../../components/SaasShell";
 
 interface SkillItem {
@@ -39,13 +40,14 @@ export default function WorkerSkillsPage() {
   }, [wallet]);
 
   return (
-    <SaasShell
-      productLabel="Worker Workspace"
-      title="Skill Attestations"
-      subtitle="Track oracle-verified competencies used in score composition."
-      nav={NAV}
-    >
-      <section className="panel p-4">
+    <RequireWallet redirectTo="/login/worker">
+      <SaasShell
+        productLabel="Worker Workspace"
+        title="Skill Attestations"
+        subtitle="Track oracle-verified competencies used in score composition."
+        nav={NAV}
+      >
+        <section className="panel p-4">
         {skills.length === 0 ? (
           <p className="text-sm text-muted">No verified skills yet.</p>
         ) : (
@@ -63,7 +65,8 @@ export default function WorkerSkillsPage() {
             ))}
           </div>
         )}
-      </section>
-    </SaasShell>
+        </section>
+      </SaasShell>
+    </RequireWallet>
   );
 }

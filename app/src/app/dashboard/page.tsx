@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { RequireWallet } from "../../components/RequireWallet";
 import { SaasShell } from "../../components/SaasShell";
 import { useCreditLine } from "../../hooks/useCreditLine";
 import { useStrandScore } from "../../hooks/useStrandScore";
@@ -15,36 +16,21 @@ const NAV = [
 ];
 
 export default function WorkerOverviewPage() {
-  const { connected, publicKey } = useWallet();
+  const { publicKey } = useWallet();
   const wallet = publicKey?.toBase58() ?? null;
   const { score, tier, stats } = useStrandScore(wallet);
   const { workNfts } = useWorkNFTs(wallet);
   const { creditLine } = useCreditLine(wallet, score);
 
-  if (!connected || !wallet) {
-    return (
-      <main className="mx-auto min-h-screen max-w-2xl px-4 py-8">
-        <section className="panel p-6">
-          <h1 className="text-2xl font-semibold">Worker Workspace</h1>
-          <p className="mt-2 text-sm text-muted">
-            Connect wallet to access worker dashboards and metrics.
-          </p>
-          <Link className="btn-accent mt-5" href="/login/worker">
-            Go To Worker Login
-          </Link>
-        </section>
-      </main>
-    );
-  }
-
   return (
-    <SaasShell
-      productLabel="Worker Workspace"
-      title="Performance Overview"
-      subtitle="Track your verified output and credit readiness."
-      nav={NAV}
-    >
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <RequireWallet redirectTo="/login/worker">
+      <SaasShell
+        productLabel="Worker Workspace"
+        title="Performance Overview"
+        subtitle="Track your verified output and credit readiness."
+        nav={NAV}
+      >
+        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <article className="panel p-4">
           <p className="text-xs uppercase tracking-[0.16em] text-muted">Strand Score</p>
           <p className="mt-2 text-3xl font-semibold text-accent">{score}</p>
@@ -67,9 +53,9 @@ export default function WorkerOverviewPage() {
           </p>
           <p className="text-sm text-muted">Available from active lines</p>
         </article>
-      </section>
+        </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
+        <section className="grid gap-4 lg:grid-cols-2">
         <article className="panel p-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Recent Work</h2>
@@ -107,7 +93,8 @@ export default function WorkerOverviewPage() {
             </Link>
           </div>
         </article>
-      </section>
-    </SaasShell>
+        </section>
+      </SaasShell>
+    </RequireWallet>
   );
 }

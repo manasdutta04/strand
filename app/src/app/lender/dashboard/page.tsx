@@ -1,6 +1,7 @@
 "use client";
 
 import { SaasShell } from "../../../components/SaasShell";
+import { RequireWallet } from "../../../components/RequireWallet";
 
 const NAV = [
   { label: "Portfolio", href: "/lender/dashboard" },
@@ -15,13 +16,14 @@ const LOANS = [
 
 export default function LenderDashboardPage() {
   return (
-    <SaasShell
-      productLabel="Lender Workspace"
-      title="Credit Portfolio"
-      subtitle="Monitor score-linked lending risk and liquidity utilization."
-      nav={NAV}
-    >
-      <section className="grid gap-4 md:grid-cols-4">
+    <RequireWallet redirectTo="/login/lender">
+      <SaasShell
+        productLabel="Lender Workspace"
+        title="Credit Portfolio"
+        subtitle="Monitor score-linked lending risk and liquidity utilization."
+        nav={NAV}
+      >
+        <section className="grid gap-4 md:grid-cols-4">
         <article className="panel p-4">
           <p className="text-xs uppercase tracking-[0.16em] text-muted">Total Exposure</p>
           <p className="mt-2 text-3xl font-semibold">$12,200</p>
@@ -38,9 +40,9 @@ export default function LenderDashboardPage() {
           <p className="text-xs uppercase tracking-[0.16em] text-muted">Default Rate</p>
           <p className="mt-2 text-3xl font-semibold">1.2%</p>
         </article>
-      </section>
+        </section>
 
-      <section className="panel p-4">
+        <section className="panel p-4">
         <h2 className="mb-3 text-lg font-semibold">Live Loan Book</h2>
         <div className="space-y-2">
           {LOANS.map((loan) => (
@@ -55,7 +57,8 @@ export default function LenderDashboardPage() {
             </div>
           ))}
         </div>
-      </section>
-    </SaasShell>
+        </section>
+      </SaasShell>
+    </RequireWallet>
   );
 }

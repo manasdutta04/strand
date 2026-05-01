@@ -2,6 +2,7 @@
 
 import { useWallet } from "@solana/wallet-adapter-react";
 import { CreditPanel } from "../../../components/CreditPanel";
+import { RequireWallet } from "../../../components/RequireWallet";
 import { SaasShell } from "../../../components/SaasShell";
 import { useCreditLine } from "../../../hooks/useCreditLine";
 import { useStrandScore } from "../../../hooks/useStrandScore";
@@ -20,13 +21,15 @@ export default function WorkerCreditPage() {
   const { creditLine, borrow, repay } = useCreditLine(wallet, score);
 
   return (
-    <SaasShell
-      productLabel="Worker Workspace"
-      title="Credit Access"
-      subtitle="Borrowing operations against score-qualified credit lines."
-      nav={NAV}
-    >
-      <CreditPanel creditLine={creditLine} onBorrow={borrow} onRepay={repay} />
-    </SaasShell>
+    <RequireWallet redirectTo="/login/worker">
+      <SaasShell
+        productLabel="Worker Workspace"
+        title="Credit Access"
+        subtitle="Borrowing operations against score-qualified credit lines."
+        nav={NAV}
+      >
+        <CreditPanel creditLine={creditLine} onBorrow={borrow} onRepay={repay} />
+      </SaasShell>
+    </RequireWallet>
   );
 }
