@@ -1,4 +1,4 @@
-# Strand — Portable Work History & Credit Protocol
+# Strand - Portable Work History & Credit Protocol
 
 > Your wallet is your résumé. Your work history is your credit score.
 
