@@ -1,52 +1,46 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { aprFromScore } from "../lib/score";
-import { CreditLineView } from "../components/CreditPanel";
+import { PublicKey } from "@solana/web3.js";
+import { getCreditLine, CreditLine } from "../lib/data";
+
+export interface CreditLineView {
+  maxUsdc: number;
+  apr: number;
+  borrowedUsdc: number;
+}
 
 export function useCreditLine(walletAddress?: string | null, score = 0, refreshToken?: number) {
   const [creditLine, setCreditLine] = useState<CreditLineView | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!walletAddress) {
       setCreditLine(null);
+      setIsLoading(false);
       return;
     }
 
-    const key = `strand-credit:${walletAddress}`;
-    const saved = localStorage.getItem(key);
-    if (saved) {
+    const fetchData = async () => {
+      setIsLoading(true);
       try {
-        setCreditLine(JSON.parse(saved) as CreditLineView);
-        return;
-      } catch {
+        const wallet = new PublicKey(walletAddress);
+        const line = await getCreditLine(wallet);
+        setCreditLine(line ? {
+          maxUsdc: line.maxUsdc,
+          apr: line.apr,
+          borrowedUsdc: line.borrowedUsdc
+        } : null);
+      } catch (error) {
+        console.error("Failed to fetch credit line:", error);
         setCreditLine(null);
+      } finally {
+        setIsLoading(false);
       }
-    }
+    };
 
-    if (score >= 100) {
-      const seeded: CreditLineView = {
-        maxUsdc: score * 10,
-        apr: aprFromScore(score),
-        borrowedUsdc: 0
-      };
-      localStorage.setItem(key, JSON.stringify(seeded));
-      setCreditLine(seeded);
-    } else {
-      setCreditLine(null);
-    }
+    fetchData();
   }, [walletAddress, score, refreshToken]);
-
-  const persist = useCallback(
-    (next: CreditLineView | null) => {
-      setCreditLine(next);
-      if (!walletAddress || !next) {
-        return;
-      }
-      localStorage.setItem(`strand-credit:${walletAddress}`, JSON.stringify(next));
-    },
-    [walletAddress]
-  );
 
   const borrow = useCallback(
     async (amount: number) => {
@@ -57,13 +51,10 @@ export function useCreditLine(walletAddress?: string | null, score = 0, refreshT
         throw new Error("Amount exceeds available limit.");
       }
 
-      const next: CreditLineView = {
-        ...creditLine,
-        borrowedUsdc: creditLine.borrowedUsdc + amount
-      };
-      persist(next);
+      // TODO: Implement actual borrow transaction
+      throw new Error("Borrow transaction not implemented");
     },
-    [creditLine, persist]
+    [creditLine]
   );
 
   const repay = useCallback(
@@ -72,18 +63,16 @@ export function useCreditLine(walletAddress?: string | null, score = 0, refreshT
         throw new Error("No active loan to repay.");
       }
 
-      const next: CreditLineView = {
-        ...creditLine,
-        borrowedUsdc: Math.max(0, creditLine.borrowedUsdc - amount)
-      };
-      persist(next);
+      // TODO: Implement actual repay transaction
+      throw new Error("Repay transaction not implemented");
     },
-    [creditLine, persist]
+    [creditLine]
   );
 
   return {
     creditLine,
     borrow,
-    repay
+    repay,
+    isLoading
   };
 }

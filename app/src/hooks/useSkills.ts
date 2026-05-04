@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
-import { getWorkNFTs, WorkNFT } from "../lib/data";
+import { getSkills, SkillAttestation } from "../lib/data";
 
-export function useWorkNFTs(walletAddress?: string | null, refreshToken?: number) {
-  const [workNfts, setWorkNfts] = useState<WorkNFT[]>([]);
+export function useSkills(walletAddress?: string | null, refreshToken?: number) {
+  const [skills, setSkills] = useState<SkillAttestation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!walletAddress) {
-      setWorkNfts([]);
+      setSkills([]);
       setIsLoading(false);
       return;
     }
@@ -19,11 +19,11 @@ export function useWorkNFTs(walletAddress?: string | null, refreshToken?: number
       setIsLoading(true);
       try {
         const wallet = new PublicKey(walletAddress);
-        const nfts = await getWorkNFTs(wallet);
-        setWorkNfts(nfts);
+        const sk = await getSkills(wallet);
+        setSkills(sk);
       } catch (error) {
-        console.error("Failed to fetch work NFTs:", error);
-        setWorkNfts([]);
+        console.error("Failed to fetch skills:", error);
+        setSkills([]);
       } finally {
         setIsLoading(false);
       }
@@ -33,7 +33,7 @@ export function useWorkNFTs(walletAddress?: string | null, refreshToken?: number
   }, [walletAddress, refreshToken]);
 
   return {
-    workNfts,
+    skills,
     isLoading
   };
 }

@@ -7,6 +7,7 @@ import { SaasShell } from "../../../components/SaasShell";
 import { useCreditLine } from "../../../hooks/useCreditLine";
 import { useStrandScore } from "../../../hooks/useStrandScore";
 import { useWorkNFTs } from "../../../hooks/useWorkNFTs";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 
 const NAV = [
   { label: "Overview", href: "/worker/dashboard" },
@@ -18,9 +19,26 @@ const NAV = [
 export default function WorkerOverviewPage() {
   const { publicKey } = useWallet();
   const wallet = publicKey?.toBase58() ?? null;
-  const { score, tier, stats } = useStrandScore(wallet);
-  const { workNfts } = useWorkNFTs(wallet);
-  const { creditLine } = useCreditLine(wallet, score);
+  const { score, tier, stats, isLoading: scoreLoading } = useStrandScore(wallet);
+  const { workNfts, isLoading: nftsLoading } = useWorkNFTs(wallet);
+  const { creditLine, isLoading: creditLoading } = useCreditLine(wallet, score);
+
+  if (scoreLoading || nftsLoading || creditLoading) {
+    return (
+      <RequireWallet redirectTo="/login/worker">
+        <SaasShell
+          productLabel="Worker Workspace"
+          title="Performance Overview"
+          subtitle="Loading your data..."
+          nav={NAV}
+        >
+          <div className="flex items-center justify-center h-64">
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </SaasShell>
+      </RequireWallet>
+    );
+  }
 
   return (
     <RequireWallet redirectTo="/login/worker">
@@ -30,70 +48,102 @@ export default function WorkerOverviewPage() {
         subtitle="Track your verified output and credit readiness."
         nav={NAV}
       >
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <article className="panel p-4">
-          <p className="text-xs uppercase tracking-[0.16em] text-muted">Strand Score</p>
-          <p className="mt-2 text-3xl font-semibold text-accent">{score}</p>
-          <p className="text-sm text-muted">{tier} tier</p>
-        </article>
-        <article className="panel p-4">
-          <p className="text-xs uppercase tracking-[0.16em] text-muted">Completed Jobs</p>
-          <p className="mt-2 text-3xl font-semibold">{stats.jobsDone}</p>
-          <p className="text-sm text-muted">All-time verified jobs</p>
-        </article>
-        <article className="panel p-4">
-          <p className="text-xs uppercase tracking-[0.16em] text-muted">Total Earnings</p>
-          <p className="mt-2 text-3xl font-semibold">${stats.totalEarnedUsdc.toLocaleString()}</p>
-          <p className="text-sm text-muted">USDC equivalent</p>
-        </article>
-        <article className="panel p-4">
-          <p className="text-xs uppercase tracking-[0.16em] text-muted">Credit Capacity</p>
-          <p className="mt-2 text-3xl font-semibold">
-            {creditLine ? `$${(creditLine.maxUsdc - creditLine.borrowedUsdc).toLocaleString()}` : "$0"}
-          </p>
-          <p className="text-sm text-muted">Available from active lines</p>
-        </article>
-        </section>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                Strand Score
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-accent">{score}</div>
+              <p className="text-sm text-muted-foreground">{tier} tier</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                Completed Jobs
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.jobsDone}</div>
+              <p className="text-sm text-muted-foreground">All-time verified jobs</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                Total Earnings
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">${stats.totalEarnedUsdc.toLocaleString()}</div>
+              <p className="text-sm text-muted-foreground">USDC equivalent</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                Credit Capacity
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">
+                {creditLine ? `$${(creditLine.maxUsdc - creditLine.borrowedUsdc).toLocaleString()}` : "$0"}
+              </div>
+              <p className="text-sm text-muted-foreground">Available from active lines</p>
+            </CardContent>
+          </Card>
+        </div>
 
-        <section className="grid gap-4 lg:grid-cols-2">
-        <article className="panel p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Recent Work</h2>
-            <Link className="text-sm text-accent" href="/worker/work">
-              View all
-            </Link>
-          </div>
-          {workNfts.length === 0 ? (
-            <p className="mt-4 text-sm text-muted">No work records yet. Complete your first job to begin.</p>
-          ) : (
-            <div className="mt-4 space-y-2">
-              {workNfts.slice(0, 3).map((item) => (
-                <div
-                  key={`${item.client}-${item.completedAt}-${item.amountUsdc}`}
-                  className="rounded-lg border border-border bg-[#141414] px-3 py-2 text-sm"
-                >
-                  ${item.amountUsdc.toLocaleString()} · {item.skills.join(", ")}
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Recent Work</CardTitle>
+                <Link className="text-sm text-accent hover:underline" href="/worker/work">
+                  View all
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {workNfts.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No work records yet. Complete your first job to begin.</p>
+              ) : (
+                <div className="space-y-2">
+                  {workNfts.slice(0, 3).map((item, index) => (
+                    <div
+                      key={index}
+                      className="rounded-lg border bg-muted/50 px-3 py-2 text-sm"
+                    >
+                      ${item.amountUsdc.toLocaleString()} · {item.skills.join(", ")}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
-        </article>
+              )}
+            </CardContent>
+          </Card>
 
-        <article className="panel p-4">
-          <h2 className="text-lg font-semibold">Next Actions</h2>
-          <div className="mt-4 space-y-2 text-sm">
-            <Link className="block rounded-lg border border-border bg-[#141414] px-3 py-2 hover:bg-card-hover" href="/client/jobs/new">
-              Post a new client job
-            </Link>
-            <Link className="block rounded-lg border border-border bg-[#141414] px-3 py-2 hover:bg-card-hover" href="/worker/skills">
-              Add or review skill attestations
-            </Link>
-            <Link className="block rounded-lg border border-border bg-[#141414] px-3 py-2 hover:bg-card-hover" href="/worker/credit">
-              Check borrowing readiness
-            </Link>
-          </div>
-        </article>
-        </section>
+          <Card>
+            <CardHeader>
+              <CardTitle>Next Actions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Link className="block rounded-lg border bg-muted/50 px-3 py-2 hover:bg-muted transition-colors" href="/client/jobs/new">
+                  Post a new client job
+                </Link>
+                <Link className="block rounded-lg border bg-muted/50 px-3 py-2 hover:bg-muted transition-colors" href="/worker/skills">
+                  Add or review skill attestations
+                </Link>
+                <Link className="block rounded-lg border bg-muted/50 px-3 py-2 hover:bg-muted transition-colors" href="/worker/credit">
+                  Check borrowing readiness
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </SaasShell>
     </RequireWallet>
   );

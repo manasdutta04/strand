@@ -17,8 +17,25 @@ const NAV = [
 export default function WorkerCreditPage() {
   const { publicKey } = useWallet();
   const wallet = publicKey?.toBase58() ?? null;
-  const { score } = useStrandScore(wallet);
-  const { creditLine, borrow, repay } = useCreditLine(wallet, score);
+  const { score, isLoading: scoreLoading } = useStrandScore(wallet);
+  const { creditLine, borrow, repay, isLoading: creditLoading } = useCreditLine(wallet, score);
+
+  if (scoreLoading || creditLoading) {
+    return (
+      <RequireWallet redirectTo="/login/worker">
+        <SaasShell
+          productLabel="Worker Workspace"
+          title="Credit Access"
+          subtitle="Loading credit information..."
+          nav={NAV}
+        >
+          <div className="flex items-center justify-center h-64">
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </SaasShell>
+      </RequireWallet>
+    );
+  }
 
   return (
     <RequireWallet redirectTo="/login/worker">

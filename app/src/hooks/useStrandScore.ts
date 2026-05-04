@@ -1,12 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  ScoreBreakdown,
-  deriveScoreBreakdown,
-  scoreFromBreakdown,
-  tierFromScore
-} from "../lib/score";
+import { PublicKey } from "@solana/web3.js";
+import { getWorkerProfile, getScoreState, WorkerProfile, ScoreState } from "../lib/data";
 
 export interface WorkerStats {
   jobsDone: number;
@@ -19,7 +15,6 @@ export interface WorkerStats {
 interface StrandScoreState {
   score: number;
   tier: string;
-  breakdown: ScoreBreakdown[];
   stats: WorkerStats;
   isLoading: boolean;
 }
@@ -33,45 +28,61 @@ const EMPTY_STATS: WorkerStats = {
 };
 
 export function useStrandScore(walletAddress?: string | null, refreshToken?: number): StrandScoreState {
-  const [stats, setStats] = useState<WorkerStats>(EMPTY_STATS);
+  const [profile, setProfile] = useState<WorkerProfile | null>(null);
+  const [scoreState, setScoreState] = useState<ScoreState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!walletAddress) {
-      setStats(EMPTY_STATS);
+      setProfile(null);
+      setScoreState(null);
       setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    const key = `strand-profile:${walletAddress}`;
-    const saved = localStorage.getItem(key);
-
-    if (saved) {
+    const fetchData = async () => {
+      setIsLoading(true);
       try {
-        setStats(JSON.parse(saved) as WorkerStats);
-      } catch {
-        setStats(EMPTY_STATS);
+        const wallet = new PublicKey(walletAddress);
+        const [prof, score] = await Promise.all([
+          getWorkerProfile(wallet),
+          getScoreState(wallet)
+        ]);
+        setProfile(prof);
+        setScoreState(score);
+      } catch (error) {
+        console.error("Failed to fetch strand data:", error);
+        setProfile(null);
+        setScoreState(null);
+      } finally {
+        setIsLoading(false);
       }
-    } else {
-      const initialStats: WorkerStats = {
-        ...EMPTY_STATS,
-        memberSince: new Date().toISOString()
-      };
-      localStorage.setItem(key, JSON.stringify(initialStats));
-      setStats(initialStats);
-    }
+    };
 
-    setIsLoading(false);
+    fetchData();
   }, [walletAddress, refreshToken]);
 
-  const breakdown = useMemo(() => deriveScoreBreakdown(stats), [stats]);
-  const score = useMemo(() => scoreFromBreakdown(breakdown), [breakdown]);
+  const stats = profile ? {
+    jobsDone: profile.jobsDone,
+    totalEarnedUsdc: profile.totalEarnedUsdc,
+    uniqueClients: profile.uniqueClients,
+    onTimeCompletions: profile.onTimeCompletions,
+    memberSince: profile.memberSince
+  } : EMPTY_STATS;
+
+  const score = scoreState?.score || 0;
+
+  const tier = useMemo(() => {
+    if (score >= 900) return "Platinum";
+    if (score >= 700) return "Gold";
+    if (score >= 500) return "Silver";
+    if (score >= 300) return "Bronze";
+    return "Starter";
+  }, [score]);
 
   return {
     score,
-    tier: tierFromScore(score),
-    breakdown,
+    tier,
     stats,
     isLoading
   };
