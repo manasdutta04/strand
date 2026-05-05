@@ -60,7 +60,7 @@ export interface ChainCreditLineState {
 
 class AccountReader {
   private readonly view: DataView;
-  private offset = 0;
+  offset = 0;
 
   constructor(private readonly data: Uint8Array) {
     this.view = new DataView(data.buffer, data.byteOffset, data.byteLength);

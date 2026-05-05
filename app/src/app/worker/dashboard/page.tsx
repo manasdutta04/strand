@@ -8,6 +8,7 @@ import { useCreditLine } from "../../../hooks/useCreditLine";
 import { useStrandScore } from "../../../hooks/useStrandScore";
 import { useWorkNFTs } from "../../../hooks/useWorkNFTs";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import { formatErrorMessage } from "../../../lib/error-formatter";
 
 const NAV = [
   { label: "Overview", href: "/worker/dashboard" },
@@ -19,21 +20,33 @@ const NAV = [
 export default function WorkerOverviewPage() {
   const { publicKey } = useWallet();
   const wallet = publicKey?.toBase58() ?? null;
-  const { score, tier, stats, isLoading: scoreLoading } = useStrandScore(wallet);
-  const { workNfts, isLoading: nftsLoading } = useWorkNFTs(wallet);
-  const { creditLine, isLoading: creditLoading } = useCreditLine(wallet, score);
+  const { score, tier, stats, isLoading: scoreLoading, error: scoreError } = useStrandScore(wallet);
+  const { workNfts, isLoading: nftsLoading, error: nftsError } = useWorkNFTs(wallet);
+  const { creditLine, isLoading: creditLoading, error: creditError } = useCreditLine(wallet, score);
 
-  if (scoreLoading || nftsLoading || creditLoading) {
+  const isLoading = scoreLoading || nftsLoading || creditLoading;
+  const hasErrors = scoreError || nftsError || creditError;
+
+  if (isLoading || hasErrors) {
     return (
       <RequireWallet redirectTo="/login/worker">
         <SaasShell
           productLabel="Worker Workspace"
           title="Performance Overview"
-          subtitle="Loading your data..."
+          subtitle={hasErrors ? "There was a problem loading your data" : "Loading your data..."}
           nav={NAV}
         >
           <div className="flex items-center justify-center h-64">
-            <p className="text-muted-foreground">Loading...</p>
+            {hasErrors ? (
+              <div className="text-center space-y-2">
+                <p className="text-red-600 font-medium">Unable to load performance data</p>
+                {scoreError && <p className="text-sm text-muted-foreground">{formatErrorMessage(scoreError)}</p>}
+                {nftsError && <p className="text-sm text-muted-foreground">{formatErrorMessage(nftsError)}</p>}
+                {creditError && <p className="text-sm text-muted-foreground">{formatErrorMessage(creditError)}</p>}
+              </div>
+            ) : (
+              <p className="text-muted-foreground">Loading...</p>
+            )}
           </div>
         </SaasShell>
       </RequireWallet>

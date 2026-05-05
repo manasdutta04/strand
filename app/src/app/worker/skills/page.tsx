@@ -3,6 +3,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { RequireWallet } from "../../../components/RequireWallet";
 import { SaasShell } from "../../../components/SaasShell";
+import { formatErrorMessage } from "../../../lib/error-formatter";
 import { listSkillAttestations } from "../../../lib/data-access";
 import { useEffect, useState } from "react";
 
@@ -23,11 +24,13 @@ export default function WorkerSkillsPage() {
   const wallet = publicKey?.toBase58() ?? null;
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!wallet) {
       setSkills([]);
       setIsLoading(false);
+      setError(null);
       return;
     }
     const walletAddress = wallet;
@@ -36,6 +39,7 @@ export default function WorkerSkillsPage() {
 
     async function load(): Promise<void> {
       setIsLoading(true);
+      setError(null);
       try {
         const attestations = await listSkillAttestations(walletAddress);
         if (!cancelled) {
@@ -46,8 +50,10 @@ export default function WorkerSkillsPage() {
             }))
           );
         }
-      } catch {
+      } catch (err) {
         if (!cancelled) {
+          const errorMessage = err instanceof Error ? err.message : "Failed to load skills";
+          setError(errorMessage);
           setSkills([]);
         }
       } finally {
@@ -72,7 +78,11 @@ export default function WorkerSkillsPage() {
         nav={NAV}
       >
         <section className="panel p-4">
-          {isLoading ? (
+          {error ? (
+            <p className="text-sm text-red-600">
+              {formatErrorMessage(error)}
+            </p>
+          ) : isLoading ? (
             <p className="text-sm text-muted">Loading verified skills...</p>
           ) : skills.length === 0 ? (
             <p className="text-sm text-muted">No verified skills yet.</p>

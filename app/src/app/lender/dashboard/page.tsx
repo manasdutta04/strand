@@ -5,6 +5,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { RequireWallet } from "../../../components/RequireWallet";
 import { SaasShell } from "../../../components/SaasShell";
 import { useLenderPortfolio } from "../../../hooks/useLenderPortfolio";
+import { formatErrorMessage } from "../../../lib/error-formatter";
 
 const NAV = [
   { label: "Portfolio", href: "/lender/dashboard" },
@@ -14,7 +15,7 @@ const NAV = [
 export default function LenderDashboardPage() {
   const { publicKey } = useWallet();
   const wallet = publicKey?.toBase58() ?? null;
-  const { portfolio, isLoading } = useLenderPortfolio(wallet);
+  const { portfolio, isLoading, error } = useLenderPortfolio(wallet);
 
   const totalExposure = useMemo(
     () => portfolio.reduce((sum, item) => sum + item.maxUsdc, 0),
@@ -55,7 +56,11 @@ export default function LenderDashboardPage() {
 
         <section className="panel p-4">
           <h2 className="mb-3 text-lg font-semibold">Live Loan Book</h2>
-          {isLoading ? (
+          {error ? (
+            <p className="text-sm text-red-600">
+              {formatErrorMessage(error)}
+            </p>
+          ) : isLoading ? (
             <p className="text-sm text-muted">Loading lender portfolio...</p>
           ) : portfolio.length === 0 ? (
             <p className="text-sm text-muted">No active credit lines found for this wallet.</p>

@@ -6,11 +6,13 @@ import { ChainLenderPortfolioItem, listLenderPortfolio } from "../lib/data-acces
 export function useLenderPortfolio(walletAddress?: string | null, refreshToken?: number) {
   const [portfolio, setPortfolio] = useState<ChainLenderPortfolioItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!walletAddress) {
       setPortfolio([]);
       setIsLoading(false);
+      setError(null);
       return;
     }
 
@@ -19,13 +21,16 @@ export function useLenderPortfolio(walletAddress?: string | null, refreshToken?:
 
     async function load(): Promise<void> {
       setIsLoading(true);
+      setError(null);
       try {
         const lenderPortfolio = await listLenderPortfolio(walletAddressSafe);
         if (!cancelled) {
           setPortfolio(lenderPortfolio);
         }
-      } catch {
+      } catch (err) {
         if (!cancelled) {
+          const errorMessage = err instanceof Error ? err.message : "Failed to load portfolio";
+          setError(errorMessage);
           setPortfolio([]);
         }
       } finally {
@@ -43,6 +48,7 @@ export function useLenderPortfolio(walletAddress?: string | null, refreshToken?:
 
   return {
     portfolio,
-    isLoading
+    isLoading,
+    error
   };
 }

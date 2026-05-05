@@ -21,6 +21,7 @@ interface StrandScoreState {
   tier: string;
   stats: WorkerStats;
   isLoading: boolean;
+  error: string | null;
 }
 
 const EMPTY_STATS: WorkerStats = {
@@ -36,6 +37,7 @@ export function useStrandScore(walletAddress?: string | null, refreshToken?: num
   const [chainScore, setChainScore] = useState<number | null>(null);
   const [attestedSkillCount, setAttestedSkillCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!walletAddress) {
@@ -43,6 +45,7 @@ export function useStrandScore(walletAddress?: string | null, refreshToken?: num
       setChainScore(null);
       setAttestedSkillCount(0);
       setIsLoading(false);
+      setError(null);
       return;
     }
     const walletAddressSafe = walletAddress;
@@ -51,6 +54,7 @@ export function useStrandScore(walletAddress?: string | null, refreshToken?: num
 
     async function load(): Promise<void> {
       setIsLoading(true);
+      setError(null);
       try {
         const profile = await getWorkerProfile(walletAddressSafe);
         const scoreState = await getScoreState(walletAddressSafe);
@@ -72,8 +76,10 @@ export function useStrandScore(walletAddress?: string | null, refreshToken?: num
         );
         setChainScore(scoreState?.score ?? null);
         setAttestedSkillCount(skills.filter((skill) => skill.confidence >= 65).length);
-      } catch {
+      } catch (err) {
         if (!cancelled) {
+          const errorMessage = err instanceof Error ? err.message : "Failed to load worker profile";
+          setError(errorMessage);
           setStats(EMPTY_STATS);
           setChainScore(null);
           setAttestedSkillCount(0);
@@ -102,6 +108,7 @@ export function useStrandScore(walletAddress?: string | null, refreshToken?: num
     score,
     tier: tierFromScore(score),
     stats,
-    isLoading
+    isLoading,
+    error
   };
 }

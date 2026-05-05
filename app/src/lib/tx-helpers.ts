@@ -1,5 +1,5 @@
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
-import { sha256 } from "@noble/hashes/sha2";
+import { createHash } from "crypto";
 import {
   Commitment,
   ConfirmOptions,
@@ -202,8 +202,10 @@ function toRawUsdc(amountUsdc: number): BN {
 }
 
 function hashTo32Bytes(input: string): Uint8Array {
-  const digest = sha256(new TextEncoder().encode(input));
-  return Uint8Array.from(digest.subarray(0, 32));
+  const hash = createHash("sha256");
+  hash.update(input);
+  const digest = hash.digest();
+  return new Uint8Array(digest.subarray(0, 32));
 }
 
 function ensureHash32(hash?: Uint8Array, fallbackInput?: string): number[] {

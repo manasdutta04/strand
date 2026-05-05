@@ -7,11 +7,13 @@ import { getCreditLineAndLoan } from "../lib/data-access";
 export function useCreditLine(walletAddress?: string | null, score = 0, refreshToken?: number) {
   const [creditLine, setCreditLine] = useState<CreditLineView | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!walletAddress) {
       setCreditLine(null);
       setIsLoading(false);
+      setError(null);
       return;
     }
     const walletAddressSafe = walletAddress;
@@ -20,6 +22,7 @@ export function useCreditLine(walletAddress?: string | null, score = 0, refreshT
 
     async function load(): Promise<void> {
       setIsLoading(true);
+      setError(null);
       try {
         const state = await getCreditLineAndLoan(walletAddressSafe);
         if (cancelled) {
@@ -36,8 +39,10 @@ export function useCreditLine(walletAddress?: string | null, score = 0, refreshT
           apr: state.apr,
           borrowedUsdc: state.borrowedUsdc
         });
-      } catch {
+      } catch (err) {
         if (!cancelled) {
+          const errorMessage = err instanceof Error ? err.message : "Failed to load credit line";
+          setError(errorMessage);
           setCreditLine(null);
         }
       } finally {
@@ -79,6 +84,7 @@ export function useCreditLine(walletAddress?: string | null, score = 0, refreshT
     creditLine,
     borrow,
     repay,
-    isLoading
+    isLoading,
+    error
   };
 }

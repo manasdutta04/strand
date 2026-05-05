@@ -9,6 +9,7 @@ import { RequireWallet } from "../../../../components/RequireWallet";
 import { listOpenJobEscrows } from "../../../../lib/data-access";
 import { DEVNET_USDC_MINT } from "../../../../lib/constants";
 import { executeOpenCreditLine } from "../../../../lib/tx-helpers";
+import { formatErrorMessage } from "../../../../lib/error-formatter";
 
 const NAV = [
   { label: "Portfolio", href: "/lender/dashboard" },
@@ -27,6 +28,7 @@ export default function LenderQueuePage() {
     status: "pending" | "approved" | "declined";
   }>>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [processingJob, setProcessingJob] = useState<number | null>(null);
   const [actionErrors, setActionErrors] = useState<Record<number, string>>({});
 
@@ -34,6 +36,7 @@ export default function LenderQueuePage() {
     if (!wallet) {
       setRequests([]);
       setIsLoading(false);
+      setError(null);
       return;
     }
 
@@ -41,6 +44,7 @@ export default function LenderQueuePage() {
 
     async function load(): Promise<void> {
       setIsLoading(true);
+      setError(null);
       try {
         const openJobs = await listOpenJobEscrows();
         if (!cancelled) {
@@ -54,8 +58,10 @@ export default function LenderQueuePage() {
             }))
           );
         }
-      } catch {
+      } catch (err) {
         if (!cancelled) {
+          const errorMessage = err instanceof Error ? err.message : "Failed to load underwriting queue";
+          setError(errorMessage);
           setRequests([]);
         }
       } finally {
@@ -149,7 +155,11 @@ export default function LenderQueuePage() {
         nav={NAV}
       >
         <section className="panel p-4">
-          {isLoading ? (
+          {error ? (
+            <p className="text-sm text-red-600">
+              {formatErrorMessage(error)}
+            </p>
+          ) : isLoading ? (
             <p className="text-sm text-muted">Loading underwriting queue...</p>
           ) : requests.length === 0 ? (
             <p className="text-sm text-muted">No open escrow requests available for underwriting.</p>

@@ -6,6 +6,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { RequireWallet } from "../../../components/RequireWallet";
 import { SaasShell } from "../../../components/SaasShell";
 import { useClientJobs } from "../../../hooks/useClientJobs";
+import { formatErrorMessage } from "../../../lib/error-formatter";
 
 const NAV = [
   { label: "Overview", href: "/client/dashboard" },
@@ -15,7 +16,7 @@ const NAV = [
 export default function ClientDashboardPage() {
   const { publicKey } = useWallet();
   const wallet = publicKey?.toBase58() ?? null;
-  const { jobs, isLoading } = useClientJobs(wallet);
+  const { jobs, isLoading, error } = useClientJobs(wallet);
 
   const activeJobs = useMemo(
     () => jobs.filter((job) => job.state === "Open"),
@@ -66,7 +67,11 @@ export default function ClientDashboardPage() {
             </Link>
           </div>
 
-          {isLoading ? (
+          {error ? (
+            <p className="text-sm text-red-600">
+              {formatErrorMessage(error)}
+            </p>
+          ) : isLoading ? (
             <p className="text-sm text-muted">Loading your client jobs...</p>
           ) : activeJobs.length === 0 ? (
             <p className="text-sm text-muted">No active jobs found on-chain. Post a new job to get started.</p>
