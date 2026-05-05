@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { aprFromScore } from "../lib/score";
 import { CreditLineView } from "../components/CreditPanel";
+import { getCreditLineAndLoan } from "../lib/data-access";
 
 export function useCreditLine(walletAddress?: string | null, score = 0, refreshToken?: number) {
   const [creditLine, setCreditLine] = useState<CreditLineView | null>(null);
@@ -12,58 +12,49 @@ export function useCreditLine(walletAddress?: string | null, score = 0, refreshT
       setCreditLine(null);
       return;
     }
+    const walletAddressSafe = walletAddress;
 
-    const key = `strand-credit:${walletAddress}`;
-    const saved = localStorage.getItem(key);
-    if (saved) {
+    let cancelled = false;
+
+    async function load(): Promise<void> {
       try {
-        setCreditLine(JSON.parse(saved) as CreditLineView);
-        return;
+        const state = await getCreditLineAndLoan(walletAddressSafe);
+        if (cancelled) {
+          return;
+        }
+
+        if (!state.hasCreditLine) {
+          setCreditLine(null);
+          return;
+        }
+
+        setCreditLine({
+          maxUsdc: state.maxUsdc,
+          apr: state.apr,
+          borrowedUsdc: state.borrowedUsdc
+        });
       } catch {
-        setCreditLine(null);
+        if (!cancelled) {
+          setCreditLine(null);
+        }
       }
     }
 
-    if (score >= 100) {
-      const seeded: CreditLineView = {
-        maxUsdc: score * 10,
-        apr: aprFromScore(score),
-        borrowedUsdc: 0
-      };
-      localStorage.setItem(key, JSON.stringify(seeded));
-      setCreditLine(seeded);
-    } else {
-      setCreditLine(null);
-    }
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [walletAddress, score, refreshToken]);
-
-  const persist = useCallback(
-    (next: CreditLineView | null) => {
-      setCreditLine(next);
-      if (!walletAddress || !next) {
-        return;
-      }
-      localStorage.setItem(`strand-credit:${walletAddress}`, JSON.stringify(next));
-    },
-    [walletAddress]
-  );
 
   const borrow = useCallback(
     async (amount: number) => {
       if (!creditLine) {
         throw new Error("No credit line available.");
       }
-      if (amount > creditLine.maxUsdc - creditLine.borrowedUsdc) {
-        throw new Error("Amount exceeds available limit.");
-      }
-
-      const next: CreditLineView = {
-        ...creditLine,
-        borrowedUsdc: creditLine.borrowedUsdc + amount
-      };
-      persist(next);
+      void amount;
+      throw new Error("Borrow transaction wiring is part of Day 2 implementation.");
     },
-    [creditLine, persist]
+    [creditLine]
   );
 
   const repay = useCallback(
@@ -71,14 +62,10 @@ export function useCreditLine(walletAddress?: string | null, score = 0, refreshT
       if (!creditLine) {
         throw new Error("No active loan to repay.");
       }
-
-      const next: CreditLineView = {
-        ...creditLine,
-        borrowedUsdc: Math.max(0, creditLine.borrowedUsdc - amount)
-      };
-      persist(next);
+      void amount;
+      throw new Error("Repay transaction wiring is part of Day 2 implementation.");
     },
-    [creditLine, persist]
+    [creditLine]
   );
 
   return {

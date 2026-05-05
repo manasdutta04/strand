@@ -149,56 +149,70 @@ async function main(): Promise<void> {
   const workCompletedListener = coreProgram.addEventListener(
     "WorkCompleted",
     async (event: any, _slot: number, signature: string) => {
-      const workerKey = new PublicKey(event.worker);
-      console.log(
-        `[${isoNow()}] WorkCompleted event received for worker ${workerKey.toBase58()} (tx: ${signature})`
-      );
+      try {
+        const workerKey = new PublicKey(event.worker);
+        console.log(
+          `[${isoNow()}] WorkCompleted event received for worker ${workerKey.toBase58()} (tx: ${signature})`
+        );
 
-      const tx = await computeScore(workerKey);
-      console.log(`[${isoNow()}] compute_score tx: ${tx}`);
+        const tx = await computeScore(workerKey);
+        console.log(`[${isoNow()}] compute_score tx: ${tx}`);
+      } catch (error) {
+        console.error(
+          `[${isoNow()}] WorkCompleted listener failed for tx ${signature}:`,
+          error
+        );
+      }
     }
   );
 
   const skillClaimListener = coreProgram.addEventListener(
     "SkillClaim",
     async (event: any, _slot: number, signature: string) => {
-      const workerKey = new PublicKey(event.worker);
-      const claimedSkill = String(event.skillTag ?? "").trim();
-      const workSampleUrl = String(event.workSampleUrl ?? "").trim();
+      try {
+        const workerKey = new PublicKey(event.worker);
+        const claimedSkill = String(event.skillTag ?? "").trim();
+        const workSampleUrl = String(event.workSampleUrl ?? "").trim();
 
-      console.log(
-        `[${isoNow()}] SkillClaim event received for worker ${workerKey.toBase58()} (tx: ${signature})`
-      );
-
-      const grade = await withRetry("grade_work_sample", () =>
-        gradeWorkSample(workSampleUrl, claimedSkill ? [claimedSkill] : [])
-      );
-
-      for (let i = 0; i < grade.verified_skills.length; i += 1) {
-        const verifiedSkill = grade.verified_skills[i];
-        const confidence = Math.max(0, Math.min(100, Math.trunc(grade.confidences[i] ?? 0)));
-
-        if (confidence < 65) {
-          continue;
-        }
-
-        const tx = await attestSkill(
-          workerKey,
-          verifiedSkill,
-          confidence,
-          `${workSampleUrl}:${verifiedSkill}`
+        console.log(
+          `[${isoNow()}] SkillClaim event received for worker ${workerKey.toBase58()} (tx: ${signature})`
         );
 
-        if (tx) {
-          console.log(`[${isoNow()}] attest_skill(${verifiedSkill}) tx: ${tx}`);
+        const grade = await withRetry("grade_work_sample", () =>
+          gradeWorkSample(workSampleUrl, claimedSkill ? [claimedSkill] : [])
+        );
+
+        for (let i = 0; i < grade.verified_skills.length; i += 1) {
+          const verifiedSkill = grade.verified_skills[i];
+          const confidence = Math.max(0, Math.min(100, Math.trunc(grade.confidences[i] ?? 0)));
+
+          if (confidence < 65) {
+            continue;
+          }
+
+          const tx = await attestSkill(
+            workerKey,
+            verifiedSkill,
+            confidence,
+            `${workSampleUrl}:${verifiedSkill}`
+          );
+
+          if (tx) {
+            console.log(`[${isoNow()}] attest_skill(${verifiedSkill}) tx: ${tx}`);
+          }
         }
+
+        const scoreTx = await computeScore(workerKey);
+        console.log(`[${isoNow()}] compute_score tx: ${scoreTx}`);
+
+        const scoreState = await getScoreState(workerKey, scoreProgram);
+        console.log(`[${isoNow()}] latest score state:`, scoreState);
+      } catch (error) {
+        console.error(
+          `[${isoNow()}] SkillClaim listener failed for tx ${signature}:`,
+          error
+        );
       }
-
-      const scoreTx = await computeScore(workerKey);
-      console.log(`[${isoNow()}] compute_score tx: ${scoreTx}`);
-
-      const scoreState = await getScoreState(workerKey, scoreProgram);
-      console.log(`[${isoNow()}] latest score state:`, scoreState);
     }
   );
 

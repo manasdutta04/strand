@@ -7,6 +7,7 @@ import {
   scoreFromBreakdown,
   tierFromScore
 } from "../lib/score";
+import { getScoreState, getWorkerProfile, listSkillAttestations } from "../lib/data-access";
 
 export interface WorkerStats {
   jobsDone: number;
@@ -34,39 +35,75 @@ const EMPTY_STATS: WorkerStats = {
 
 export function useStrandScore(walletAddress?: string | null, refreshToken?: number): StrandScoreState {
   const [stats, setStats] = useState<WorkerStats>(EMPTY_STATS);
+  const [chainScore, setChainScore] = useState<number | null>(null);
+  const [attestedSkillCount, setAttestedSkillCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!walletAddress) {
       setStats(EMPTY_STATS);
+      setChainScore(null);
+      setAttestedSkillCount(0);
       setIsLoading(false);
       return;
     }
+    const walletAddressSafe = walletAddress;
 
-    setIsLoading(true);
-    const key = `strand-profile:${walletAddress}`;
-    const saved = localStorage.getItem(key);
+    let cancelled = false;
 
-    if (saved) {
+    async function load(): Promise<void> {
+      setIsLoading(true);
       try {
-        setStats(JSON.parse(saved) as WorkerStats);
+        const profile = await getWorkerProfile(walletAddressSafe);
+        const scoreState = await getScoreState(walletAddressSafe);
+        const skills = await listSkillAttestations(walletAddressSafe);
+        if (cancelled) {
+          return;
+        }
+
+        if (profile) {
+          setStats({
+            jobsDone: profile.jobsDone,
+            totalEarnedUsdc: profile.totalEarnedUsdc,
+            uniqueClients: profile.uniqueClients,
+            onTimeCompletions: profile.onTimeCompletions,
+            memberSince: profile.memberSince
+          });
+        } else {
+          setStats(EMPTY_STATS);
+        }
+
+        if (!profile && !scoreState) {
+          setStats(EMPTY_STATS);
+        }
+
+        setChainScore(scoreState?.score ?? null);
+        setAttestedSkillCount(skills.filter((skill) => skill.confidence >= 65).length);
       } catch {
-        setStats(EMPTY_STATS);
+        if (!cancelled) {
+          setStats(EMPTY_STATS);
+          setChainScore(null);
+          setAttestedSkillCount(0);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
-    } else {
-      const initialStats: WorkerStats = {
-        ...EMPTY_STATS,
-        memberSince: new Date().toISOString()
-      };
-      localStorage.setItem(key, JSON.stringify(initialStats));
-      setStats(initialStats);
     }
 
-    setIsLoading(false);
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [walletAddress, refreshToken]);
 
-  const breakdown = useMemo(() => deriveScoreBreakdown(stats), [stats]);
-  const score = useMemo(() => scoreFromBreakdown(breakdown), [breakdown]);
+  const breakdown = useMemo(
+    () => deriveScoreBreakdown(stats, attestedSkillCount),
+    [attestedSkillCount, stats]
+  );
+  const fallbackScore = useMemo(() => scoreFromBreakdown(breakdown), [breakdown]);
+  const score = chainScore ?? fallbackScore;
 
   return {
     score,

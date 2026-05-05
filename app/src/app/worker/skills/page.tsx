@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { RequireWallet } from "../../../components/RequireWallet";
 import { SaasShell } from "../../../components/SaasShell";
+import { listSkillAttestations } from "../../../lib/data-access";
 
 interface SkillItem {
   name: string;
@@ -21,22 +22,45 @@ export default function WorkerSkillsPage() {
   const { publicKey } = useWallet();
   const wallet = publicKey?.toBase58() ?? null;
   const [skills, setSkills] = useState<SkillItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!wallet) {
       setSkills([]);
+      setIsLoading(false);
       return;
     }
-    const raw = localStorage.getItem(`strand-skills:${wallet}`);
-    if (!raw) {
-      setSkills([]);
-      return;
+    const walletAddress = wallet;
+
+    let cancelled = false;
+
+    async function load(): Promise<void> {
+      setIsLoading(true);
+      try {
+        const attestations = await listSkillAttestations(walletAddress);
+        if (!cancelled) {
+          setSkills(
+            attestations.map((skill) => ({
+              name: skill.name,
+              confidence: skill.confidence
+            }))
+          );
+        }
+      } catch {
+        if (!cancelled) {
+          setSkills([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
     }
-    try {
-      setSkills(JSON.parse(raw) as SkillItem[]);
-    } catch {
-      setSkills([]);
-    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [wallet]);
 
   return (
@@ -48,7 +72,9 @@ export default function WorkerSkillsPage() {
         nav={NAV}
       >
         <section className="panel p-4">
-        {skills.length === 0 ? (
+        {isLoading ? (
+          <p className="text-sm text-muted">Loading verified skills...</p>
+        ) : skills.length === 0 ? (
           <p className="text-sm text-muted">No verified skills yet.</p>
         ) : (
           <div className="space-y-3">

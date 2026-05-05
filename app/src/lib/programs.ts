@@ -1,4 +1,5 @@
-import { AnchorProvider, Program } from "@coral-xyz/anchor";
+import { AnchorProvider, Idl, Program } from "@coral-xyz/anchor";
+import { PublicKey } from "@solana/web3.js";
 import coreIdl from "./idl/strand_core.json";
 import scoreIdl from "./idl/strand_score.json";
 import creditIdl from "./idl/strand_credit.json";
@@ -8,23 +9,21 @@ import {
   STRAND_SCORE_PROGRAM_ID
 } from "./constants";
 
+function withProgramAddress(idl: unknown, address: PublicKey): Idl {
+  return {
+    ...(idl as object),
+    address: address.toBase58()
+  } as unknown as Idl;
+}
+
 export function getPrograms(provider: AnchorProvider) {
-  const core = {
-    ...(coreIdl as any),
-    address: STRAND_CORE_PROGRAM_ID.toBase58()
-  };
-  const score = {
-    ...(scoreIdl as any),
-    address: STRAND_SCORE_PROGRAM_ID.toBase58()
-  };
-  const credit = {
-    ...(creditIdl as any),
-    address: STRAND_CREDIT_PROGRAM_ID.toBase58()
-  };
+  const core = withProgramAddress(coreIdl, STRAND_CORE_PROGRAM_ID);
+  const score = withProgramAddress(scoreIdl, STRAND_SCORE_PROGRAM_ID);
+  const credit = withProgramAddress(creditIdl, STRAND_CREDIT_PROGRAM_ID);
 
   return {
-    coreProgram: new Program(core as any, provider as any),
-    scoreProgram: new Program(score as any, provider as any),
-    creditProgram: new Program(credit as any, provider as any)
+    coreProgram: new Program(core, provider),
+    scoreProgram: new Program(score, provider),
+    creditProgram: new Program(credit, provider)
   };
 }

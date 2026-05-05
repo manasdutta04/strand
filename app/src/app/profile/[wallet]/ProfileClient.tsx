@@ -2,6 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { WorkNFTCardData } from "../../../components/WorkNFTCard";
+import {
+  getScoreState,
+  getWorkerProfile,
+  listSkillAttestations,
+  listWorkNfts
+} from "../../../lib/data-access";
 import { ScoreBreakdown, scoreFromBreakdown, tierFromScore } from "../../../lib/score";
 
 interface SkillItem {
@@ -34,35 +40,62 @@ export default function ProfileClient({ wallet }: { wallet: string }) {
   const [profile, setProfile] = useState<ProfileSnapshot>(EMPTY_PROFILE);
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [workNfts, setWorkNfts] = useState<WorkNFTCardData[]>([]);
+  const [chainScore, setChainScore] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const profileRaw = localStorage.getItem(`strand-profile:${wallet}`);
-    const skillsRaw = localStorage.getItem(`strand-skills:${wallet}`);
-    const nftsRaw = localStorage.getItem(`strand-worknfts:${wallet}`);
+    let cancelled = false;
 
-    if (profileRaw) {
+    async function load(): Promise<void> {
+      setIsLoading(true);
       try {
-        setProfile(JSON.parse(profileRaw) as ProfileSnapshot);
+        const [profileState, scoreState, skillStates, nftStates] = await Promise.all([
+          getWorkerProfile(wallet),
+          getScoreState(wallet),
+          listSkillAttestations(wallet),
+          listWorkNfts(wallet)
+        ]);
+
+        if (cancelled) {
+          return;
+        }
+
+        setProfile(
+          profileState
+            ? {
+                jobsDone: profileState.jobsDone,
+                totalEarnedUsdc: profileState.totalEarnedUsdc,
+                uniqueClients: profileState.uniqueClients,
+                memberSince: profileState.memberSince
+              }
+            : EMPTY_PROFILE
+        );
+        setChainScore(scoreState?.score ?? null);
+        setSkills(
+          skillStates.map((skill) => ({
+            name: skill.name,
+            confidence: skill.confidence
+          }))
+        );
+        setWorkNfts(nftStates as WorkNFTCardData[]);
       } catch {
-        setProfile(EMPTY_PROFILE);
+        if (!cancelled) {
+          setProfile(EMPTY_PROFILE);
+          setChainScore(null);
+          setSkills([]);
+          setWorkNfts([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     }
 
-    if (skillsRaw) {
-      try {
-        setSkills(JSON.parse(skillsRaw) as SkillItem[]);
-      } catch {
-        setSkills([]);
-      }
-    }
-
-    if (nftsRaw) {
-      try {
-        setWorkNfts(JSON.parse(nftsRaw) as WorkNFTCardData[]);
-      } catch {
-        setWorkNfts([]);
-      }
-    }
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [wallet]);
 
   const breakdown: ScoreBreakdown[] = useMemo(
@@ -101,7 +134,7 @@ export default function ProfileClient({ wallet }: { wallet: string }) {
     [profile.jobsDone, profile.totalEarnedUsdc, profile.uniqueClients, skills.length]
   );
 
-  const score = scoreFromBreakdown(breakdown);
+  const score = chainScore ?? scoreFromBreakdown(breakdown);
   const tier = tierFromScore(score);
 
   return (
@@ -112,7 +145,7 @@ export default function ProfileClient({ wallet }: { wallet: string }) {
           <h1 className="mt-2 text-2xl font-semibold">{truncateWallet(wallet)}</h1>
         </div>
         <div className="rounded-full border border-accent/40 bg-accent/10 px-4 py-2 text-sm text-accent">
-          Strand Score {score} · {tier}
+          {isLoading ? "Loading score..." : `Strand Score ${score} - ${tier}`}
         </div>
       </header>
 
@@ -142,11 +175,13 @@ export default function ProfileClient({ wallet }: { wallet: string }) {
       <section className="panel p-5">
         <h2 className="mb-3 text-xl font-semibold">Skills</h2>
         <div className="space-y-3">
-          {skills.length === 0 ? (
+          {isLoading ? (
+            <p className="text-sm text-muted">Loading skill attestations...</p>
+          ) : skills.length === 0 ? (
             <p className="text-sm text-muted">No skill attestations yet.</p>
           ) : (
             skills.map((skill) => (
-              <article key={skill.name} className="rounded-xl border border-border bg-[#141414] p-3">
+              <article key={skill.name} className="rounded-lg border border-border bg-[#141414] p-3">
                 <div className="mb-1 flex items-center justify-between text-sm">
                   <span>{skill.name}</span>
                   <span className="text-accent">{skill.confidence}%</span>
@@ -163,7 +198,9 @@ export default function ProfileClient({ wallet }: { wallet: string }) {
       <section className="panel p-5">
         <h2 className="mb-3 text-xl font-semibold">Work history</h2>
         <div className="space-y-2 text-sm">
-          {workNfts.length === 0 ? (
+          {isLoading ? (
+            <p className="text-muted">Loading work records...</p>
+          ) : workNfts.length === 0 ? (
             <p className="text-muted">No work records available yet.</p>
           ) : (
             workNfts.map((nft) => (
@@ -171,7 +208,7 @@ export default function ProfileClient({ wallet }: { wallet: string }) {
                 key={`${nft.client}-${nft.completedAt}-${nft.amountUsdc}`}
                 className="rounded-lg border border-border bg-[#141414] px-3 py-2"
               >
-                ${nft.amountUsdc.toLocaleString()} · {nft.skills.join(", ")} ·{" "}
+                ${nft.amountUsdc.toLocaleString()} - {nft.skills.join(", ") || "No skills tagged"} -{" "}
                 {new Intl.DateTimeFormat("en-US", {
                   month: "short",
                   day: "numeric",

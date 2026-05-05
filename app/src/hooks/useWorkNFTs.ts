@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { WorkNFTCardData } from "../components/WorkNFTCard";
+import { listWorkNfts } from "../lib/data-access";
 
 const FALLBACK_NFTS: WorkNFTCardData[] = [];
 
@@ -15,23 +16,32 @@ export function useWorkNFTs(walletAddress?: string | null, refreshToken?: number
       setIsLoading(false);
       return;
     }
+    const walletAddressSafe = walletAddress;
 
-    const key = `strand-worknfts:${walletAddress}`;
-    const raw = localStorage.getItem(key);
-    if (!raw) {
-      localStorage.setItem(key, JSON.stringify(FALLBACK_NFTS));
-      setWorkNfts(FALLBACK_NFTS);
-      setIsLoading(false);
-      return;
+    let cancelled = false;
+
+    async function load(): Promise<void> {
+      setIsLoading(true);
+      try {
+        const nfts = await listWorkNfts(walletAddressSafe);
+        if (!cancelled) {
+          setWorkNfts(nfts as WorkNFTCardData[]);
+        }
+      } catch {
+        if (!cancelled) {
+          setWorkNfts(FALLBACK_NFTS);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
     }
 
-    try {
-      setWorkNfts(JSON.parse(raw) as WorkNFTCardData[]);
-    } catch {
-      setWorkNfts(FALLBACK_NFTS);
-    }
-
-    setIsLoading(false);
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [walletAddress, refreshToken]);
 
   return {

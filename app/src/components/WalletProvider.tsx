@@ -1,7 +1,6 @@
-// @ts-nocheck
 "use client";
 
-import { ReactNode, useMemo } from "react";
+import { ComponentType, ReactNode, useMemo } from "react";
 import {
   ConnectionProvider,
   WalletProvider as SolanaWalletProvider
@@ -15,17 +14,28 @@ import { RPC_URL } from "../lib/constants";
 
 import "@solana/wallet-adapter-react-ui/styles.css";
 
-export function WalletProvider({ children }: { children: any }): any {
+const TypedConnectionProvider = ConnectionProvider as unknown as ComponentType<{
+  endpoint: string;
+  children: ReactNode;
+}>;
+const TypedSolanaWalletProvider = SolanaWalletProvider as unknown as ComponentType<{
+  wallets: never[];
+  autoConnect?: boolean;
+  children: ReactNode;
+}>;
+const TypedWalletModalProvider = WalletModalProvider as unknown as ComponentType<{
+  children: ReactNode;
+}>;
+
+export function WalletProvider({ children }: { children: ReactNode }) {
   const wallets = useMemo(() => [], []);
 
   return (
-    <ConnectionProvider endpoint={RPC_URL}>
-      {(
-        <SolanaWalletProvider wallets={wallets} autoConnect>
-          <WalletModalProvider>{children as any}</WalletModalProvider>
-        </SolanaWalletProvider>
-      ) as any}
-    </ConnectionProvider>
+    <TypedConnectionProvider endpoint={RPC_URL}>
+      <TypedSolanaWalletProvider wallets={wallets} autoConnect>
+        <TypedWalletModalProvider>{children}</TypedWalletModalProvider>
+      </TypedSolanaWalletProvider>
+    </TypedConnectionProvider>
   );
 }
 

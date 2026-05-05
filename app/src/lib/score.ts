@@ -6,7 +6,7 @@ export interface ScoreBreakdown {
   max: number;
 }
 
-export function deriveScoreBreakdown(stats: WorkerStats): ScoreBreakdown[] {
+export function deriveScoreBreakdown(stats: WorkerStats, attestedSkillCount = 0): ScoreBreakdown[] {
   const accountAgeMonths = Math.max(
     0,
     Math.floor((Date.now() - new Date(stats.memberSince).getTime()) / (30 * 24 * 3600 * 1000))
@@ -16,7 +16,7 @@ export function deriveScoreBreakdown(stats: WorkerStats): ScoreBreakdown[] {
   const consistency = Math.floor((Math.min(stats.jobsDone, 100) * 250) / 100);
   const diversity = Math.floor((Math.min(stats.uniqueClients, 20) * 150) / 20);
   const longevity = Math.floor((Math.min(accountAgeMonths, 24) * 100) / 24);
-  const skills = 0;
+  const skills = Math.min(attestedSkillCount * 15, 150);
   const reliability =
     stats.jobsDone === 0 ? 0 : Math.floor((stats.onTimeCompletions * 100) / stats.jobsDone);
 
