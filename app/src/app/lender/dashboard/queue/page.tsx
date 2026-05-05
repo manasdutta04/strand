@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import { getAssociatedTokenAddress, ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { SaasShell } from "../../../../components/SaasShell";
 import { RequireWallet } from "../../../../components/RequireWallet";
 import { listOpenJobEscrows } from "../../../../lib/data-access";
+import { DEVNET_USDC_MINT } from "../../../../lib/constants";
+import { executeOpenCreditLine } from "../../../../lib/tx-helpers";
 
 const NAV = [
   { label: "Portfolio", href: "/lender/dashboard" },
@@ -12,7 +16,8 @@ const NAV = [
 ];
 
 export default function LenderQueuePage() {
-  const { publicKey } = useWallet();
+  const { publicKey, sendTransaction } = useWallet();
+  const { connection } = useConnection();
   const wallet = publicKey?.toBase58() ?? null;
   const [requests, setRequests] = useState<Array<{
     jobId: number;
@@ -22,6 +27,8 @@ export default function LenderQueuePage() {
     status: "pending" | "approved" | "declined";
   }>>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [processingJob, setProcessingJob] = useState<number | null>(null);
+  const [actionErrors, setActionErrors] = useState<Record<number, string>>({});
 
   useEffect(() => {
     if (!wallet) {
@@ -69,12 +76,60 @@ export default function LenderQueuePage() {
     [requests]
   );
 
-  function approveRequest(jobId: number): void {
-    setRequests((current) =>
-      current.map((item) =>
-        item.jobId === jobId ? { ...item, status: "approved" } : item
-      )
-    );
+  async function approveRequest(jobId: number): Promise<void> {
+    if (!publicKey || !sendTransaction) return;
+    
+    setProcessingJob(jobId);
+    setActionErrors((prev) => ({ ...prev, [jobId]: "" }));
+
+    const request = requests.find((r) => r.jobId === jobId);
+    if (!request) {
+      setProcessingJob(null);
+      return;
+    }
+
+    try {
+      const lenderTokenAccount = await getAssociatedTokenAddress(
+        DEVNET_USDC_MINT,
+        publicKey,
+        false,
+        TOKEN_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
+      );
+
+      await executeOpenCreditLine(
+        {
+          connection,
+          walletPublicKey: publicKey,
+          sendTransaction
+        },
+        {
+          lender: publicKey,
+          worker: new PublicKey(request.worker),
+          lenderTokenAccount,
+          maxUsdc: request.amountUsdc,
+          annualRateBps: 1200,
+          minScoreRequired: 100
+        }
+      );
+
+      setRequests((current) =>
+        current.map((item) =>
+          item.jobId === jobId ? { ...item, status: "approved" } : item
+        )
+      );
+      setActionErrors((prev) => ({ ...prev, [jobId]: "" }));
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      setActionErrors((prev) => ({ ...prev, [jobId]: errorMsg }));
+      setRequests((current) =>
+        current.map((item) =>
+          item.jobId === jobId ? { ...item, status: "pending" } : item
+        )
+      );
+    } finally {
+      setProcessingJob(null);
+    }
   }
 
   function declineRequest(jobId: number): void {
@@ -101,30 +156,38 @@ export default function LenderQueuePage() {
           ) : (
             <div className="space-y-2">
               {requests.map((request) => (
-                <div
-                  key={request.jobId}
-                  className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-3 rounded-lg border border-border bg-[#141414] px-3 py-2 text-sm"
-                >
-                  <span>JOB-{request.jobId}</span>
-                  <span>{request.worker.slice(0, 6)}…{request.worker.slice(-4)}</span>
-                  <span>${request.amountUsdc.toLocaleString()}</span>
-                  <span className="text-muted text-xs">{new Date(request.createdAt).toLocaleDateString()}</span>
-                  <div className="flex gap-2">
-                    <button
-                      className="btn-subtle !px-3 !py-1.5 !text-xs"
-                      disabled={request.status !== "pending"}
-                      onClick={() => declineRequest(request.jobId)}
-                    >
-                      {request.status === "declined" ? "Declined" : "Decline"}
-                    </button>
-                    <button
-                      className="btn-accent !px-3 !py-1.5 !text-xs"
-                      disabled={request.status !== "pending"}
-                      onClick={() => approveRequest(request.jobId)}
-                    >
-                      {request.status === "approved" ? "Approved" : "Approve"}
-                    </button>
+                <div key={request.jobId} className="space-y-1">
+                  <div
+                    className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-3 rounded-lg border border-border bg-[#141414] px-3 py-2 text-sm"
+                  >
+                    <span>JOB-{request.jobId}</span>
+                    <span>{request.worker.slice(0, 6)}…{request.worker.slice(-4)}</span>
+                    <span>${request.amountUsdc.toLocaleString()}</span>
+                    <span className="text-muted text-xs">{new Date(request.createdAt).toLocaleDateString()}</span>
+                    <div className="flex gap-2">
+                      <button
+                        className="btn-subtle !px-3 !py-1.5 !text-xs"
+                        disabled={request.status !== "pending" || processingJob === request.jobId}
+                        onClick={() => declineRequest(request.jobId)}
+                      >
+                        {request.status === "declined" ? "Declined" : "Decline"}
+                      </button>
+                      <button
+                        className="btn-accent !px-3 !py-1.5 !text-xs"
+                        disabled={request.status !== "pending" || processingJob === request.jobId}
+                        onClick={() => approveRequest(request.jobId)}
+                      >
+                        {processingJob === request.jobId
+                          ? "Approving…"
+                          : request.status === "approved"
+                            ? "Approved"
+                            : "Approve"}
+                      </button>
+                    </div>
                   </div>
+                  {actionErrors[request.jobId] ? (
+                    <p className="text-xs text-danger px-3">{actionErrors[request.jobId]}</p>
+                  ) : null}
                 </div>
               ))}
             </div>

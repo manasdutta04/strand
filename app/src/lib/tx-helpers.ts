@@ -131,6 +131,21 @@ export interface BorrowDerived {
   scoreState: PublicKey;
 }
 
+export interface OpenCreditLineRequest {
+  lender: PublicKey;
+  worker: PublicKey;
+  lenderTokenAccount: PublicKey;
+  maxUsdc: number;
+  annualRateBps: number;
+  minScoreRequired: number;
+  usdcMint?: PublicKey;
+}
+
+export interface OpenCreditLineDerived {
+  creditLine: PublicKey;
+  lenderVault: PublicKey;
+}
+
 export interface RepayDerived {
   creditLine: PublicKey;
   lenderVault: PublicKey;
@@ -558,6 +573,59 @@ export async function executeBorrow(
   options?: TxSendOptions
 ): Promise<TxExecuteResult<BorrowDerived>> {
   const built = await buildBorrowTx(context, request);
+  try {
+    const signature = await context.sendTransaction(built.transaction, context.connection, options);
+    return { signature, derived: built.derived };
+  } catch (error) {
+    throw normalizeError(error);
+  }
+}
+
+export async function buildOpenCreditLineTx(
+  context: TxContext,
+  request: OpenCreditLineRequest
+): Promise<TxBuildResult<OpenCreditLineDerived>> {
+  try {
+    const lender = ensureWalletPublicKey(context.walletPublicKey);
+    const provider = createReadOnlyProvider(context);
+    const { creditProgram } = getPrograms(provider);
+    const credit = creditProgram as unknown as ProgramLike;
+
+    const derived: OpenCreditLineDerived = {
+      creditLine: deriveCreditLinePda(request.lender, request.worker),
+      lenderVault: deriveLenderVaultPda(request.lender, request.worker)
+    };
+
+    const usdcMint = request.usdcMint ?? DEVNET_USDC_MINT;
+
+    const instruction = await credit.methods
+      .openCreditLine(new BN(Math.round(request.maxUsdc * USDC_SCALE)), request.annualRateBps, request.minScoreRequired)
+      .accounts({
+        lender: request.lender,
+        worker: request.worker,
+        creditLine: derived.creditLine,
+        lenderVault: derived.lenderVault,
+        lenderTokenAccount: request.lenderTokenAccount,
+        usdcMint,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId
+      })
+      .instruction();
+
+    const transaction = new Transaction().add(instruction);
+    transaction.feePayer = lender;
+    return { transaction, instructions: [instruction], derived };
+  } catch (error) {
+    throw normalizeError(error);
+  }
+}
+
+export async function executeOpenCreditLine(
+  context: TxContext,
+  request: OpenCreditLineRequest,
+  options?: TxSendOptions
+): Promise<TxExecuteResult<OpenCreditLineDerived>> {
+  const built = await buildOpenCreditLineTx(context, request);
   try {
     const signature = await context.sendTransaction(built.transaction, context.connection, options);
     return { signature, derived: built.derived };
