@@ -5,16 +5,15 @@ const ROLE_ORDER = ["worker", "client", "lender"] as const;
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen px-4 py-8 sm:px-6">
+    <main className="min-h-screen bg-background px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
         <header className="panel px-6 py-7">
-          <p className="text-xs uppercase tracking-[0.16em] text-accent">Strand SaaS</p>
-          <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">
-            Reputation Infrastructure For Work And Credit
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Strand</p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+            Work and credit, in one system.
           </h1>
-          <p className="mt-3 max-w-3xl text-sm text-muted sm:text-base">
-            Choose your workspace role to continue. Each role has dedicated workflows, dashboards,
-            and metrics for daily operation.
+          <p className="mt-3 max-w-3xl text-sm text-muted-foreground sm:text-base">
+            Choose a workspace to continue.
           </p>
         </header>
 
@@ -24,7 +23,7 @@ export default function LandingPage() {
             return (
               <article key={role.role} className="panel flex flex-col p-5">
                 <h2 className="text-xl font-semibold">{role.label}</h2>
-                <p className="mt-2 flex-1 text-sm text-muted">{role.description}</p>
+                <p className="mt-2 flex-1 text-sm text-muted-foreground">{role.description}</p>
                 <Link className="btn-accent mt-4" href={`/login/${role.role}`}>
                   Continue As {role.label}
                 </Link>

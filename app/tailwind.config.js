@@ -9,18 +9,31 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        base: "#0F0F0F",
-        card: "#1A1A1A",
-        "card-hover": "#222222",
-        border: "#2A2A2A",
-        primary: "#FFFFFF",
-        muted: "#888888",
-        accent: "#14F195",
-        "accent-dim": "#0ABF74",
-        danger: "#FF4444"
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        card: "hsl(var(--card))",
+        "card-foreground": "hsl(var(--card-foreground))",
+        popover: "hsl(var(--popover))",
+        "popover-foreground": "hsl(var(--popover-foreground))",
+        primary: "hsl(var(--primary))",
+        "primary-foreground": "hsl(var(--primary-foreground))",
+        secondary: "hsl(var(--secondary))",
+        "secondary-foreground": "hsl(var(--secondary-foreground))",
+        muted: "hsl(var(--muted))",
+        "muted-foreground": "hsl(var(--muted-foreground))",
+        accent: "hsl(var(--accent))",
+        "accent-foreground": "hsl(var(--accent-foreground))",
+        destructive: "hsl(var(--destructive))",
+        "destructive-foreground": "hsl(var(--destructive-foreground))",
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        base: "hsl(var(--background))",
+        "card-hover": "hsl(var(--muted))",
+        danger: "hsl(var(--destructive))"
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(20, 241, 149, 0.35), 0 12px 40px rgba(20, 241, 149, 0.2)"
+        glow: "0 0 0 1px hsl(var(--ring) / 0.35), 0 12px 40px hsl(var(--foreground) / 0.06)"
       },
       keyframes: {
         "fade-rise": {

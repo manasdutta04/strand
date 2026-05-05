@@ -21,41 +21,33 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
   const pathname = usePathname();
 
   return (
-    <main className="min-h-screen px-4 py-5 sm:px-6">
-      <div className="mx-auto max-w-7xl space-y-5">
-        <header className="panel flex flex-wrap items-center justify-between gap-4 px-4 py-3">
-          <div>
-            <div className="text-xs uppercase tracking-[0.16em] text-muted">{productLabel}</div>
-            <h1 className="mt-1 text-xl font-semibold">{title}</h1>
-            <p className="text-sm text-muted">{subtitle}</p>
+    <main className="min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <header className="panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="space-y-1">
+            <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{productLabel}</div>
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
+            <p className="max-w-2xl text-sm text-muted-foreground">{subtitle}</p>
           </div>
-          <StrandWalletButton className="!h-10 !text-sm" />
+          <StrandWalletButton className="!h-10 !rounded-md !text-sm" />
         </header>
 
-        <div className="grid gap-5 lg:grid-cols-[240px_1fr]">
-          <aside className="panel h-fit p-3">
-            <nav className="space-y-1">
-              {nav.map((item) => {
-                const active = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={
-                      active
-                        ? "block rounded-lg bg-accent px-3 py-2 text-sm font-medium text-primary"
-                        : "block rounded-lg px-3 py-2 text-sm text-muted transition hover:bg-card-hover hover:text-primary"
-                    }
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
-          </aside>
+        <nav className="flex flex-wrap gap-2">
+          {nav.map((item) => {
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={active ? "btn-accent" : "btn-subtle"}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
 
-          <section className="space-y-5">{children}</section>
-        </div>
+        <section className="space-y-5">{children}</section>
       </div>
     </main>
   );

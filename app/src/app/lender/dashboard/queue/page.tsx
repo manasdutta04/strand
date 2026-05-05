@@ -151,29 +151,29 @@ export default function LenderQueuePage() {
       <SaasShell
         productLabel="Lender Workspace"
         title="Underwriting Queue"
-        subtitle="Evaluate incoming credit requests using score and work proof signals."
+        subtitle="Review and approve credit lines for score-verified borrowers."
         nav={NAV}
       >
         <section className="panel p-4">
           {error ? (
-            <p className="text-sm text-red-600">
+            <p className="text-sm text-destructive">
               {formatErrorMessage(error)}
             </p>
           ) : isLoading ? (
-            <p className="text-sm text-muted">Loading underwriting queue...</p>
+            <p className="text-sm text-muted-foreground">Loading underwriting queue...</p>
           ) : requests.length === 0 ? (
-            <p className="text-sm text-muted">No open escrow requests available for underwriting.</p>
+            <p className="text-sm text-muted-foreground">No open escrow requests available for underwriting.</p>
           ) : (
             <div className="space-y-2">
               {requests.map((request) => (
                 <div key={request.jobId} className="space-y-1">
                   <div
-                    className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-3 rounded-lg border border-border bg-[#141414] px-3 py-2 text-sm"
+                    className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm"
                   >
                     <span>JOB-{request.jobId}</span>
                     <span>{request.worker.slice(0, 6)}…{request.worker.slice(-4)}</span>
                     <span>${request.amountUsdc.toLocaleString()}</span>
-                    <span className="text-muted text-xs">{new Date(request.createdAt).toLocaleDateString()}</span>
+                    <span className="text-xs text-muted-foreground">{new Date(request.createdAt).toLocaleDateString()}</span>
                     <div className="flex gap-2">
                       <button
                         className="btn-subtle !px-3 !py-1.5 !text-xs"
@@ -196,7 +196,7 @@ export default function LenderQueuePage() {
                     </div>
                   </div>
                   {actionErrors[request.jobId] ? (
-                    <p className="text-xs text-danger px-3">{actionErrors[request.jobId]}</p>
+                    <p className="px-3 text-xs text-destructive">{actionErrors[request.jobId]}</p>
                   ) : null}
                 </div>
               ))}
@@ -204,7 +204,7 @@ export default function LenderQueuePage() {
           )}
         </section>
         {actionCount > 0 ? (
-          <div className="mt-4 rounded-xl border border-border bg-[#101010] p-4 text-sm text-muted">
+          <div className="mt-4 rounded-xl border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
             {actionCount} underwriting action{actionCount === 1 ? "" : "s"} taken locally in this session.
           </div>
         ) : null}

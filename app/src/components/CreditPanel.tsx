@@ -60,13 +60,13 @@ export function CreditPanel({ creditLine, onBorrow, onRepay }: CreditPanelProps)
 
   if (!creditLine) {
     return (
-      <section className="panel space-y-4 p-5">
-        <h3 className="text-lg font-semibold">No lender has opened a credit line for your score yet.</h3>
-        <p className="text-sm text-muted">
+      <section className="panel space-y-4 p-6">
+        <h3 className="text-lg font-semibold tracking-tight">No lender has opened a credit line for your score yet.</h3>
+        <p className="text-sm text-muted-foreground">
           Share your profile to attract lenders. Your live score and work history make underwriting
           portable.
         </p>
-        <div className="rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm text-accent">
+        <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
           Shareable score card ready once your first jobs are completed.
         </div>
       </section>
@@ -74,28 +74,28 @@ export function CreditPanel({ creditLine, onBorrow, onRepay }: CreditPanelProps)
   }
 
   return (
-    <section className="panel space-y-5 p-5">
+    <section className="panel space-y-5 p-6">
       <div>
-        <div className="text-xs uppercase tracking-[0.16em] text-muted">Available</div>
-        <div className="text-3xl font-semibold text-accent">
+        <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Available</div>
+        <div className="text-3xl font-semibold tracking-tight text-foreground">
           ${available.toLocaleString()} USDC
         </div>
       </div>
 
       <div className="grid gap-3 text-sm sm:grid-cols-2">
-        <div className="rounded-lg border border-border bg-[#151515] p-3">
-          <div className="text-muted">APR</div>
+        <div className="rounded-lg border border-border bg-muted/30 p-3">
+          <div className="text-muted-foreground">APR</div>
           <div className="mt-1 text-lg font-medium">{creditLine.apr.toFixed(1)}%</div>
         </div>
-        <div className="rounded-lg border border-border bg-[#151515] p-3">
-          <div className="text-muted">Current balance</div>
+        <div className="rounded-lg border border-border bg-muted/30 p-3">
+          <div className="text-muted-foreground">Current balance</div>
           <div className="mt-1 text-lg font-medium">${creditLine.borrowedUsdc.toLocaleString()} borrowed</div>
         </div>
       </div>
 
       <form className="grid gap-2 sm:grid-cols-[1fr_auto]" onSubmit={submitBorrow}>
         <input
-          className="w-full rounded-xl border border-border bg-[#101010] px-3 py-2 text-sm outline-none ring-accent/40 transition focus:ring"
+          className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           value={borrowInput}
           onChange={(event) => setBorrowInput(event.target.value)}
           inputMode="decimal"
@@ -108,7 +108,7 @@ export function CreditPanel({ creditLine, onBorrow, onRepay }: CreditPanelProps)
 
       <form className="grid gap-2 sm:grid-cols-[1fr_auto]" onSubmit={submitRepay}>
         <input
-          className="w-full rounded-xl border border-border bg-[#101010] px-3 py-2 text-sm outline-none ring-accent/40 transition focus:ring"
+          className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           value={repayInput}
           onChange={(event) => setRepayInput(event.target.value)}
           inputMode="decimal"
@@ -120,7 +120,7 @@ export function CreditPanel({ creditLine, onBorrow, onRepay }: CreditPanelProps)
       </form>
 
       {status ? (
-        <div className="rounded-lg border border-accent/30 bg-accent/10 px-3 py-2 text-sm text-accent">
+        <div className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
           {status}
         </div>
       ) : null}

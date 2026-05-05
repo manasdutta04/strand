@@ -11,19 +11,19 @@ export const ROLE_META: Record<UserRole, RoleMeta> = {
   worker: {
     role: "worker",
     label: "Worker",
-    description: "Track completed jobs, skill attestations, and score growth.",
+    description: "Track verified work, reputation, and credit access.",
     dashboardPath: "/worker/dashboard"
   },
   client: {
     role: "client",
     label: "Client",
-    description: "Post jobs, fund escrow, and manage freelancer payouts.",
+    description: "Post work, manage escrow, and supervise delivery.",
     dashboardPath: "/client/dashboard"
   },
   lender: {
     role: "lender",
     label: "Lender",
-    description: "Underwrite credit lines using on-chain Strand score signals.",
+    description: "Underwrite credit lines from on-chain work signals.",
     dashboardPath: "/lender/dashboard"
   }
 };

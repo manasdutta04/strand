@@ -53,8 +53,8 @@ export default function WorkerCreditPage() {
     <RequireWallet redirectTo="/login/worker">
       <SaasShell
         productLabel="Worker Workspace"
-        title="Credit Access"
-        subtitle="Borrowing operations against score-qualified credit lines."
+         title="Build Your Reputation"
+         subtitle="Manage credit lines and borrow against your verified Strand score."
         nav={NAV}
       >
         <CreditPanel creditLine={creditLine} onBorrow={borrow} onRepay={repay} />

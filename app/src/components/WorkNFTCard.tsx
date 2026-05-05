@@ -22,19 +22,19 @@ export function WorkNFTCard({ data }: { data: WorkNFTCardData }) {
   }).format(new Date(data.completedAt));
 
   return (
-    <article className="panel group p-4 transition-all duration-150 hover:bg-card-hover">
+    <article className="panel group p-4 transition-colors hover:bg-accent/40">
       <div className="mb-3 flex items-center justify-between">
-        <span className="rounded-full border border-accent/40 px-2 py-1 text-xs text-accent">
+        <span className="rounded-full border border-border bg-muted/40 px-2 py-1 text-xs text-muted-foreground">
           ${data.amountUsdc.toLocaleString()} USDC
         </span>
-        <span className="text-xs text-muted">Client {truncateWallet(data.client)}</span>
+        <span className="text-xs text-muted-foreground">Client {truncateWallet(data.client)}</span>
       </div>
 
       <div className="mb-3 flex flex-wrap gap-2">
         {data.skills.map((skill) => (
           <span
             key={`${data.client}-${skill}`}
-            className="rounded-full border border-accent/50 px-2 py-1 text-xs text-accent"
+            className="rounded-full border border-border bg-background px-2 py-1 text-xs text-muted-foreground"
           >
             {skill}
           </span>
@@ -48,20 +48,20 @@ export function WorkNFTCard({ data }: { data: WorkNFTCardData }) {
             viewBox="0 0 24 24"
             width="16"
             height="16"
-            className={index < data.clientRating ? "fill-accent" : "fill-[#343434]"}
+            className={index < data.clientRating ? "fill-foreground" : "fill-muted"}
           >
             <path d="M12 2.4l2.8 5.68 6.27.91-4.54 4.43 1.07 6.23L12 16.72l-5.61 2.95 1.07-6.23L2.92 8.99l6.27-.91L12 2.4z" />
           </svg>
         ))}
       </div>
 
-      <div className="mb-4 text-sm text-muted">{formattedDate}</div>
+      <div className="mb-4 text-sm text-muted-foreground">{formattedDate}</div>
 
       <a
         href={data.explorerUrl}
         target="_blank"
         rel="noreferrer"
-        className="text-sm text-accent transition-colors duration-150 hover:text-accent-dim"
+        className="text-sm text-foreground underline-offset-4 hover:underline"
       >
         View on Explorer ↗
       </a>

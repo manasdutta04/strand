@@ -73,8 +73,8 @@ export default function WorkerSkillsPage() {
     <RequireWallet redirectTo="/login/worker">
       <SaasShell
         productLabel="Worker Workspace"
-        title="Skill Attestations"
-        subtitle="Track oracle-verified competencies used in score composition."
+        title="Build Your Reputation"
+        subtitle="Verified skills and attestations — trusted expertise signals."
         nav={NAV}
       >
         <section className="panel p-4">

@@ -31,22 +31,22 @@ export default function LoginClient({ role }: { role: UserRole }) {
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-3xl px-4 py-8 sm:px-6">
-      <section className="panel p-6">
-        <p className="text-xs uppercase tracking-[0.16em] text-accent">Role Access</p>
-        <h1 className="mt-2 text-3xl font-semibold">{roleMeta.label} Workspace</h1>
-        <p className="mt-3 text-sm text-muted">{roleMeta.description}</p>
+    <main className="mx-auto flex min-h-screen max-w-3xl items-center px-4 py-8 sm:px-6">
+      <section className="panel w-full p-6 sm:p-8">
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Role access</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight">{roleMeta.label} workspace</h1>
+        <p className="mt-3 text-sm text-muted-foreground">{roleMeta.description}</p>
 
-        <div className="mt-6 rounded-lg border border-border bg-[#141414] p-4 text-sm text-muted">
+        <div className="mt-6 rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
           Wallet access is used for signature-based identity and transaction approvals.
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2">
           <button className="btn-accent" onClick={continueWithWallet} type="button">
-            Connect Wallet And Enter
+            Connect wallet and enter
           </button>
           <Link className="btn-subtle" href="/">
-            Back To Role Selection
+            Back to role selection
           </Link>
         </div>
       </section>

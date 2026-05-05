@@ -24,8 +24,8 @@ export default function WorkerWorkHistoryPage() {
     <RequireWallet redirectTo="/login/worker">
       <SaasShell
         productLabel="Worker Workspace"
-        title="Work History"
-        subtitle="Immutable records of completed jobs and delivery quality."
+         title="Build Your Reputation"
+         subtitle="Your work history — verified earnings and delivery quality."
         nav={NAV}
       >
         <Card>

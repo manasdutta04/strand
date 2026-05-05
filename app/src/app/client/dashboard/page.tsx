@@ -36,26 +36,37 @@ export default function ClientDashboardPage() {
     <RequireWallet redirectTo="/login/client">
       <SaasShell
         productLabel="Client Workspace"
-        title="Hiring Operations"
-        subtitle="Manage escrow-backed jobs and completion workflow."
+        title="Overview"
+        subtitle="Monitor escrow, active jobs, and completion flow."
         nav={NAV}
       >
+        <div className="panel p-6">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Active jobs</p>
+          <div className="mt-2 text-5xl font-semibold tracking-tight">{isLoading ? "—" : activeJobs.length}</div>
+          <p className="mt-2 text-sm text-muted-foreground">Jobs in progress • escrow protected</p>
+        </div>
+
         <section className="grid gap-4 md:grid-cols-3">
           <article className="panel p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-muted">Open Jobs</p>
-            <p className="mt-2 text-3xl font-semibold">{isLoading ? "—" : activeJobs.length}</p>
-          </article>
-          <article className="panel p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-muted">Escrowed USDC</p>
-            <p className="mt-2 text-3xl font-semibold">
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Total Escrowed</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight">
               {isLoading ? "—" : `$${totalEscrowed.toLocaleString()}`}
             </p>
+            <p className="mt-1 text-sm text-muted-foreground">Capital reserved for open work</p>
           </article>
           <article className="panel p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-muted">Completion Rate</p>
-            <p className="mt-2 text-3xl font-semibold">
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Completion Rate</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight">
               {isLoading ? "—" : `${completionRate}%`}
             </p>
+            <p className="mt-1 text-sm text-muted-foreground">Completed jobs vs total</p>
+          </article>
+          <article className="panel p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Workers Hired</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight">
+              {isLoading ? "—" : jobs.length}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">Total jobs posted</p>
           </article>
         </section>
 
@@ -68,24 +79,24 @@ export default function ClientDashboardPage() {
           </div>
 
           {error ? (
-            <p className="text-sm text-red-600">
+            <p className="text-sm text-destructive">
               {formatErrorMessage(error)}
             </p>
           ) : isLoading ? (
-            <p className="text-sm text-muted">Loading your client jobs...</p>
+            <p className="text-sm text-muted-foreground">Loading your client jobs...</p>
           ) : activeJobs.length === 0 ? (
-            <p className="text-sm text-muted">No active jobs found on-chain. Post a new job to get started.</p>
+            <p className="text-sm text-muted-foreground">No active jobs found on-chain. Post a new job to get started.</p>
           ) : (
             <div className="space-y-2">
               {activeJobs.map((job) => (
                 <div
                   key={job.jobId}
-                  className="grid grid-cols-[1fr_1fr_auto_auto] gap-3 rounded-lg border border-border bg-[#141414] px-3 py-2 text-sm"
+                  className="grid grid-cols-[1fr_1fr_auto_auto] gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm"
                 >
                   <span>JOB-{job.jobId}</span>
-                  <span className="text-muted">Worker {job.worker.slice(0, 6)}…{job.worker.slice(-4)}</span>
+                  <span className="text-muted-foreground">Worker {job.worker.slice(0, 6)}…{job.worker.slice(-4)}</span>
                   <span>${job.amountUsdc.toLocaleString()}</span>
-                  <span className="text-accent">{job.state}</span>
+                  <span className="text-muted-foreground">{job.state}</span>
                 </div>
               ))}
             </div>

@@ -8,16 +8,6 @@ interface ScoreGaugeProps {
   breakdown: ScoreBreakdown[];
 }
 
-function scoreColor(score: number): string {
-  if (score < 350) {
-    return "#FF4444";
-  }
-  if (score < 700) {
-    return "#F59E0B";
-  }
-  return "#14F195";
-}
-
 export function ScoreGauge({ score, breakdown }: ScoreGaugeProps) {
   const [animatedScore, setAnimatedScore] = useState(0);
 
@@ -46,7 +36,7 @@ export function ScoreGauge({ score, breakdown }: ScoreGaugeProps) {
             <circle
               r={radius}
               fill="none"
-              stroke="#242424"
+              stroke="hsl(var(--muted))"
               strokeWidth={stroke}
               strokeLinecap="round"
               strokeDasharray={`${arcLength} ${circumference}`}
@@ -54,7 +44,7 @@ export function ScoreGauge({ score, breakdown }: ScoreGaugeProps) {
             <circle
               r={radius}
               fill="none"
-              stroke={scoreColor(score)}
+              stroke="hsl(var(--foreground))"
               strokeWidth={stroke}
               strokeLinecap="round"
               strokeDasharray={`${arcLength} ${circumference}`}
@@ -66,11 +56,11 @@ export function ScoreGauge({ score, breakdown }: ScoreGaugeProps) {
             x="110"
             y="104"
             textAnchor="middle"
-            className="fill-primary text-[2rem] font-semibold"
+            className="fill-foreground text-[2rem] font-semibold"
           >
             {score}
           </text>
-          <text x="110" y="130" textAnchor="middle" className="fill-muted text-sm">
+          <text x="110" y="130" textAnchor="middle" className="fill-muted-foreground text-sm">
             / 1000
           </text>
         </svg>
@@ -82,14 +72,14 @@ export function ScoreGauge({ score, breakdown }: ScoreGaugeProps) {
           return (
             <div key={item.label} className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted">{item.label}</span>
-                <span className="text-primary">
+                <span className="text-muted-foreground">{item.label}</span>
+                <span className="text-foreground">
                   {item.value}/{item.max}
                 </span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-[#242424]">
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full rounded-full bg-accent"
+                  className="h-full rounded-full bg-foreground"
                   style={{ width: `${fillPct}%`, transition: "width 600ms ease-out" }}
                 />
               </div>

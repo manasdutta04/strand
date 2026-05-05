@@ -138,32 +138,32 @@ export default function ProfileClient({ wallet }: { wallet: string }) {
   const tier = tierFromScore(score);
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-6xl space-y-6 px-6 py-8">
+    <main className="mx-auto min-h-screen w-full max-w-6xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
       <header className="panel flex flex-wrap items-center justify-between gap-4 p-5">
         <div>
-          <div className="text-xs uppercase tracking-[0.16em] text-muted">Public profile</div>
-          <h1 className="mt-2 text-2xl font-semibold">{truncateWallet(wallet)}</h1>
+          <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Public profile</div>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight">{truncateWallet(wallet)}</h1>
         </div>
-        <div className="rounded-full border border-accent/40 bg-accent/10 px-4 py-2 text-sm text-accent">
-          {isLoading ? "Loading score..." : `Strand Score ${score} - ${tier}`}
+        <div className="rounded-full border border-border bg-muted/40 px-4 py-2 text-sm text-muted-foreground">
+          {isLoading ? "Loading score..." : `Strand Score ${score} • ${tier}`}
         </div>
       </header>
 
       <section className="panel grid gap-4 p-5 sm:grid-cols-4">
         <div>
-          <div className="text-xs text-muted">Jobs</div>
+          <div className="text-xs text-muted-foreground">Jobs</div>
           <div className="text-xl font-semibold">{profile.jobsDone}</div>
         </div>
         <div>
-          <div className="text-xs text-muted">Earned</div>
+          <div className="text-xs text-muted-foreground">Earned</div>
           <div className="text-xl font-semibold">${profile.totalEarnedUsdc.toLocaleString()}</div>
         </div>
         <div>
-          <div className="text-xs text-muted">Clients</div>
+          <div className="text-xs text-muted-foreground">Clients</div>
           <div className="text-xl font-semibold">{profile.uniqueClients}</div>
         </div>
         <div>
-          <div className="text-xs text-muted">Member since</div>
+          <div className="text-xs text-muted-foreground">Member since</div>
           <div className="text-xl font-semibold">
             {new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(
               new Date(profile.memberSince)
@@ -176,18 +176,18 @@ export default function ProfileClient({ wallet }: { wallet: string }) {
         <h2 className="mb-3 text-xl font-semibold">Skills</h2>
         <div className="space-y-3">
           {isLoading ? (
-            <p className="text-sm text-muted">Loading skill attestations...</p>
+            <p className="text-sm text-muted-foreground">Loading skill attestations...</p>
           ) : skills.length === 0 ? (
-            <p className="text-sm text-muted">No skill attestations yet.</p>
+            <p className="text-sm text-muted-foreground">No skill attestations yet.</p>
           ) : (
             skills.map((skill) => (
-              <article key={skill.name} className="rounded-lg border border-border bg-[#141414] p-3">
+              <article key={skill.name} className="rounded-lg border border-border bg-muted/30 p-3">
                 <div className="mb-1 flex items-center justify-between text-sm">
                   <span>{skill.name}</span>
-                  <span className="text-accent">{skill.confidence}%</span>
+                  <span className="text-muted-foreground">{skill.confidence}%</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-[#242424]">
-                  <div className="h-full bg-accent" style={{ width: `${skill.confidence}%` }} />
+                <div className="h-2 overflow-hidden rounded-full bg-muted">
+                  <div className="h-full bg-foreground" style={{ width: `${skill.confidence}%` }} />
                 </div>
               </article>
             ))
@@ -199,14 +199,14 @@ export default function ProfileClient({ wallet }: { wallet: string }) {
         <h2 className="mb-3 text-xl font-semibold">Work history</h2>
         <div className="space-y-2 text-sm">
           {isLoading ? (
-            <p className="text-muted">Loading work records...</p>
+            <p className="text-muted-foreground">Loading work records...</p>
           ) : workNfts.length === 0 ? (
-            <p className="text-muted">No work records available yet.</p>
+            <p className="text-muted-foreground">No work records available yet.</p>
           ) : (
             workNfts.map((nft) => (
               <div
                 key={`${nft.client}-${nft.completedAt}-${nft.amountUsdc}`}
-                className="rounded-lg border border-border bg-[#141414] px-3 py-2"
+                className="rounded-lg border border-border bg-muted/30 px-3 py-2"
               >
                 ${nft.amountUsdc.toLocaleString()} - {nft.skills.join(", ") || "No skills tagged"} -{" "}
                 {new Intl.DateTimeFormat("en-US", {

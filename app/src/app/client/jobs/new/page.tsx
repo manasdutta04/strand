@@ -114,18 +114,18 @@ export default function CreateClientJobPage() {
       <SaasShell
         productLabel="Client Workspace"
         title="Create Job"
-        subtitle="Define the worker, escrow amount, and required skill tags."
+        subtitle="Define the worker, escrow amount, and required skills."
         nav={NAV}
       >
-        <section className="panel p-5">
+        <section className="panel p-6">
           {step === 1 ? (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold">Select worker wallet</h2>
+              <h2 className="text-xl font-semibold tracking-tight">Select worker wallet</h2>
               <input
                 value={workerWallet}
                 onChange={(event) => setWorkerWallet(event.target.value.trim())}
                 placeholder="Worker wallet address"
-                className="w-full rounded-xl border border-border bg-[#101010] px-4 py-3 text-sm outline-none ring-accent/30 transition focus:ring"
+                className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               />
               <button className="btn-accent" disabled={!canContinueStep1} onClick={() => setStep(2)}>
                 Continue
@@ -135,13 +135,13 @@ export default function CreateClientJobPage() {
 
           {step === 2 ? (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold">Set escrow amount</h2>
+              <h2 className="text-xl font-semibold tracking-tight">Set escrow amount</h2>
               <input
                 value={amount}
                 onChange={(event) => setAmount(event.target.value)}
                 inputMode="decimal"
                 placeholder="USDC amount"
-                className="w-full rounded-xl border border-border bg-[#101010] px-4 py-3 text-sm outline-none ring-accent/30 transition focus:ring"
+                className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               />
               <button className="btn-accent" disabled={!canContinueStep2} onClick={() => setStep(3)}>
                 Continue
@@ -151,17 +151,17 @@ export default function CreateClientJobPage() {
 
           {step === 3 ? (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold">Set required skills</h2>
+              <h2 className="text-xl font-semibold tracking-tight">Set required skills</h2>
               <input
                 value={skillInput}
                 onChange={(event) => setSkillInput(event.target.value)}
                 onKeyDown={onSkillInputKeyDown}
                 placeholder="Type skill and press Enter"
-                className="w-full rounded-xl border border-border bg-[#101010] px-4 py-3 text-sm outline-none ring-accent/30 transition focus:ring"
+                className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-offset-background transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               />
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill) => (
-                  <span key={skill} className="rounded-full border border-accent/40 bg-accent/10 px-2 py-1 text-xs text-accent">
+                  <span key={skill} className="rounded-full border border-border bg-muted/40 px-2 py-1 text-xs text-muted-foreground">
                     {skill}
                   </span>
                 ))}
@@ -174,8 +174,8 @@ export default function CreateClientJobPage() {
 
           {step === 4 ? (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold">Review and submit</h2>
-              <div className="rounded-xl border border-border bg-[#141414] p-4 text-sm">
+              <h2 className="text-xl font-semibold tracking-tight">Review and submit</h2>
+              <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm">
                 Worker: {workerWallet}
                 <br />
                 Amount: ${Number(amount).toLocaleString()} USDC
@@ -187,13 +187,13 @@ export default function CreateClientJobPage() {
               <button className="btn-accent" disabled={isSending} onClick={postJob}>
                 {isSending ? "Signing transaction…" : "Sign And Fund Escrow"}
               </button>
-              {error ? <p className="text-sm text-danger">{error}</p> : null}
+              {error ? <p className="text-sm text-destructive">{error}</p> : null}
               {signature ? (
-                <p className="text-sm text-accent">
+                <p className="text-sm text-muted-foreground">
                   Job created on-chain: <a className="underline" href={`https://solana.fm/tx/${signature}`} target="_blank" rel="noreferrer">{signature.slice(0, 10)}…</a>
                 </p>
               ) : null}
-              {posted && !signature ? <p className="text-sm text-accent">Transaction submitted. Waiting for confirmation…</p> : null}
+              {posted && !signature ? <p className="text-sm text-muted-foreground">Transaction submitted. Waiting for confirmation…</p> : null}
             </div>
           ) : null}
         </section>

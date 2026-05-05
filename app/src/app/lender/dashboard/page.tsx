@@ -29,52 +29,57 @@ export default function LenderDashboardPage() {
     <RequireWallet redirectTo="/login/lender">
       <SaasShell
         productLabel="Lender Workspace"
-        title="Credit Portfolio"
-        subtitle="Monitor score-linked lending risk and liquidity utilization."
+        title="Overview"
+        subtitle="Monitor capital deployment, APR, and borrower utilization."
         nav={NAV}
       >
+        <div className="panel p-6">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Total capital deployed</p>
+          <div className="mt-2 text-5xl font-semibold tracking-tight">${isLoading ? "—" : totalExposure.toLocaleString()}</div>
+          <p className="mt-2 text-sm text-muted-foreground">Active lending portfolio • risk diversified</p>
+        </div>
+
         <section className="grid gap-4 md:grid-cols-4">
           <article className="panel p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-muted">Total Exposure</p>
-            <p className="mt-2 text-3xl font-semibold">
-              {isLoading ? "—" : `$${totalExposure.toLocaleString()}`}
-            </p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Active Borrowers</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight">{isLoading ? "—" : activeBorrowers}</p>
           </article>
           <article className="panel p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-muted">Active Borrowers</p>
-            <p className="mt-2 text-3xl font-semibold">{isLoading ? "—" : activeBorrowers}</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Average APR</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight">{isLoading ? "—" : `${avgApr.toFixed(1)}%`}</p>
           </article>
           <article className="panel p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-muted">Avg APR</p>
-            <p className="mt-2 text-3xl font-semibold">{isLoading ? "—" : `${avgApr.toFixed(1)}%`}</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Utilization Rate</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight">{isLoading ? "—" : `${utilizationRate}%`}</p>
           </article>
           <article className="panel p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-muted">Utilization</p>
-            <p className="mt-2 text-3xl font-semibold">{isLoading ? "—" : `${utilizationRate}%`}</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Yield Generated</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight">{isLoading ? "—" : `$${Math.round(totalExposure * (avgApr / 100) / 12).toLocaleString()}`}</p>
+            <p className="mt-1 text-xs text-muted-foreground">Monthly estimate</p>
           </article>
         </section>
 
         <section className="panel p-4">
           <h2 className="mb-3 text-lg font-semibold">Live Loan Book</h2>
           {error ? (
-            <p className="text-sm text-red-600">
+            <p className="text-sm text-destructive">
               {formatErrorMessage(error)}
             </p>
           ) : isLoading ? (
-            <p className="text-sm text-muted">Loading lender portfolio...</p>
+            <p className="text-sm text-muted-foreground">Loading lender portfolio...</p>
           ) : portfolio.length === 0 ? (
-            <p className="text-sm text-muted">No active credit lines found for this wallet.</p>
+            <p className="text-sm text-muted-foreground">No active credit lines found for this wallet.</p>
           ) : (
             <div className="space-y-2">
               {portfolio.map((item) => (
                 <div
                   key={`${item.worker}-${item.maxUsdc}`}
-                  className="grid grid-cols-[1fr_auto_auto_auto] gap-3 rounded-lg border border-border bg-[#141414] px-3 py-2 text-sm"
+                  className="grid grid-cols-[1fr_auto_auto_auto] gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm"
                 >
                   <span>Worker {item.worker.slice(0, 6)}…{item.worker.slice(-4)}</span>
                   <span>{item.active ? `APR ${item.apr.toFixed(1)}%` : "Inactive"}</span>
                   <span>${item.borrowedUsdc.toLocaleString()} / ${item.maxUsdc.toLocaleString()}</span>
-                  <span className={item.utilization < 0.75 ? "text-accent" : "text-amber-300"}>
+                  <span className="text-muted-foreground">
                     {Math.round(item.utilization * 100)}%
                   </span>
                 </div>

@@ -57,55 +57,44 @@ export default function WorkerOverviewPage() {
     <RequireWallet redirectTo="/login/worker">
       <SaasShell
         productLabel="Worker Workspace"
-        title="Performance Overview"
-        subtitle="Track your verified output and credit readiness."
+        title="Overview"
+        subtitle="Track work history, earnings, and credit readiness."
         nav={NAV}
       >
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="panel p-6">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Strand score</p>
+          <div className="mt-2 text-5xl font-semibold tracking-tight">{score}</div>
+          <p className="mt-2 text-sm text-muted-foreground">{tier} tier • verified reputation</p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                Strand Score
-              </CardTitle>
+              <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Completed Jobs</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-accent">{score}</div>
-              <p className="text-sm text-muted-foreground">{tier} tier</p>
+              <div className="text-3xl font-bold tracking-tight">{stats.jobsDone}</div>
+              <p className="text-sm text-muted-foreground">Verified work history</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                Completed Jobs
-              </CardTitle>
+              <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Total Earnings</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.jobsDone}</div>
-              <p className="text-sm text-muted-foreground">All-time verified jobs</p>
+              <div className="text-3xl font-bold tracking-tight">${stats.totalEarnedUsdc.toLocaleString()}</div>
+              <p className="text-sm text-muted-foreground">USDC earned and available</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                Total Earnings
-              </CardTitle>
+              <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Credit Capacity</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">${stats.totalEarnedUsdc.toLocaleString()}</div>
-              <p className="text-sm text-muted-foreground">USDC equivalent</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                Credit Capacity
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">
+              <div className="text-3xl font-bold tracking-tight">
                 {creditLine ? `$${(creditLine.maxUsdc - creditLine.borrowedUsdc).toLocaleString()}` : "$0"}
               </div>
-              <p className="text-sm text-muted-foreground">Available from active lines</p>
+              <p className="text-sm text-muted-foreground">Available to borrow</p>
             </CardContent>
           </Card>
         </div>
@@ -115,7 +104,7 @@ export default function WorkerOverviewPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Recent Work</CardTitle>
-                <Link className="text-sm text-accent hover:underline" href="/worker/work">
+                <Link className="text-sm text-foreground underline-offset-4 hover:underline" href="/worker/work">
                   View all
                 </Link>
               </div>
@@ -128,7 +117,7 @@ export default function WorkerOverviewPage() {
                   {workNfts.slice(0, 3).map((item, index) => (
                     <div
                       key={index}
-                      className="rounded-lg border bg-muted/50 px-3 py-2 text-sm"
+                      className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm"
                     >
                       ${item.amountUsdc.toLocaleString()} · {item.skills.join(", ")}
                     </div>
@@ -144,13 +133,13 @@ export default function WorkerOverviewPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <Link className="block rounded-lg border bg-muted/50 px-3 py-2 hover:bg-muted transition-colors" href="/client/jobs/new">
+                <Link className="block rounded-lg border border-border bg-muted/30 px-3 py-2 transition-colors hover:bg-accent/40" href="/client/jobs/new">
                   Post a new client job
                 </Link>
-                <Link className="block rounded-lg border bg-muted/50 px-3 py-2 hover:bg-muted transition-colors" href="/worker/skills">
+                <Link className="block rounded-lg border border-border bg-muted/30 px-3 py-2 transition-colors hover:bg-accent/40" href="/worker/skills">
                   Add or review skill attestations
                 </Link>
-                <Link className="block rounded-lg border bg-muted/50 px-3 py-2 hover:bg-muted transition-colors" href="/worker/credit">
+                <Link className="block rounded-lg border border-border bg-muted/30 px-3 py-2 transition-colors hover:bg-accent/40" href="/worker/credit">
                   Check borrowing readiness
                 </Link>
               </div>
