@@ -133,8 +133,8 @@ export default function WorkerOverviewPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <Link className="block rounded-lg border border-border bg-muted/30 px-3 py-2 transition-colors hover:bg-accent/40" href="/client/jobs/new">
-                  Post a new client job
+                <Link className="block rounded-lg border border-border bg-muted/30 px-3 py-2 transition-colors hover:bg-accent/40" href="/worker/work">
+                  View your work history
                 </Link>
                 <Link className="block rounded-lg border border-border bg-muted/30 px-3 py-2 transition-colors hover:bg-accent/40" href="/worker/skills">
                   Add or review skill attestations

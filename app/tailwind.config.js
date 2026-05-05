@@ -32,6 +32,17 @@ module.exports = {
         "card-hover": "hsl(var(--muted))",
         danger: "hsl(var(--destructive))"
       },
+      textColor: {
+        foreground: "hsl(var(--foreground))",
+        "muted-foreground": "hsl(var(--muted-foreground))",
+        "card-foreground": "hsl(var(--card-foreground))",
+        "primary-foreground": "hsl(var(--primary-foreground))",
+        "secondary-foreground": "hsl(var(--secondary-foreground))",
+        "accent-foreground": "hsl(var(--accent-foreground))",
+        "destructive-foreground": "hsl(var(--destructive-foreground))",
+        "popover-foreground": "hsl(var(--popover-foreground))",
+        destructive: "hsl(var(--destructive))"
+      },
       boxShadow: {
         glow: "0 0 0 1px hsl(var(--ring) / 0.35), 0 12px 40px hsl(var(--foreground) / 0.06)"
       },

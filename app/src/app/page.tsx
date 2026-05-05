@@ -9,10 +9,10 @@ export default function LandingPage() {
       <div className="mx-auto max-w-6xl space-y-6">
         <header className="panel px-6 py-7">
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Strand</p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Work and credit, in one system.
           </h1>
-          <p className="mt-3 max-w-3xl text-sm text-muted-foreground sm:text-base">
+          <p className="mt-3 max-w-3xl text-sm sm:text-base" style={{ color: "hsl(var(--foreground))" }}>
             Choose a workspace to continue.
           </p>
         </header>
