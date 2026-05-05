@@ -4,10 +4,8 @@ import { useEffect, useState } from "react";
 import { WorkNFTCardData } from "../components/WorkNFTCard";
 import { listWorkNfts } from "../lib/data-access";
 
-const FALLBACK_NFTS: WorkNFTCardData[] = [];
-
 export function useWorkNFTs(walletAddress?: string | null, refreshToken?: number) {
-  const [workNfts, setWorkNfts] = useState<WorkNFTCardData[]>(FALLBACK_NFTS);
+  const [workNfts, setWorkNfts] = useState<WorkNFTCardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +27,7 @@ export function useWorkNFTs(walletAddress?: string | null, refreshToken?: number
         }
       } catch {
         if (!cancelled) {
-          setWorkNfts(FALLBACK_NFTS);
+          setWorkNfts([]);
         }
       } finally {
         if (!cancelled) {

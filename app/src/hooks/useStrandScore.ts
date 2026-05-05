@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  ScoreBreakdown,
   deriveScoreBreakdown,
   scoreFromBreakdown,
   tierFromScore
@@ -20,7 +19,6 @@ export interface WorkerStats {
 interface StrandScoreState {
   score: number;
   tier: string;
-  breakdown: ScoreBreakdown[];
   stats: WorkerStats;
   isLoading: boolean;
 }
@@ -61,22 +59,17 @@ export function useStrandScore(walletAddress?: string | null, refreshToken?: num
           return;
         }
 
-        if (profile) {
-          setStats({
-            jobsDone: profile.jobsDone,
-            totalEarnedUsdc: profile.totalEarnedUsdc,
-            uniqueClients: profile.uniqueClients,
-            onTimeCompletions: profile.onTimeCompletions,
-            memberSince: profile.memberSince
-          });
-        } else {
-          setStats(EMPTY_STATS);
-        }
-
-        if (!profile && !scoreState) {
-          setStats(EMPTY_STATS);
-        }
-
+        setStats(
+          profile
+            ? {
+                jobsDone: profile.jobsDone,
+                totalEarnedUsdc: profile.totalEarnedUsdc,
+                uniqueClients: profile.uniqueClients,
+                onTimeCompletions: profile.onTimeCompletions,
+                memberSince: profile.memberSince
+              }
+            : EMPTY_STATS
+        );
         setChainScore(scoreState?.score ?? null);
         setAttestedSkillCount(skills.filter((skill) => skill.confidence >= 65).length);
       } catch {
@@ -108,7 +101,6 @@ export function useStrandScore(walletAddress?: string | null, refreshToken?: num
   return {
     score,
     tier: tierFromScore(score),
-    breakdown,
     stats,
     isLoading
   };

@@ -6,10 +6,12 @@ import { getCreditLineAndLoan } from "../lib/data-access";
 
 export function useCreditLine(walletAddress?: string | null, score = 0, refreshToken?: number) {
   const [creditLine, setCreditLine] = useState<CreditLineView | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!walletAddress) {
       setCreditLine(null);
+      setIsLoading(false);
       return;
     }
     const walletAddressSafe = walletAddress;
@@ -17,6 +19,7 @@ export function useCreditLine(walletAddress?: string | null, score = 0, refreshT
     let cancelled = false;
 
     async function load(): Promise<void> {
+      setIsLoading(true);
       try {
         const state = await getCreditLineAndLoan(walletAddressSafe);
         if (cancelled) {
@@ -36,6 +39,10 @@ export function useCreditLine(walletAddress?: string | null, score = 0, refreshT
       } catch {
         if (!cancelled) {
           setCreditLine(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
         }
       }
     }
@@ -71,6 +78,7 @@ export function useCreditLine(walletAddress?: string | null, score = 0, refreshT
   return {
     creditLine,
     borrow,
-    repay
+    repay,
+    isLoading
   };
 }
