@@ -13,6 +13,7 @@
     "lint": "npm --prefix app run lint",
     "dev:app": "npm --prefix app run dev",
     "dev:oracle": "npm --prefix oracle run dev",
+    "setup:oracle-env": "node scripts/setup-oracle-env.mjs",
     "seed": "ts-node scripts/seed-demo.ts"
   },
   "devDependencies": {

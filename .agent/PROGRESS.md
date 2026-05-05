@@ -5,7 +5,7 @@
 2. [ ] Worker + client both sign complete_job → WorkNFT mints
 3. [ ] Strand Score updates on-chain (visible in explorer)
 4. [ ] Worker claims "React" skill with GitHub URL
-5. [ ] Ollama oracle validates → SkillAttestation written on-chain
+5. [ ] Selected oracle provider validates → SkillAttestation written on-chain
 6. [ ] Score updates again (higher)
 7. [ ] Lender opens credit line for worker
 8. [ ] Worker borrows $200 USDC against score
@@ -25,7 +25,7 @@
 - [ ] Solana CLI installed + configured to devnet
 - [ ] Anchor CLI 0.31.x installed
 - [x] Node.js 18+ installed
-- [ ] Ollama installed + llama3.2 pulled
+- [ ] Oracle provider configured (local Ollama or cloud API key provider)
 - [ ] Oracle keypair generated
 - [x] All npm dependencies installed
 
@@ -57,11 +57,11 @@
 - [ ] Deployed to devnet → program ID recorded in ENV.md
 - [ ] Tests passing: all strand-credit.ts
 
-### Oracle service (Ollama)
-- [x] oracle/src/grader.ts — Ollama skill grader working
+### Oracle service (pluggable providers)
+- [x] oracle/src/grader.ts — provider-aware skill grader working
 - [x] oracle/src/chain.ts — Solana tx helpers
 - [x] oracle/src/index.ts — event listener + orchestration
-- [ ] Tested with real GitHub URL (skill validated end-to-end)
+- [ ] Tested with real GitHub URL and at least one cloud provider path
 - [x] oracle/.env configured
 
 ### Frontend

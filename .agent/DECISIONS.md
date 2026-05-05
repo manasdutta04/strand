@@ -8,13 +8,11 @@ Each entry format:
 
 ---
 
-## D-001: Local Ollama instead of cloud LLM API for skill oracle
-**Decision:** Use Ollama running locally (llama3.2 or mistral) for skill validation
-**Alternatives:** Claude API, OpenAI API, Gemini API
-**Reason:** No API key required, no per-call cost, works fully offline, no data leaves
-the machine — important for a protocol handling professional credentials. Also avoids
-external dependency for hackathon demo (no rate limits, no cold starts).
-**Date:** 2026-04-07
+## D-001: Pluggable oracle providers with Ollama default
+**Decision:** Use a provider abstraction for skill validation with Ollama as the local default and OpenAI, Groq, Gemini, or Claude as supported cloud options via user-supplied API keys.
+**Alternatives:** Ollama-only oracle, cloud-only oracle, hard-coded provider-specific implementations
+**Reason:** This keeps the MVP usable for privacy-first local demos while also making the SaaS product viable for users who only want to bring API keys. The oracle code stays server-side, and the frontend never needs provider credentials.
+**Date:** 2026-05-05
 
 ## D-002: Three separate Anchor programs instead of one monolith
 **Decision:** strand-core / strand-score / strand-credit as independent programs

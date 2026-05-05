@@ -9,8 +9,9 @@ User (Phantom wallet)
 │
 ├─► strand-score ──read──► strand-credit (score check before borrow)
 │       │
-│       └─► Ollama Oracle (off-chain Node.js service)
-│               └─► POST http://localhost:11434/api/generate
+│       └─► Oracle service (off-chain Node.js service)
+│               ├─► Ollama via http://localhost:11434/api/generate
+│               └─► Cloud providers via user-supplied API keys
 │
 └─► strand-credit
 └─► Lender Vault (USDC SPL token account, PDA-owned)
@@ -62,7 +63,7 @@ TOTAL SCORE = sum                                                → max 1000
 - Credit limit = `score * 10` USDC (score 500 → $5,000 max)
 - APR = `24% − (score / 1000 * 12%)` (score 1000 → 12% APR)
 
-## Oracle architecture (Ollama — local)
+## Oracle architecture (pluggable providers)
 strand-core emits WorkCompleted / SkillClaim events
 │
 oracle/src/index.ts (Node.js, websocket subscriber)
@@ -70,7 +71,12 @@ oracle/src/index.ts (Node.js, websocket subscriber)
 ├─► On WorkCompleted → CPI compute_score
 └─► On SkillClaim → oracle/src/grader.ts
 │
-└─► POST localhost:11434/api/generate (llama3.2)
+└─► Provider selected by `LLM_PROVIDER`
+	├─► Ollama: POST localhost:11434/api/generate
+	├─► OpenAI: chat/completions-style request with `OPENAI_API_KEY`
+	├─► Groq: OpenAI-compatible request with `GROQ_API_KEY`
+	├─► Gemini: native Gemini request with `GEMINI_API_KEY`
+	└─► Claude: Anthropic Messages API with `ANTHROPIC_API_KEY`
 │
 └─► Returns JSON: { verified_skills, confidences, quality_rating }
 │

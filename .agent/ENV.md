@@ -7,8 +7,7 @@
 | Solana CLI | 1.18+ | `solana --version` | [ ] |
 | Anchor CLI | 0.31.x | `anchor --version` | [ ] |
 | Node.js | 18+ | `node --version` | [x] |
-| Ollama | latest | `ollama --version` | [x] |
-| llama3.2 model | — | `ollama list` | [ ] |
+| Ollama | optional for local mode | `ollama --version` | [x] |
 
 ## Observed tool versions
 - Node.js: `v24.9.0`
@@ -30,12 +29,13 @@ STRAND_CREDIT_PROGRAM_ID=
 ## Token addresses
 - **Devnet USDC mint:** `Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr`
 
-## Ollama configuration
-- **Base URL:** `http://localhost:11434`
-- **Model in use:** `llama3.2`
-- **Start command:** `ollama serve` (if not running as daemon)
-- **Pull model:** `ollama pull llama3.2`
-- **Models currently present:** `qwen2.5-coder:7b`, `deepseek-r1:8b`, `qwen3-coder:480b-cloud`
+## Oracle provider configuration
+- **Default local provider:** Ollama
+- **Cloud providers supported:** OpenAI, Groq, Gemini, Claude/Anthropic
+- **Provider selector:** `LLM_PROVIDER`
+- **Local Ollama base URL:** `http://localhost:11434`
+- **Local model defaults:** `llama3.2` for Ollama, `gpt-4o-mini` for OpenAI, `llama-3.3-70b-versatile` for Groq, `gemini-1.5-flash` for Gemini, `claude-3-5-sonnet-latest` for Claude
+- **Server-side keys:** `OPENAI_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`
 
 ## Environment variables (.env files)
 
@@ -48,6 +48,17 @@ STRAND_CORE_PROGRAM_ID=
 STRAND_SCORE_PROGRAM_ID=
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=llama3.2
+LLM_PROVIDER=ollama
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
+OPENAI_BASE_URL=https://api.openai.com/v1
+GROQ_API_KEY=
+GROQ_MODEL=llama-3.3-70b-versatile
+GROQ_BASE_URL=https://api.groq.com/openai/v1
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-1.5-flash
+ANTHROPIC_API_KEY=
+CLAUDE_MODEL=claude-3-5-sonnet-latest
 ### app/.env.local
 NEXT_PUBLIC_RPC_URL=https://api.devnet.solana.com
 NEXT_PUBLIC_STRAND_CORE_PROGRAM_ID=
@@ -62,9 +73,12 @@ NEXT_PUBLIC_USDC_MINT=Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr
 
 ## Setup commands (run once, in order)
 ```bash
-# 1. Install Ollama and pull model
-curl -fsSL https://ollama.com/install.sh | sh
-ollama pull llama3.2
+# 1. Choose the oracle provider
+# Local mode:
+# curl -fsSL https://ollama.com/install.sh | sh
+# ollama pull llama3.2
+# Cloud mode:
+# set LLM_PROVIDER to openai, groq, gemini, or claude and populate the matching API key
 
 # 2. Configure Solana CLI
 solana config set --url devnet

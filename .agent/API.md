@@ -1,25 +1,17 @@
 # Strand — API & Library Reference
 
-## Ollama (local LLM — skill oracle)
-- **What:** Local inference server, no API key, no cost, works offline
-- **Install:** `curl -fsSL https://ollama.com/install.sh | sh`
-- **Model for skill grading:** `llama3.2` (fast) or `mistral` (more accurate)
-  - Pull command: `ollama pull llama3.2`
-- **Base URL:** `http://localhost:11434`
-- **API endpoint:** `POST http://localhost:11434/api/generate`
-- **Request format:**
-```json
-  {
-    "model": "llama3.2",
-    "prompt": "...",
-    "stream": false,
-    "format": "json"
-  }
-```
-- **Response:** `{ "response": "{ json string here }" }`
-- **Important:** Always set `stream: false` for oracle use. Parse `response` field as JSON.
-- **Timeout:** Set 30s timeout — local models can be slow on first load
-- **Gotchas discovered:** If Ollama daemon is not running, `ollama list` can still print model metadata but HTTP calls to `localhost:11434` will fail until `ollama serve` is active.
+## Oracle providers (pluggable skill oracle)
+- **Default for local development:** Ollama running on `http://localhost:11434`
+- **Cloud providers supported through user-supplied API keys:** OpenAI, Groq, Gemini, Claude/Anthropic
+- **Provider selection:** set `LLM_PROVIDER` to `ollama`, `openai`, `groq`, `gemini`, or `claude`
+- **Keys:**
+  - OpenAI: `OPENAI_API_KEY`
+  - Groq: `GROQ_API_KEY`
+  - Gemini: `GEMINI_API_KEY`
+  - Claude: `ANTHROPIC_API_KEY`
+- **Models:** provider-specific defaults live in `oracle/.env.example` and `scripts/setup-oracle-env.mjs`
+- **Deployment note:** the oracle stays server-side; never expose provider keys to the frontend
+- **Gotcha:** keep local Ollama optional, not required, so the SaaS path works for users who only bring API keys
 
 ## Anchor (Solana program framework)
 - **Version:** 0.31.x

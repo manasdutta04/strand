@@ -35,9 +35,10 @@ Please follow these steps to have your contribution considered by the maintainer
 
 To set up the development environment, follow these steps:
 
-1. Install prerequisites: Node.js 18+, Rust 1.75+, Solana CLI 1.18+, Anchor 0.31.x, Ollama.
-2. Pull model:
-	- `ollama pull llama3.2`
+1. Install prerequisites: Node.js 18+, Rust 1.75+, Solana CLI 1.18+, Anchor 0.31.x.
+2. Choose an oracle provider:
+	- Local Ollama: install Ollama and run `ollama pull llama3.2`
+	- Cloud mode: set `LLM_PROVIDER` to `openai`, `groq`, `gemini`, or `claude`, then provide the matching API key in `oracle/.env`
 3. Configure Solana to devnet:
 	- `solana config set --url devnet`
 4. Install dependencies:
@@ -46,6 +47,8 @@ To set up the development environment, follow these steps:
 	- `anchor build`
 6. Set environment values:
 	- Fill `STRAND_CORE_PROGRAM_ID`, `STRAND_SCORE_PROGRAM_ID`, `STRAND_CREDIT_PROGRAM_ID` in `oracle/.env`.
+	- Set `LLM_PROVIDER` in `oracle/.env` to one of: `ollama`, `openai`, `groq`, `gemini`, `claude`.
+	- If using cloud provider mode, fill the matching API key (`OPENAI_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY`, or `ANTHROPIC_API_KEY`) and provider model/base URL values.
 	- Fill `NEXT_PUBLIC_STRAND_*` values in `app/.env.local`.
 7. Run services:
 	- Oracle: `cd oracle && npm run dev`

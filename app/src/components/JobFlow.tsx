@@ -6,7 +6,7 @@ const STEPS = [
   {
     title: "Verify Skills",
     description:
-      "Worker claims skills with a portfolio URL. Local Ollama oracle validates evidence on your machine."
+      "Worker claims skills with a portfolio URL. The oracle validates evidence using local Ollama or user-supplied API keys for OpenAI, Groq, Gemini, or Claude."
   },
   {
     title: "Unlock Credit",

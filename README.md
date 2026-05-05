@@ -8,7 +8,7 @@ Gig work is massive, but reputation is still trapped inside closed platforms. Mo
 ## What Strand Does
 - Work NFTs: Every completed job mints a dual-signed on-chain work record owned by the worker wallet.
 - Strand Score: A transparent 0-1000 on-chain reputation score updates from verified work and consistency.
-- AI-verified skills via local Ollama: Skill claims are graded by a local LLM oracle so evidence stays on the operator machine.
+- AI-verified skills via a pluggable oracle: Skill claims are graded through Ollama locally or via user-provided API keys for OpenAI, Groq, Gemini, or Claude.
 - Credit layer: Lenders read score accounts on Solana to open USDC credit lines and enable borrowing.
 
 ## Why This Wins
@@ -26,8 +26,9 @@ User (Phantom wallet)
 │
 ├─► strand-score ──read──► strand-credit (score check before borrow)
 │       │
-│       └─► Ollama Oracle (off-chain Node.js service)
-│               └─► POST http://localhost:11434/api/generate
+│       └─► Oracle service (off-chain Node.js service)
+│               ├─► Ollama: POST http://localhost:11434/api/generate
+│               └─► Cloud providers via user-supplied API keys
 │
 └─► strand-credit
 └─► Lender Vault (USDC SPL token account, PDA-owned)
@@ -58,21 +59,58 @@ The frontend is now role-oriented and multi-page:
   - `/lender/dashboard/queue`
 
 ## Quick Start
-1. Install prerequisites: Node.js 18+, Rust 1.75+, Solana CLI 1.18+, Anchor 0.31.x, Ollama.
-2. Pull model:
-	- `ollama pull llama3.2`
+1. Install prerequisites: Node.js 18+, Rust 1.75+, Solana CLI 1.18+, Anchor 0.31.x.
+2. Choose an oracle provider:
+	- Local Ollama: install Ollama and run `ollama pull llama3.2`
+	- Cloud mode: set `LLM_PROVIDER` to `openai`, `groq`, `gemini`, or `claude`, then provide the matching API key in `oracle/.env`
 3. Configure Solana to devnet:
 	- `solana config set --url devnet`
 4. Install dependencies:
 	- `npm install`
 5. Build programs:
 	- `anchor build`
-6. Set environment values:
-	- Fill `STRAND_CORE_PROGRAM_ID`, `STRAND_SCORE_PROGRAM_ID`, `STRAND_CREDIT_PROGRAM_ID` in `oracle/.env`.
-	- Fill `NEXT_PUBLIC_STRAND_*` values in `app/.env.local`.
-7. Run services:
+6. Configure oracle provider and keys:
+	- Run `npm run setup:oracle-env`
+	- Choose `LLM_PROVIDER` (`ollama`, `openai`, `groq`, `gemini`, or `claude`)
+	- Paste your own provider API key when prompted for cloud providers
+	- Fill `STRAND_CORE_PROGRAM_ID` and `STRAND_SCORE_PROGRAM_ID` in `oracle/.env`
+7. Configure frontend environment:
+	- Fill `NEXT_PUBLIC_STRAND_*` values in `app/.env.local`
+8. Run services:
 	- Oracle: `cd oracle && npm run dev`
 	- Frontend: `cd app && npm run dev`
+
+## Vercel Deployment
+You can deploy the Next.js frontend on Vercel, but the oracle must run as a separate always-on service.
+
+Why: the oracle is a long-running event listener (Solana websocket subscriber), which is not suitable for Vercel serverless functions.
+
+### Deploy frontend on Vercel
+1. Import the repository in Vercel.
+2. Set root directory to `app`.
+3. Build command: `npm run build`
+4. Output: default Next.js output.
+5. Add frontend environment variables in Vercel:
+	- `NEXT_PUBLIC_RPC_URL`
+	- `NEXT_PUBLIC_STRAND_CORE_PROGRAM_ID`
+	- `NEXT_PUBLIC_STRAND_SCORE_PROGRAM_ID`
+	- `NEXT_PUBLIC_STRAND_CREDIT_PROGRAM_ID`
+	- `NEXT_PUBLIC_USDC_MINT`
+
+### Deploy oracle separately (Render/Railway/Fly/VM)
+1. Deploy from `oracle/` with start command `npm run start` (after build).
+2. Add oracle env vars:
+	- `ANCHOR_PROVIDER_URL`
+	- `ORACLE_KEYPAIR_PATH`
+	- `STRAND_CORE_PROGRAM_ID`
+	- `STRAND_SCORE_PROGRAM_ID`
+	- `LLM_PROVIDER`
+	- `OLLAMA_BASE_URL` and `OLLAMA_MODEL` if using local Ollama
+	- `OPENAI_API_KEY` / `OPENAI_MODEL` / `OPENAI_BASE_URL` if using OpenAI
+	- `GROQ_API_KEY` / `GROQ_MODEL` / `GROQ_BASE_URL` if using Groq
+	- `GEMINI_API_KEY` / `GEMINI_MODEL` if using Gemini
+	- `ANTHROPIC_API_KEY` / `CLAUDE_MODEL` if using Claude
+3. Keep API keys server-side only (never expose as `NEXT_PUBLIC_*`).
 
 ## Demo
 Demo video: https://example.com/strand-demo
