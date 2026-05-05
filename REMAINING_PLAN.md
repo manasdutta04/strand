@@ -1,4 +1,4 @@
-# Strand Remaining Work Plan (4 Days, No Clash)
+# Strand Remaining Work Plan (Updated)
 
 This plan includes **only remaining tasks** to make Strand production-ready (no mocks).
 
@@ -6,14 +6,32 @@ Goal: both people work every day, in parallel, with clean ownership and no merge
 
 ---
 
+## Status snapshot (as of 2026-05-05)
+
+### Completed
+- Day 1 (Manas + Priya): worker data layer cutover is done.
+- Day 1 deliverable: worker workspace no longer uses localStorage as source-of-truth for score/work/credit/skills.
+- Day 2 (Manas): transaction helper layer is implemented in `app/src/lib/**` with typed `build*` + `execute*` APIs for:
+  - create job + fund escrow
+  - complete job
+  - claim skill
+  - borrow/repay
+- Day 2 (Manas): PDA derivation helpers, USDC conversion/validation utilities, and non-UI test vectors are added.
+
+### Not yet completed
+- Day 2 (Priya): client and lender UI routes are not wired to the new tx/data helpers yet.
+- Client and lender dashboards still show hardcoded demo values/lists.
+- Lender queue approve/decline actions are still UI-only.
+- Day 3 and Day 4 hardening/QA/release tasks are still pending.
+
+---
+
 ## 0) Current gaps (remaining only)
 
-1. Frontend still uses `localStorage` for core product state (score/work/credit/skills).
-2. Client and lender dashboards still use hardcoded demo numbers/lists.
-3. Client job flow is UI-only (not fully wired to real on-chain tx path).
-4. Lender queue actions are UI-only (approve/decline not connected).
-5. No unified production data-access layer (chain/indexed reads).
-6. QA + deploy hardening for full 3-role live flow still pending.
+1. Client and lender dashboards still use hardcoded demo numbers/lists.
+2. Client job page UI is not yet wired to the new tx helper APIs.
+3. Lender queue approve/decline actions are not connected to real operations.
+4. End-to-end QA + deploy hardening for full 3-role live flow is still pending.
 
 ---
 
@@ -49,56 +67,56 @@ Goal: both people work every day, in parallel, with clean ownership and no merge
 
 ## 3) Day-by-day execution
 
-## Day 1 - Data layer cutover + UI integration start
+## Day 1 - Data layer cutover + UI integration start (Completed)
 
 ### Manas (backend/protocol)
-1. Build production data-access functions for:
+1. Built production data-access functions for:
    - worker profile
    - score state
    - work NFT list
    - credit line + loan position
-2. Expose stable typed methods in `app/src/lib` for frontend consumption.
-3. Ensure oracle emits/handles events cleanly for score + skill updates.
+2. Exposed stable typed methods in `app/src/lib` for frontend consumption.
+3. Ensured oracle event handlers are wrapped with resilience logging/error handling.
 
 **Deliverable**
-- Frontend can call real read APIs (no localStorage dependency for critical data).
+- Achieved.
 
 ### Priya (frontend)
-1. Replace worker pages to consume real data methods:
+1. Replaced worker pages to consume real data methods:
    - `/worker/dashboard`
    - `/worker/work`
    - `/worker/skills`
    - `/worker/credit`
-2. Remove old local mock presentation logic.
-3. Keep route guards intact and user-friendly empty states for true-zero data.
+2. Removed old worker local mock presentation logic.
+3. Kept route guards + empty states.
 
 **Deliverable**
-- Worker workspace shows live chain-backed data only.
+- Achieved.
 
 ---
 
-## Day 2 - Transaction wiring for client + lender
+## Day 2 - Transaction wiring for client + lender (In Progress)
 
 ### Manas
-1. Wire transaction builders for:
+1. Wired transaction builders and execute helpers for:
    - create job + fund escrow
    - complete job
    - claim skill
    - borrow/repay
-2. Validate signer/account constraints with test vectors.
-3. Provide reusable transaction helper APIs to frontend.
+2. Added validation/test-vector support for PDA derivations, amounts, and request guards.
+3. Published reusable typed helper APIs under `app/src/lib/**`.
 
 **Deliverable**
-- All core tx paths available from frontend via typed helpers.
+- Achieved on backend/helper side.
 
 ### Priya
-1. Connect `/client/jobs/new` form to real tx flow.
-2. Replace client dashboard hardcoded cards/list with live query data.
-3. Replace lender dashboard hardcoded cards/list with live data feed shape.
-4. Keep loading/error states clear for each role.
+1. Connect `/client/jobs/new` form to real tx flow (Pending).
+2. Replace client dashboard hardcoded cards/list with live query data (Pending).
+3. Replace lender dashboard hardcoded cards/list with live data feed shape (Pending).
+4. Keep loading/error states clear for each role (Pending).
 
 **Deliverable**
-- Client and lender workspaces stop using hardcoded mock data.
+- Pending Priya integration.
 
 ---
 
@@ -154,11 +172,10 @@ Goal: both people work every day, in parallel, with clean ownership and no merge
 
 | Remaining Task | Owner | Files/Modules |
 |---|---|---|
-| Remove `localStorage` score/work/credit source-of-truth | Manas + Priya (handoff) | Manas: `app/src/lib/**` data APIs; Priya: `app/src/app/worker/**`, `app/src/components/**` |
-| Wire real client job transactions | Manas + Priya | Manas: tx helpers in `app/src/lib/programs.ts` + related libs; Priya: `app/src/app/client/jobs/new/page.tsx` |
+| Wire client job page to real tx helpers | Priya (consume) + Manas (support) | Priya: `app/src/app/client/jobs/new/page.tsx`; Manas: helper usage support in `app/src/lib/**` |
 | Replace client dashboard hardcoded stats/jobs | Priya | `app/src/app/client/dashboard/page.tsx` |
-| Replace lender dashboard hardcoded portfolio/queue | Priya (UI) + Manas (data source) | `app/src/app/lender/dashboard/**` + Manas data endpoints/helpers |
-| Lender approve/decline action wiring | Manas + Priya | Manas tx/data functions; Priya button/action integration in lender pages |
+| Replace lender dashboard hardcoded portfolio/queue | Priya (UI) + Manas (data source support) | `app/src/app/lender/dashboard/**` + `app/src/lib/**` |
+| Lender approve/decline action wiring | Priya (integration) + Manas (tx/data support) | Priya: lender pages/actions; Manas: helper additions if needed |
 | Oracle reliability + observability hardening | Manas | `oracle/src/**` |
 | End-to-end QA across all roles | Priya (lead), Manas (fix support) | QA docs + route-by-route tests |
 | Production deploy/runbook finalization | Manas | Infra/runbook docs |
