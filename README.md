@@ -80,6 +80,40 @@ The frontend is now role-oriented and multi-page:
 	- Oracle: `cd oracle && npm run dev`
 	- Frontend: `cd app && npm run dev`
 
+## Run The Full App
+Use this when you want the whole stack running locally for the MVP demo.
+
+### Root commands
+```bash
+npm run setup:oracle-env
+npm run dev:oracle
+npm run dev:app
+```
+
+### Full local flow
+```bash
+# 1. Install dependencies once
+npm install
+
+# 2. Generate oracle env file and choose provider
+npm run setup:oracle-env
+
+# 3. Fill app/.env.local and oracle/.env
+
+# 4. Start the oracle in one terminal
+npm run dev:oracle
+
+# 5. Start the frontend in a second terminal
+npm run dev:app
+```
+
+### Optional build/test commands
+```bash
+npm run build
+npm run test:anchor
+npm run lint
+```
+
 ## Vercel Deployment
 You can deploy the Next.js frontend on Vercel, but the oracle must run as a separate always-on service.
 

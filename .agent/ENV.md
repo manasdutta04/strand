@@ -103,5 +103,18 @@ anchor deploy --provider.cluster devnet
 # → Copy program IDs into ENV.md and all .env files
 ```
 
+## Run commands
+
+```bash
+# Root shortcuts
+npm run setup:oracle-env
+npm run dev:oracle
+npm run dev:app
+
+# Manual equivalent
+cd oracle && npm run dev
+cd app && npm run dev
+```
+
 ---
 *Last updated: 2026-04-07 09:19 IST*

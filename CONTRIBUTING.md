@@ -54,6 +54,38 @@ To set up the development environment, follow these steps:
 	- Oracle: `cd oracle && npm run dev`
 	- Frontend: `cd app && npm run dev`
 
+## Run The Full App
+
+When you want to start the complete local demo stack, use these commands from the repo root:
+
+```bash
+npm run setup:oracle-env
+npm run dev:oracle
+npm run dev:app
+```
+
+If you want the fully manual version:
+
+```bash
+npm install
+npm run setup:oracle-env
+
+# then open two terminals
+cd oracle
+npm run dev
+
+cd app
+npm run dev
+```
+
+Helpful checks:
+
+```bash
+npm run build
+npm run test:anchor
+npm run lint
+```
+
 ## Styleguides
 
 ### Git Commit Messages
