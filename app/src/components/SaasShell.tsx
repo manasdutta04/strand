@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { StrandWalletButton } from "./WalletProvider";
@@ -25,7 +26,10 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
       <div className="mx-auto max-w-7xl space-y-6">
         <header className="panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1">
-            <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{productLabel}</div>
+            <div className="flex items-center gap-2">
+              <Image src="/logo.svg" alt="Strand" width={16} height={16} className="rounded" style={{ width: "16px", height: "16px" }} />
+              <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{productLabel}</span>
+            </div>
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
             <p className="max-w-2xl text-sm text-muted-foreground">{subtitle}</p>
           </div>

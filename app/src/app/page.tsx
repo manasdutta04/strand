@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ROLE_META } from "../lib/roles";
 
@@ -8,7 +9,10 @@ export default function LandingPage() {
     <main className="min-h-screen bg-background px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
         <header className="panel px-6 py-7">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Strand</p>
+          <div className="flex items-center gap-3">
+            <Image src="/logo.svg" alt="Strand" width={20} height={20} className="rounded" style={{ width: "20px", height: "20px" }} />
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Strand</p>
+          </div>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Work and credit, in one system.
           </h1>

@@ -10,7 +10,10 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   title: "Strand",
-  description: "Portable work history and credit protocol on Solana"
+  description: "Portable work history and credit protocol on Solana",
+  icons: {
+    icon: "/logo.svg"
+  }
 };
 
 export default function RootLayout({
