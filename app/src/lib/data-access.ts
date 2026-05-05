@@ -222,6 +222,116 @@ function decodeWorkNft(data: Uint8Array, accountKey: PublicKey): ChainWorkNft {
   };
 }
 
+export interface ChainJobEscrow {
+  client: string;
+  worker: string;
+  jobId: number;
+  amountUsdc: number;
+  state: "Open" | "Disputed" | "Closed";
+  createdAt: string;
+  explorerUrl: string;
+}
+
+export interface ChainLenderPortfolioItem {
+  lender: string;
+  worker: string;
+  maxUsdc: number;
+  apr: number;
+  minScoreRequired: number;
+  borrowedUsdc: number;
+  active: boolean;
+  utilization: number;
+}
+
+const JOB_ESCROW_SIZE = 130;
+const CREDIT_LINE_SIZE = 86;
+const LOAN_POSITION_SIZE = 89;
+
+function decodeJobEscrow(data: Uint8Array, accountKey: PublicKey): ChainJobEscrow {
+  const reader = new AccountReader(data);
+  reader.offset = 8;
+  const client = reader.publicKey();
+  const worker = reader.publicKey();
+  const jobId = reader.u64();
+  const amountRaw = reader.u64();
+  reader.bytes(32);
+  const stateByte = reader.u8();
+  const createdAt = reader.i64();
+  reader.u8();
+
+  const state = stateByte === 0 ? "Open" : stateByte === 1 ? "Disputed" : "Closed";
+
+  return {
+    client: client.toBase58(),
+    worker: worker.toBase58(),
+    jobId,
+    amountUsdc: usdcFromRaw(amountRaw),
+    state,
+    createdAt: toIsoFromUnix(createdAt),
+    explorerUrl: `${EXPLORER_TX}/${accountKey.toBase58()}`
+  };
+}
+
+export async function listClientJobs(walletAddress: string): Promise<ChainJobEscrow[]> {
+  const client = new PublicKey(walletAddress);
+  const accounts = await connection.getProgramAccounts(STRAND_CORE_PROGRAM_ID, {
+    filters: [{ memcmp: { offset: 8, bytes: client.toBase58() } }, { dataSize: JOB_ESCROW_SIZE }]
+  });
+
+  return accounts
+    .map((item) => decodeJobEscrow(item.account.data, item.pubkey))
+    .filter((job) => job.client === walletAddress)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export async function listOpenJobEscrows(): Promise<ChainJobEscrow[]> {
+  const accounts = await connection.getProgramAccounts(STRAND_CORE_PROGRAM_ID, {
+    filters: [{ dataSize: JOB_ESCROW_SIZE }]
+  });
+
+  return accounts
+    .map((item) => decodeJobEscrow(item.account.data, item.pubkey))
+    .filter((job) => job.state === "Open")
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export async function listLenderPortfolio(lenderAddress: string): Promise<ChainLenderPortfolioItem[]> {
+  const lender = new PublicKey(lenderAddress);
+  const creditAccounts = await connection.getProgramAccounts(STRAND_CREDIT_PROGRAM_ID, {
+    filters: [{ memcmp: { offset: 8, bytes: lender.toBase58() } }, { dataSize: CREDIT_LINE_SIZE }]
+  });
+  const loanAccounts = await connection.getProgramAccounts(STRAND_CREDIT_PROGRAM_ID, {
+    filters: [{ memcmp: { offset: 8, bytes: lender.toBase58() } }, { dataSize: LOAN_POSITION_SIZE }]
+  });
+
+  const loanByWorker = new Map<string, number>();
+  for (const item of loanAccounts) {
+    try {
+      const loan = decodeLoanPosition(item.account.data);
+      loanByWorker.set(loan.worker, loan.principalUsdc);
+    } catch {
+      // ignore unsupported data
+    }
+  }
+
+  return creditAccounts
+    .map((item) => {
+      const line = decodeCreditLine(item.account.data);
+      const borrowedUsdc = loanByWorker.get(line.worker) ?? 0;
+      return {
+        lender: lenderAddress,
+        worker: line.worker,
+        maxUsdc: line.maxUsdc,
+        apr: line.annualRateBps / 100,
+        minScoreRequired: line.minScoreRequired,
+        borrowedUsdc,
+        active: line.active,
+        utilization: line.maxUsdc > 0 ? borrowedUsdc / line.maxUsdc : 0
+      };
+    })
+    .sort((a, b) => b.maxUsdc - a.maxUsdc);
+}
+
 function decodeSkillAttestation(data: Uint8Array): ChainSkillAttestation {
   const reader = new AccountReader(data);
   reader.expectDiscriminator(ACCOUNT_DISCRIMINATORS.skillAttestation);
@@ -244,6 +354,7 @@ function decodeCreditLine(data: Uint8Array): {
   worker: string;
   maxUsdc: number;
   annualRateBps: number;
+  minScoreRequired: number;
   active: boolean;
 } {
   const reader = new AccountReader(data);
@@ -252,13 +363,14 @@ function decodeCreditLine(data: Uint8Array): {
   const worker = reader.publicKey();
   const maxUsdc = usdcFromRaw(reader.u64());
   const annualRateBps = reader.u16();
-  reader.u16();
+  const minScoreRequired = reader.u16();
   const active = reader.bool();
 
   return {
     worker: worker.toBase58(),
     maxUsdc,
     annualRateBps,
+    minScoreRequired,
     active
   };
 }
