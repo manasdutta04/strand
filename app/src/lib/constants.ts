@@ -1,9 +1,9 @@
 import { PublicKey } from "@solana/web3.js";
 
-// Free Solana RPC endpoints - use mainnet-beta for production stability
-// Fallbacks available if primary is rate-limited
+// Use ProjectSerum or Solflare public RPC (more reliable than mainnet-beta for public access)
+// For production, use Helius (https://www.helius.dev) free tier with API key
 export const RPC_URL =
-  process.env.NEXT_PUBLIC_RPC_URL ?? "https://api.mainnet-beta.solana.com";
+  process.env.NEXT_PUBLIC_RPC_URL ?? "https://solana-api.projectserum.com";
 
 export const STRAND_CORE_PROGRAM_ID = new PublicKey(
   process.env.NEXT_PUBLIC_STRAND_CORE_PROGRAM_ID ??
