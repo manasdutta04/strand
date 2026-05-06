@@ -1,7 +1,7 @@
 {
   "buildCommand": "next build",
   "devCommand": "next dev",
-  "installCommand": "npm ci --legacy-peer-deps --no-audit",
+  "installCommand": "npm install --legacy-peer-deps",
   "framework": "nextjs",
   "outputDirectory": ".next",
   "env": {
