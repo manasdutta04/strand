@@ -1,6 +1,5 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import {
-  EXPLORER_TX,
   RPC_URL,
   STRAND_CORE_PROGRAM_ID,
   STRAND_CREDIT_PROGRAM_ID,
@@ -8,6 +7,9 @@ import {
 } from "./constants";
 
 const USDC_SCALE = 1_000_000;
+
+// Single connection instance to mainnet-beta
+const connection = new Connection(RPC_URL, "confirmed");
 
 const ACCOUNT_DISCRIMINATORS = {
   workerProfile: Uint8Array.from([40, 244, 208, 98, 69, 236, 70, 229]),
@@ -390,8 +392,6 @@ function decodeLoanPosition(data: Uint8Array): {
     principalUsdc
   };
 }
-
-const connection = new Connection(RPC_URL, "confirmed");
 
 export async function getWorkerProfile(walletAddress: string): Promise<ChainWorkerProfile | null> {
   const worker = new PublicKey(walletAddress);
