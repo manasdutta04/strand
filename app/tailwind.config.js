@@ -7,8 +7,16 @@ module.exports = {
     "./src/lib/**/*.{js,ts,jsx,tsx,mdx}"
   ],
   theme: {
+    fontFamily: {
+      grotesk: ["Anton", "sans-serif"],
+      condiment: ["Condiment", "cursive"],
+      mono: ["monospace"]
+    },
     extend: {
       colors: {
+        "orbis-bg": "#010828",
+        "orbis-cream": "#EFF4FF",
+        "orbis-neon": "#6FFF00",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: "hsl(var(--card))",

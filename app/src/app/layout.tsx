@@ -1,12 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
-import { WalletProvider } from "../components/WalletProvider";
 import "./globals.css";
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-sans"
-});
 
 export const metadata: Metadata = {
   title: "Strand",
@@ -23,8 +16,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${manrope.variable}`}>
-        <WalletProvider>{children}</WalletProvider>
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Anton&family=Condiment&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>
+        {children}
       </body>
     </html>
   );

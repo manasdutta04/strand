@@ -1,41 +1,398 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
-import { ROLE_META } from "../lib/roles";
+import { ChevronRight } from "lucide-react";
 
-const ROLE_ORDER = ["worker", "client", "lender"] as const;
+const featureCards = [
+  {
+    title: "Work history",
+    description: "Portable proof of completed work that follows the wallet instead of the platform.",
+    eyebrow: "Verified"
+  },
+  {
+    title: "Strand Score",
+    description: "A transparent score that updates from job completion, consistency, and attestation.",
+    eyebrow: "0 - 1000"
+  },
+  {
+    title: "Credit access",
+    description: "Lenders can underwrite from on-chain reputation and open USDC credit lines.",
+    eyebrow: "USDC-ready"
+  }
+] as const;
 
-export default function LandingPage() {
+const signalCards = [
+  {
+    title: "Worker workspace",
+    description: "Track jobs, claims, skills, and score updates from a single wallet-native account."
+  },
+  {
+    title: "Client workflow",
+    description: "Review job history and verified delivery before assigning work or releasing escrow."
+  },
+  {
+    title: "Lender workflow",
+    description: "Read score signals and portability proof before opening or adjusting credit lines."
+  }
+] as const;
+
+const trustedUsers = [
+  "Gig workers",
+  "Freelancers",
+  "Delivery riders",
+  "Creators",
+  "Contractors",
+  "Small teams",
+  "Marketplaces",
+  "Lenders"
+] as const;
+
+const pricingPlans = [
+  {
+    name: "Free",
+    price: "Own key",
+    description: "Bring your own key and start with the core wallet-native proof flow.",
+    cta: "Start free",
+    featured: false
+  },
+  {
+    name: "Pro",
+    price: "$9/month",
+    description: "Key provided. Coming soon for teams that want managed access and workflow automation.",
+    cta: "Coming soon",
+    featured: true
+  }
+] as const;
+
+export default function StrandLandingPage() {
   return (
-    <main className="min-h-screen bg-background px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl space-y-6">
-        <header className="panel px-6 py-7">
-          <div className="flex items-center gap-3">
-            <Image src="/logo.svg" alt="Strand" width={20} height={20} className="rounded" style={{ width: "20px", height: "20px" }} />
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Strand</p>
-          </div>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Work and credit, in one system.
-          </h1>
-          <p className="mt-3 max-w-3xl text-sm sm:text-base" style={{ color: "hsl(var(--foreground))" }}>
-            Choose a workspace to continue.
-          </p>
+    <main className="bg-[#010828] overflow-hidden scroll-smooth">
+      <div
+        className="fixed inset-0 z-50 pointer-events-none"
+        style={{
+          backgroundImage: "url(/texture.png)",
+          backgroundSize: "cover",
+          mixBlendMode: "lighten",
+          opacity: 0.6
+        }}
+      />
+
+      <section id="home" className="relative min-h-screen overflow-hidden rounded-b-[32px]">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 h-full w-full object-cover"
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260331_045634_e1c98c76-1265-4f5c-882a-4276f2080894.mp4"
+        />
+        <div className="absolute inset-0 bg-black/35" />
+
+        <header className="relative z-10 mx-auto flex max-w-[1831px] items-center justify-between px-4 py-6 sm:px-6 lg:px-16 lg:py-8">
+          <a href="#home" className="flex items-center gap-3">
+            <img src="/logo.svg" alt="Strand" className="h-10 w-auto" />
+            <span className="ml-2 font-grotesk text-[20px] uppercase text-white tracking-[0.03em] sm:text-[22px] md:text-[24px]">
+              Strand app
+            </span>
+          </a>
+
+          <nav className="hidden lg:flex items-center gap-6">
+            <div className="rounded-[28px] px-6 py-3 liquid-glass flex items-center">
+              {[
+                ["Home", "#home"],
+                ["Product", "#product"],
+                ["Proof", "#proof"],
+                ["Stack", "#stack"],
+                ["GitHub", "https://github.com/manasdutta04/strand"]
+              ].map(([label, href]) => (
+                <a
+                  key={label}
+                  href={href}
+                  className="mx-3 font-grotesk text-xs uppercase tracking-[0.18em] text-[#EFF4FF] transition-colors hover:text-[#6FFF00]"
+                  {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+
+            <Link href="/who" className="liquid-glass rounded-full px-5 py-2 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] transition-colors hover:text-[#6FFF00]">
+              Get Started
+            </Link>
+          </nav>
         </header>
 
-        <section className="grid gap-4 md:grid-cols-3">
-          {ROLE_ORDER.map((roleKey) => {
-            const role = ROLE_META[roleKey];
-            return (
-              <article key={role.role} className="panel flex flex-col p-5">
-                <h2 className="text-xl font-semibold">{role.label}</h2>
-                <p className="mt-2 flex-1 text-sm text-muted-foreground">{role.description}</p>
-                <Link className="btn-accent mt-4" href={`/login/${role.role}`}>
-                  Continue As {role.label}
+        <div className="relative z-10 mx-auto max-w-[1831px] px-4 pb-16 pt-14 sm:px-6 lg:px-16 lg:pb-20 lg:pt-20">
+          <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+            <div className="relative max-w-4xl lg:ml-28">
+              <p className="mb-6 font-grotesk text-[11px] uppercase tracking-[0.35em] text-[#6FFF00] sm:text-xs">
+                Portable work history and credit protocol
+              </p>
+
+              <h1 className="max-w-4xl font-grotesk text-[42px] uppercase leading-[1.05] text-[#EFF4FF] sm:text-[60px] md:text-[75px] lg:text-[90px] lg:leading-[1]">
+                Work, reputation,
+                <br />
+                and credit in one
+                <br />
+                <span className="font-condiment normal-case text-[#6FFF00]">wallet-native system</span>
+              </h1>
+
+              
+
+              <p className="mt-8 max-w-2xl font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF]/80 sm:text-[16px]">
+                Strand turns completed work into portable proof, then uses that signal to power profiles, score updates, and lender-ready credit decisions.
+              </p>
+
+              <div className="mt-10 flex flex-wrap items-center gap-5">
+                <Link href="/who" className="liquid-glass rounded-full px-7 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] transition-colors hover:text-[#6FFF00]">
+                  Get Started
                 </Link>
+                <a href="#proof" className="font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF]/75 transition-colors hover:text-[#6FFF00]">
+                  See proof
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative border-y border-white/10 bg-[#010828] py-5">
+        <div className="mx-auto flex max-w-[1831px] items-center gap-6 overflow-hidden px-4 sm:px-6 lg:px-16">
+          <p className="shrink-0 font-grotesk text-[11px] uppercase tracking-[0.3em] text-[#6FFF00] sm:text-xs">
+            Trusted by
+          </p>
+
+            <div className="relative flex-1 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+            <div className="flex w-max animate-[marquee-left_28s_linear_infinite] gap-4 whitespace-nowrap">
+              {Array.from({ length: 2 }).flatMap(() => trustedUsers).map((label, index) => (
+                <span
+                  key={`${label}-${index}`}
+                  className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-[#EFF4FF]/80 sm:text-[12px]"
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="product" className="relative w-full min-h-screen overflow-hidden rounded-b-[32px]">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 h-full w-full object-cover"
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260331_151551_992053d1-3d3e-4b8c-abac-45f22158f411.mp4"
+        />
+        <div className="absolute inset-0 bg-black/35" />
+
+        <div className="relative z-10 mx-auto max-w-[1831px] px-4 py-16 sm:px-6 lg:px-16 lg:py-24">
+          <div className="mb-16 grid gap-12 lg:grid-cols-2 lg:items-end">
+            <div className="relative">
+              <h2 className="font-grotesk text-[36px] uppercase leading-[1.1] text-[#EFF4FF] sm:text-[48px] md:text-[58px] lg:text-[60px]">
+                What Strand
+                <br />
+                unlocks
+              </h2>
+
+              <div className="absolute bottom-4 right-0 font-condiment text-[42px] text-[#6FFF00] opacity-90 sm:text-[58px] md:text-[68px]" style={{ mixBlendMode: "exclusion" }}>
+                product layer
+              </div>
+            </div>
+
+            <p className="max-w-md font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF] sm:text-[16px] lg:justify-self-end">
+              One workspace for workers, clients, and lenders. Each side sees the same trusted work history and score signal.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <section id="proof" className="w-full bg-[#010828] py-24">
+        <div className="mx-auto max-w-[1831px] px-4 sm:px-6 lg:px-16">
+          <div className="mb-16 grid gap-12 lg:grid-cols-2 lg:items-end">
+            <div>
+              <h2 className="mb-4 font-grotesk text-[36px] uppercase leading-[1.1] text-[#EFF4FF] sm:text-[48px] md:text-[58px] lg:text-[60px]">
+                Built from
+              </h2>
+              <h2 className="ml-12 font-grotesk text-[36px] uppercase leading-[1.1] text-[#EFF4FF] sm:ml-24 sm:text-[48px] md:ml-32 md:text-[58px] lg:text-[60px]">
+                <span className="font-condiment normal-case text-[#6FFF00]">verified</span> work signals
+              </h2>
+            </div>
+
+            <p className="max-w-md font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF]/80 sm:text-[16px] lg:justify-self-end">
+              The app looks like a product, not a protocol diagram. These modules show the proof layer that powers Strand.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {featureCards.map((card) => (
+              <article key={card.title} className="liquid-glass rounded-[32px] p-[18px] transition-colors hover:bg-white/10">
+                <div className="relative min-h-[320px] overflow-hidden rounded-[24px] border border-white/5 bg-white/5 p-6">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(111,255,0,0.12),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(183,36,255,0.12),transparent_45%)]" />
+                  <div className="relative z-10 flex h-full flex-col justify-between">
+                    <div>
+                      <p className="font-grotesk text-xs uppercase tracking-[0.22em] text-[#6FFF00]">{card.eyebrow}</p>
+                      <h3 className="mt-4 font-grotesk text-[28px] uppercase leading-[1.05] text-[#EFF4FF] sm:text-[34px]">
+                        {card.title}
+                      </h3>
+                    </div>
+                    <p className="mt-8 font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF]">
+                      {card.description}
+                    </p>
+                  </div>
+                </div>
               </article>
-            );
-          })}
-        </section>
-      </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" className="border-t border-white/10 bg-[#010828] py-24">
+        <div className="mx-auto max-w-[1831px] px-4 sm:px-6 lg:px-16">
+          <div className="mb-12 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="mb-4 font-grotesk text-xs uppercase tracking-[0.3em] text-[#6FFF00]">Pricing</p>
+              <h2 className="max-w-2xl font-grotesk text-[36px] uppercase leading-[1.08] text-[#EFF4FF] sm:text-[48px] md:text-[58px] lg:text-[60px]">
+                Simple plans for individuals and teams.
+              </h2>
+            </div>
+
+            <p className="max-w-md font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF]/80 sm:text-[16px] lg:text-right">
+              Free starts with your own key. Pro is key-provided and is coming soon at $9 per month.
+            </p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            {pricingPlans.map((plan) => (
+              <article
+                key={plan.name}
+                className={`rounded-[32px] border p-[18px] ${plan.featured ? "border-[#6FFF00]/40 bg-white/10" : "border-white/10 bg-white/5"}`}
+              >
+                <div className="liquid-glass h-full rounded-[24px] p-8">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-grotesk text-xs uppercase tracking-[0.24em] text-[#6FFF00]">{plan.name}</p>
+                      <h3 className="mt-4 font-grotesk text-[34px] uppercase leading-none text-[#EFF4FF] sm:text-[42px]">
+                        {plan.price}
+                      </h3>
+                    </div>
+                    {plan.featured ? (
+                      <span className="rounded-full border border-[#6FFF00]/30 bg-[#6FFF00]/10 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-[#6FFF00]">
+                        Coming soon
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <p className="mt-6 max-w-md font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF]/80 sm:text-[15px]">
+                    {plan.description}
+                  </p>
+
+                  <div className="mt-8 flex items-center gap-4">
+                    <Link href="/who" className="liquid-glass rounded-full px-6 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] transition-colors hover:text-[#6FFF00]">
+                      {plan.cta}
+                    </Link>
+                    <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#EFF4FF]/55">
+                      {plan.featured ? "Key provided" : "Bring your own key"}
+                    </span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="stack" className="relative w-full overflow-hidden py-24 min-h-screen">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 h-auto w-full block"
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260331_055729_72d66327-b59e-4ae9-bb70-de6ccb5ecdb0.mp4"
+        />
+
+        <div className="absolute inset-0 bg-black/35" />
+
+        <div className="relative z-10 mx-auto max-w-[1831px] px-4 sm:px-6 lg:px-16 lg:pr-[20%]">
+          <div className="font-condiment mb-6 text-[20px] text-[#6FFF00] opacity-90 sm:text-[32px] md:text-[48px] lg:text-[68px]" style={{ mixBlendMode: "exclusion" }}>
+            Product stack
+          </div>
+
+          <h2 className="max-w-2xl font-grotesk text-[18px] uppercase leading-[1.1] text-[#EFF4FF] sm:text-[32px] md:text-[48px] lg:text-[60px]">
+            <span className="block mb-4 lg:mb-8">WORK NFTs.</span>
+            <span className="block">STRAND SCORE.</span>
+            <span className="block">ORACLE-VERIFIED SKILLS.</span>
+            <span className="block">CREDIT LAYER.</span>
+          </h2>
+
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            {signalCards.map((card) => (
+              <article key={card.title} className="liquid-glass rounded-[24px] p-5">
+                <p className="font-grotesk text-xs uppercase tracking-[0.24em] text-[#6FFF00]">{card.title}</p>
+                <p className="mt-3 font-mono text-sm uppercase leading-relaxed text-[#EFF4FF]/80">
+                  {card.description}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" className="border-t border-white/10 bg-[#050b20] py-16">
+        <div className="mx-auto max-w-[1831px] px-4 sm:px-6 lg:px-16">
+          <div className="grid gap-12 md:grid-cols-2 xl:grid-cols-4">
+            <div className="max-w-md">
+              <div className="flex items-center gap-3">
+                <img src="/logo.svg" alt="Strand" className="h-10 w-auto" />
+                <span className="font-grotesk text-[18px] uppercase tracking-[0.08em] text-[#EFF4FF]">Strand</span>
+              </div>
+              <p className="mt-6 max-w-sm font-mono text-[14px] leading-relaxed text-[#EFF4FF]/65">
+                Portable work reputation for freelancers, teams, and lenders. Strand turns verified work into a product-grade signal.
+              </p>
+              
+            </div>
+
+            <div>
+              <p className="font-grotesk text-xs uppercase tracking-[0.28em] text-[#EFF4FF]">Product</p>
+              <div className="mt-5 space-y-4 font-mono text-[14px] text-[#EFF4FF]/60">
+                <a href="#product" className="block transition-colors hover:text-[#EFF4FF]">Proof</a>
+                <a href="#stack" className="block transition-colors hover:text-[#EFF4FF]">Stack</a>
+                <a href="#pricing" className="block transition-colors hover:text-[#EFF4FF]">Pricing</a>
+              </div>
+            </div>
+
+            <div>
+              <p className="font-grotesk text-xs uppercase tracking-[0.28em] text-[#EFF4FF]">Resources</p>
+              <div className="mt-5 space-y-4 font-mono text-[14px] text-[#EFF4FF]/60">
+                <a href="/docs" className="block transition-colors hover:text-[#EFF4FF]">Docs</a>
+                <a href="/help" className="block transition-colors hover:text-[#EFF4FF]">Help</a>
+                <a href="#home" className="block transition-colors hover:text-[#EFF4FF]">Home</a>
+              </div>
+            </div>
+
+            <div>
+              <p className="font-grotesk text-xs uppercase tracking-[0.28em] text-[#EFF4FF]">Legal</p>
+              <div className="mt-5 space-y-4 font-mono text-[14px] text-[#EFF4FF]/60">
+                <a href="/privacy" className="block transition-colors hover:text-[#EFF4FF]">Privacy</a>
+                <a href="/terms" className="block transition-colors hover:text-[#EFF4FF]">Terms</a>
+                <a href="https://github.com/manasdutta04/strand" target="_blank" rel="noopener noreferrer" className="block transition-colors hover:text-[#EFF4FF]">GitHub</a>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-14 border-t border-white/10 pt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="font-mono text-sm text-[#EFF4FF]/55">Strand © 2026 • Apache Licensed </p>
+            <div className="flex items-center gap-4 font-mono text-[13px] uppercase tracking-[0.18em] text-[#EFF4FF]/55">
+              <span>Build by</span>
+              <span>Manas &amp; Priya</span>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
