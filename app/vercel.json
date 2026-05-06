@@ -3,11 +3,6 @@
   "devCommand": "next dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "outputDirectory": ".next",
-  "env": {
-    "NEXT_PUBLIC_ENVIRONMENT": {
-      "description": "Environment (development, staging, production)",
-      "default": "production"
-    }
-  }
+  "outputDirectory": ".next"
 }
+
