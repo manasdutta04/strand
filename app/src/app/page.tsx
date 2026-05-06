@@ -126,22 +126,22 @@ export default function StrandLandingPage() {
           <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
             <div className="relative max-w-4xl lg:ml-28">
               <p className="mb-6 font-grotesk text-[11px] uppercase tracking-[0.35em] text-[#6FFF00] sm:text-xs">
-                Portable work history and credit protocol
+                Built on Solana • Portable work history and credit protocol
               </p>
 
               <h1 className="max-w-4xl font-grotesk text-[42px] uppercase leading-[1.05] text-[#EFF4FF] sm:text-[60px] md:text-[75px] lg:text-[90px] lg:leading-[1]">
                 Work, reputation,
                 <br />
-                and credit in one
+                and credit
                 <br />
+                in one
+                <br/>
                 <span className="font-condiment normal-case text-[#6FFF00]">wallet-native system</span>
               </h1>
 
               
 
-              <p className="mt-8 max-w-2xl font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF]/80 sm:text-[16px]">
-                Strand turns completed work into portable proof, then uses that signal to power profiles, score updates, and lender-ready credit decisions.
-              </p>
+              
 
               <div className="mt-10 flex flex-wrap items-center gap-5">
                 <Link href="/who" className="liquid-glass rounded-full px-7 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] transition-colors hover:text-[#6FFF00]">
@@ -201,7 +201,7 @@ export default function StrandLandingPage() {
             </div>
 
             <p className="max-w-md font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF] sm:text-[16px] lg:justify-self-end">
-              One workspace for workers, clients, and lenders. Each side sees the same trusted work history and score signal.
+              One wallet-native workspace for workers, clients, and lenders on Solana. Each side sees the same trusted on-chain work history and score signal.
             </p>
           </div>
 
@@ -221,7 +221,7 @@ export default function StrandLandingPage() {
             </div>
 
             <p className="max-w-md font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF]/80 sm:text-[16px] lg:justify-self-end">
-              The app looks like a product, not a protocol diagram. These modules show the proof layer that powers Strand.
+              The app looks like a product, not a protocol diagram. These Solana-based modules show the on-chain proof layer that powers Strand.
             </p>
           </div>
 
@@ -321,10 +321,10 @@ export default function StrandLandingPage() {
           </div>
 
           <h2 className="max-w-2xl font-grotesk text-[18px] uppercase leading-[1.1] text-[#EFF4FF] sm:text-[32px] md:text-[48px] lg:text-[60px]">
-            <span className="block mb-4 lg:mb-8">WORK NFTs.</span>
-            <span className="block">STRAND SCORE.</span>
+            <span className="block mb-4 lg:mb-8">SOLANA WORK NFTs.</span>
+            <span className="block">STRAND SCORE (On-Chain).</span>
             <span className="block">ORACLE-VERIFIED SKILLS.</span>
-            <span className="block">CREDIT LAYER.</span>
+            <span className="block">USDC CREDIT LAYER.</span>
           </h2>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -349,7 +349,7 @@ export default function StrandLandingPage() {
                 <span className="font-grotesk text-[18px] uppercase tracking-[0.08em] text-[#EFF4FF]">Strand</span>
               </div>
               <p className="mt-6 max-w-sm font-mono text-[14px] leading-relaxed text-[#EFF4FF]/65">
-                Portable work reputation for freelancers, teams, and lenders. Strand turns verified work into a product-grade signal.
+                Portable work reputation for freelancers, teams, and lenders on Solana. Strand turns verified on-chain work into a product-grade signal and credit-ready proof.
               </p>
               
             </div>
@@ -383,7 +383,7 @@ export default function StrandLandingPage() {
           </div>
 
           <div className="mt-14 border-t border-white/10 pt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="font-mono text-sm text-[#EFF4FF]/55">Strand © 2026 • Apache Licensed </p>
+            <p className="font-mono text-sm text-[#EFF4FF]/55">Strand © 2026 • Apache Licensed • Built on Solana</p>
             <div className="flex items-center gap-4 font-mono text-[13px] uppercase tracking-[0.18em] text-[#EFF4FF]/55">
               <span>Build by</span>
               <span>Manas &amp; Priya</span>
