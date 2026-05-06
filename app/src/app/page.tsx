@@ -92,17 +92,17 @@ export default function StrandLandingPage() {
           <a href="#home" className="flex items-center gap-3">
             <img src="/logo.svg" alt="Strand" className="h-10 w-auto" />
             <span className="ml-2 font-grotesk text-[20px] uppercase text-white tracking-[0.03em] sm:text-[22px] md:text-[24px]">
-              Strand app
+              Strand
             </span>
           </a>
 
           <nav className="hidden lg:flex items-center gap-6">
             <div className="rounded-[28px] px-6 py-3 liquid-glass flex items-center">
               {[
-                ["Home", "#home"],
-                ["Product", "#product"],
-                ["Proof", "#proof"],
-                ["Stack", "#stack"],
+                ["Features", "#product"],
+                ["Pricing", "#pricing"],
+                ["Docs", "/docs"],
+                ["Help", "/help"],
                 ["GitHub", "https://github.com/manasdutta04/strand"]
               ].map(([label, href]) => (
                 <a
@@ -147,9 +147,7 @@ export default function StrandLandingPage() {
                 <Link href="/who" className="liquid-glass rounded-full px-7 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] transition-colors hover:text-[#6FFF00]">
                   Get Started
                 </Link>
-                <a href="#proof" className="font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF]/75 transition-colors hover:text-[#6FFF00]">
-                  See proof
-                </a>
+                
               </div>
             </div>
           </div>
@@ -192,9 +190,9 @@ export default function StrandLandingPage() {
           <div className="mb-16 grid gap-12 lg:grid-cols-2 lg:items-end">
             <div className="relative">
               <h2 className="font-grotesk text-[36px] uppercase leading-[1.1] text-[#EFF4FF] sm:text-[48px] md:text-[58px] lg:text-[60px]">
-                What Strand
+                Core
                 <br />
-                unlocks
+                Features
               </h2>
 
               <div className="absolute bottom-4 right-0 font-condiment text-[42px] text-[#6FFF00] opacity-90 sm:text-[58px] md:text-[68px]" style={{ mixBlendMode: "exclusion" }}>
@@ -215,10 +213,10 @@ export default function StrandLandingPage() {
           <div className="mb-16 grid gap-12 lg:grid-cols-2 lg:items-end">
             <div>
               <h2 className="mb-4 font-grotesk text-[36px] uppercase leading-[1.1] text-[#EFF4FF] sm:text-[48px] md:text-[58px] lg:text-[60px]">
-                Built from
+                How it
               </h2>
               <h2 className="ml-12 font-grotesk text-[36px] uppercase leading-[1.1] text-[#EFF4FF] sm:ml-24 sm:text-[48px] md:ml-32 md:text-[58px] lg:text-[60px]">
-                <span className="font-condiment normal-case text-[#6FFF00]">verified</span> work signals
+                <span className="font-condiment normal-case text-[#6FFF00]">works</span>
               </h2>
             </div>
 
@@ -319,7 +317,7 @@ export default function StrandLandingPage() {
 
         <div className="relative z-10 mx-auto max-w-[1831px] px-4 sm:px-6 lg:px-16 lg:pr-[20%]">
           <div className="font-condiment mb-6 text-[20px] text-[#6FFF00] opacity-90 sm:text-[32px] md:text-[48px] lg:text-[68px]" style={{ mixBlendMode: "exclusion" }}>
-            Product stack
+            The stack
           </div>
 
           <h2 className="max-w-2xl font-grotesk text-[18px] uppercase leading-[1.1] text-[#EFF4FF] sm:text-[32px] md:text-[48px] lg:text-[60px]">
@@ -359,9 +357,9 @@ export default function StrandLandingPage() {
             <div>
               <p className="font-grotesk text-xs uppercase tracking-[0.28em] text-[#EFF4FF]">Product</p>
               <div className="mt-5 space-y-4 font-mono text-[14px] text-[#EFF4FF]/60">
-                <a href="#product" className="block transition-colors hover:text-[#EFF4FF]">Proof</a>
-                <a href="#stack" className="block transition-colors hover:text-[#EFF4FF]">Stack</a>
+                <a href="#product" className="block transition-colors hover:text-[#EFF4FF]">Features</a>
                 <a href="#pricing" className="block transition-colors hover:text-[#EFF4FF]">Pricing</a>
+                <a href="#stack" className="block transition-colors hover:text-[#EFF4FF]">Built for</a>
               </div>
             </div>
 
