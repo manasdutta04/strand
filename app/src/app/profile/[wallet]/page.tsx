@@ -15,11 +15,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const shortWallet = truncateWallet(params.wallet);
   return {
-    title: `${shortWallet} on Strand · Score 0`,
+    title: `${shortWallet} on Strand · Public profile`,
     description: `Public Strand profile for ${shortWallet}`,
     openGraph: {
-      title: `${shortWallet} on Strand · Score 0`,
-      description: "Portable work history and reputation on Solana"
+      title: `${shortWallet} on Strand · Public profile`,
+      description: "Portable gig work history and reputation on Solana"
     }
   };
 }

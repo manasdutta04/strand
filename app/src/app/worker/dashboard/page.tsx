@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { RequireWallet } from "../../../components/RequireWallet";
 import { SaasShell } from "../../../components/SaasShell";
-import { useCreditLine } from "../../../hooks/useCreditLine";
-import { useStrandScore } from "../../../hooks/useStrandScore";
-import { useWorkNFTs } from "../../../hooks/useWorkNFTs";
+import { ScoreBreakdown } from "../../../components/ScoreBreakdown";
+import { EarningsUpload } from "../../../components/EarningsUpload";
+import { WorkRecordsDisplay } from "../../../components/WorkRecordsDisplay";
+import { useWorkerProfile } from "../../../hooks/useWorkerProfile";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { formatErrorMessage } from "../../../lib/error-formatter";
 
@@ -17,32 +19,37 @@ const NAV = [
   { label: "Credit", href: "/worker/credit" }
 ];
 
+const PLATFORMS = [
+  { name: "zomato", label: "Zomato" },
+  { name: "swiggy", label: "Swiggy" },
+  { name: "blinkit", label: "Blinkit" },
+  { name: "ola", label: "Ola" },
+  { name: "uber", label: "Uber" },
+  { name: "urban_company", label: "Urban Company" }
+];
+
+const INR_TO_USD_RATE = parseInt(process.env.NEXT_PUBLIC_INR_TO_USD_RATE || "83", 10);
+
 export default function WorkerOverviewPage() {
   const { publicKey } = useWallet();
   const wallet = publicKey?.toBase58() ?? null;
-  const { score, tier, stats, isLoading: scoreLoading, error: scoreError } = useStrandScore(wallet);
-  const { workNfts, isLoading: nftsLoading, error: nftsError } = useWorkNFTs(wallet);
-  const { creditLine, isLoading: creditLoading, error: creditError } = useCreditLine(wallet, score);
+  const { workRecords, scoreComponents, totalScore, isLoading, error } = useWorkerProfile(wallet);
+  const [selectedPlatform, setSelectedPlatform] = useState(PLATFORMS[0].name);
 
-  const isLoading = scoreLoading || nftsLoading || creditLoading;
-  const hasErrors = scoreError || nftsError || creditError;
-
-  if (isLoading || hasErrors) {
+  if (isLoading || error) {
     return (
       <RequireWallet redirectTo="/login/worker">
         <SaasShell
           productLabel="Worker Workspace"
-          title="Performance Overview"
-          subtitle={hasErrors ? "There was a problem loading your data" : "Loading your data..."}
+          title="Overview"
+          subtitle={error ? "There was a problem loading your data" : "Loading your data..."}
           nav={NAV}
         >
           <div className="flex items-center justify-center h-64">
-            {hasErrors ? (
+            {error ? (
               <div className="text-center space-y-2">
-                <p className="text-red-600 font-medium">Unable to load performance data</p>
-                {scoreError && <p className="text-sm text-muted-foreground">{formatErrorMessage(scoreError)}</p>}
-                {nftsError && <p className="text-sm text-muted-foreground">{formatErrorMessage(nftsError)}</p>}
-                {creditError && <p className="text-sm text-muted-foreground">{formatErrorMessage(creditError)}</p>}
+                <p className="text-red-600 font-medium">Unable to load your profile</p>
+                <p className="text-sm text-muted-foreground">{formatErrorMessage(error)}</p>
               </div>
             ) : (
               <p className="text-muted-foreground">Loading...</p>
@@ -57,91 +64,100 @@ export default function WorkerOverviewPage() {
     <RequireWallet redirectTo="/login/worker">
       <SaasShell
         productLabel="Worker Workspace"
-        title="Overview"
-        subtitle="Track work history, earnings, and credit readiness."
+        title="Dashboard"
+        subtitle="Track earnings, build reputation, and access credit."
         nav={NAV}
       >
-        <div className="panel p-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Strand score</p>
-          <div className="mt-2 text-5xl font-semibold tracking-tight">{score}</div>
-          <p className="mt-2 text-sm text-muted-foreground">{tier} tier • verified reputation</p>
+        {/* Upload Section - Most Prominent */}
+        <div className="space-y-4 mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold">Add Earnings</h2>
+              <p className="text-sm text-muted-foreground">Upload a screenshot from one of your delivery platforms</p>
+            </div>
+          </div>
+
+          {/* Platform Selector */}
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {PLATFORMS.map((platform) => (
+              <button
+                key={platform.name}
+                onClick={() => setSelectedPlatform(platform.name)}
+                className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+                  selectedPlatform === platform.name
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                }`}
+              >
+                {platform.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Upload Component */}
+          <EarningsUpload platform={selectedPlatform} />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Completed Jobs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold tracking-tight">{stats.jobsDone}</div>
-              <p className="text-sm text-muted-foreground">Verified work history</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Total Earnings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold tracking-tight">${stats.totalEarnedUsdc.toLocaleString()}</div>
-              <p className="text-sm text-muted-foreground">USDC earned and available</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Credit Capacity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold tracking-tight">
-                {creditLine ? `$${(creditLine.maxUsdc - creditLine.borrowedUsdc).toLocaleString()}` : "$0"}
-              </div>
-              <p className="text-sm text-muted-foreground">Available to borrow</p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Main Content Tabs */}
+        <div className="space-y-8">
+          {/* Score Section */}
+          <div>
+            <h2 className="text-lg font-semibold mb-4">Reputation Score</h2>
+            {scoreComponents ? (
+              <ScoreBreakdown
+                components={scoreComponents}
+                totalScore={totalScore}
+                inrRate={INR_TO_USD_RATE}
+              />
+            ) : (
+              <Card>
+                <CardContent className="pt-6">
+                  <p className="text-center text-muted-foreground">No score data yet. Upload your first earnings to get started.</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
+          {/* Work Records Section */}
+          <div>
+            <h2 className="text-lg font-semibold mb-4">Work History</h2>
+            <WorkRecordsDisplay
+              records={workRecords}
+              inrRate={INR_TO_USD_RATE}
+              isLoading={isLoading}
+            />
+          </div>
+
+          {/* Credit Overview Card */}
+          <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Recent Work</CardTitle>
-                <Link className="text-sm text-foreground underline-offset-4 hover:underline" href="/worker/work">
-                  View all
-                </Link>
-              </div>
+              <CardTitle className="text-base">Credit Access</CardTitle>
             </CardHeader>
-            <CardContent>
-              {workNfts.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No work records yet. Complete your first job to begin.</p>
-              ) : (
-                <div className="space-y-2">
-                  {workNfts.slice(0, 3).map((item, index) => (
-                    <div
-                      key={index}
-                      className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm"
-                    >
-                      ${item.amountUsdc.toLocaleString()} · {item.skills.join(", ")}
-                    </div>
-                  ))}
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Your Strand Score determines how much credit you can access. Build your reputation by adding work
+                records and maintaining consistent earnings.
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">Status</p>
+                  <p className="text-lg font-semibold">
+                    {totalScore >= 400 ? (
+                      <span className="text-green-600">✓ Eligible</span>
+                    ) : (
+                      <span className="text-yellow-600">Build Score</span>
+                    )}
+                  </p>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Next Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Link className="block rounded-lg border border-border bg-muted/30 px-3 py-2 transition-colors hover:bg-accent/40" href="/worker/work">
-                  View your work history
-                </Link>
-                <Link className="block rounded-lg border border-border bg-muted/30 px-3 py-2 transition-colors hover:bg-accent/40" href="/worker/skills">
-                  Add or review skill attestations
-                </Link>
-                <Link className="block rounded-lg border border-border bg-muted/30 px-3 py-2 transition-colors hover:bg-accent/40" href="/worker/credit">
-                  Check borrowing readiness
-                </Link>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">Next Step</p>
+                  <Link
+                    href="/worker/credit"
+                    className="text-sm font-medium text-primary hover:underline"
+                  >
+                    View Credit →
+                  </Link>
+                </div>
               </div>
             </CardContent>
           </Card>

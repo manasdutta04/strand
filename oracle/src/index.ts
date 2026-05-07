@@ -2,12 +2,12 @@ import "dotenv/config";
 
 import * as anchor from "@coral-xyz/anchor";
 import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
-import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { gradeWorkSample } from "./grader";
-import { getScoreState, isoNow, loadOracleKeypair, sleep } from "./chain";
+import { isoNow, loadOracleKeypair, sleep, submitWorkRecord } from "./chain";
+import { parsePdfToBase64, parseFileName, listPendingPdfs, archivePdf } from "./pdf-parser";
+import { parseEarningsPdf } from "./worker-record-parser";
 
 type AnyProgram = anchor.Program<any>;
 
@@ -48,11 +48,6 @@ async function withRetry<T>(label: string, fn: () => Promise<T>): Promise<T> {
   throw lastError;
 }
 
-function toEvidenceHash(payload: string): number[] {
-  const digest = crypto.createHash("sha256").update(payload).digest();
-  return Array.from(digest.subarray(0, 32));
-}
-
 async function main(): Promise<void> {
   const rpcUrl = process.env.ANCHOR_PROVIDER_URL ?? "https://api.devnet.solana.com";
   const wsEndpoint = rpcUrl.replace("https://", "wss://").replace("http://", "ws://");
@@ -82,161 +77,127 @@ async function main(): Promise<void> {
   const coreProgram: any = new anchor.Program(coreIdl as any, provider as any);
   const scoreProgram: any = new anchor.Program(scoreIdl as any, provider as any);
 
-  const computeScore = async (workerKey: PublicKey): Promise<string> => {
-    const [scoreStatePda] = PublicKey.findProgramAddressSync(
-      [Buffer.from("score"), workerKey.toBuffer()],
-      scoreProgram.programId
-    );
-    const [workerProfilePda] = PublicKey.findProgramAddressSync(
-      [Buffer.from("profile"), workerKey.toBuffer()],
-      coreProgram.programId
-    );
+  const uploadsDir = process.env.UPLOADS_DIR || path.join(currentDir, "..", "uploads");
+  const archiveDir = path.join(uploadsDir, "processed");
 
-    return withRetry("compute_score", async () => {
-      const signature = await (scoreProgram as any).methods
-        .computeScore(workerKey)
-        .accounts({
-          payer: wallet.publicKey,
-          scoreState: scoreStatePda,
-          systemProgram: SystemProgram.programId
-        })
-        .remainingAccounts([
-          {
-            pubkey: workerProfilePda,
-            isSigner: false,
-            isWritable: false
-          }
-        ])
-        .rpc();
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
 
-      return signature as string;
-    });
-  };
-
-  const attestSkill = async (
-    workerKey: PublicKey,
-    skillTag: string,
-    confidence: number,
-    evidencePayload: string
-  ): Promise<string | null> => {
-    if (skillTag.length === 0 || skillTag.length > 32) {
-      console.warn(
-        `[${isoNow()}] skipping attest_skill for invalid seed-length tag: ${skillTag}`
-      );
-      return null;
-    }
-
-    const [skillAttestationPda] = PublicKey.findProgramAddressSync(
-      [Buffer.from("skill"), workerKey.toBuffer(), Buffer.from(skillTag)],
-      scoreProgram.programId
-    );
-
-    return withRetry("attest_skill", async () => {
-      const signature = await scoreProgram.methods
-        .attestSkill(workerKey, skillTag, confidence, toEvidenceHash(evidencePayload))
-        .accounts({
-          payer: wallet.publicKey,
-          oracle: wallet.publicKey,
-          skillAttestation: skillAttestationPda,
-          systemProgram: SystemProgram.programId
-        })
-        .rpc();
-
-      return signature as string;
-    });
-  };
-
-  const workCompletedListener = coreProgram.addEventListener(
-    "WorkCompleted",
-    async (event: any, _slot: number, signature: string) => {
-      try {
-        const workerKey = new PublicKey(event.worker);
-        console.log(
-          `[${isoNow()}] WorkCompleted event received for worker ${workerKey.toBase58()} (tx: ${signature})`
-        );
-
-        const tx = await computeScore(workerKey);
-        console.log(`[${isoNow()}] compute_score tx: ${tx}`);
-      } catch (error) {
-        console.error(
-          `[${isoNow()}] WorkCompleted listener failed for tx ${signature}:`,
-          error
-        );
-      }
-    }
+  console.log(
+    `[${isoNow()}] Oracle started (${process.env.LLM_PROVIDER || "ollama"} provider). Watching ${uploadsDir} for earnings PDFs.`
   );
 
-  const skillClaimListener = coreProgram.addEventListener(
-    "SkillClaim",
-    async (event: any, _slot: number, signature: string) => {
-      try {
-        const workerKey = new PublicKey(event.worker);
-        const claimedSkill = String(event.skillTag ?? "").trim();
-        const workSampleUrl = String(event.workSampleUrl ?? "").trim();
+  // Main polling loop: check for new PDFs every 5 seconds
+  const processingSet = new Set<string>();
+  const processLoop = setInterval(async () => {
+    try {
+      const pendingPdfs = await listPendingPdfs(uploadsDir);
 
-        console.log(
-          `[${isoNow()}] SkillClaim event received for worker ${workerKey.toBase58()} (tx: ${signature})`
-        );
+      for (const pdfPath of pendingPdfs) {
+        const fileName = path.basename(pdfPath);
 
-        const grade = await withRetry("grade_work_sample", () =>
-          gradeWorkSample(workSampleUrl, claimedSkill ? [claimedSkill] : [])
-        );
+        // Skip if already processing
+        if (processingSet.has(fileName)) {
+          continue;
+        }
 
-        for (let i = 0; i < grade.verified_skills.length; i += 1) {
-          const verifiedSkill = grade.verified_skills[i];
-          const confidence = Math.max(0, Math.min(100, Math.trunc(grade.confidences[i] ?? 0)));
+        processingSet.add(fileName);
 
-          if (confidence < 65) {
+        try {
+          console.log(`[${isoNow()}] Found PDF: ${fileName}`);
+
+          // Parse filename to get worker pubkey and platform
+          const parsed = parseFileName(fileName);
+          if (!parsed) {
+            console.warn(`[${isoNow()}] Skipping: invalid filename format. Expected: {pubkey}_{platform}_{timestamp}.pdf`);
             continue;
           }
 
-          const tx = await attestSkill(
-            workerKey,
-            verifiedSkill,
-            confidence,
-            `${workSampleUrl}:${verifiedSkill}`
+          const { workerPubkey: workerPubkeyStr, platform } = parsed;
+
+          // Convert to PublicKey
+          let workerKey: PublicKey;
+          try {
+            workerKey = new PublicKey(workerPubkeyStr);
+          } catch {
+            console.warn(`[${isoNow()}] Skipping: invalid worker pubkey ${workerPubkeyStr}`);
+            continue;
+          }
+
+          // Parse PDF to base64
+          const { base64 } = await parsePdfToBase64(pdfPath);
+
+          // Extract earnings data using vision model
+          console.log(`[${isoNow()}] Parsing earnings from ${platform}...`);
+          const workRecord = await withRetry("parse_earnings", () =>
+            parseEarningsPdf(base64, platform, fileName)
           );
 
-          if (tx) {
-            console.log(`[${isoNow()}] attest_skill(${verifiedSkill}) tx: ${tx}`);
+          if (!workRecord.verified) {
+            console.warn(
+              `[${isoNow()}] Earnings extraction failed or unverified for ${fileName}`
+            );
+            // Archive even if not verified (for debugging)
+            await archivePdf(pdfPath, archiveDir);
+            continue;
           }
+
+          console.log(
+            `[${isoNow()}] Extracted: ${workRecord.earning_amount_usdc} USDC, ${workRecord.delivery_count} deliveries from ${platform}`
+          );
+
+          // Submit work record to blockchain via CPI
+          console.log(`[${isoNow()}] Submitting work record to chain...`);
+          const txSig = await withRetry("submit_work_record", () =>
+            submitWorkRecord(
+              workerKey,
+              Math.round(workRecord.earning_amount_usdc * 1_000_000), // Convert to 6-decimal USDC
+              workRecord.delivery_count,
+              platform,
+              coreProgram,
+              scoreProgram,
+              oracleKeypair
+            )
+          );
+
+          console.log(`[${isoNow()}] Work record submitted: ${txSig}`);
+
+          // Archive the processed PDF
+          await archivePdf(pdfPath, archiveDir);
+          console.log(`[${isoNow()}] Archived: ${fileName}`);
+        } catch (error) {
+          console.error(
+            `[${isoNow()}] Error processing ${fileName}:`,
+            error instanceof Error ? error.message : error
+          );
+        } finally {
+          processingSet.delete(fileName);
         }
-
-        const scoreTx = await computeScore(workerKey);
-        console.log(`[${isoNow()}] compute_score tx: ${scoreTx}`);
-
-        const scoreState = await getScoreState(workerKey, scoreProgram);
-        console.log(`[${isoNow()}] latest score state:`, scoreState);
-      } catch (error) {
-        console.error(
-          `[${isoNow()}] SkillClaim listener failed for tx ${signature}:`,
-          error
-        );
       }
+    } catch (error) {
+      console.error(`[${isoNow()}] Process loop error:`, error);
     }
-  );
-
-  console.log(
-    `[${isoNow()}] Oracle started. Listening to WorkCompleted and SkillClaim events.`
-  );
+  }, 5_000); // Check every 5 seconds
 
   const cleanup = async (): Promise<void> => {
-    coreProgram.removeEventListener(workCompletedListener);
-    coreProgram.removeEventListener(skillClaimListener);
+    clearInterval(processLoop);
   };
 
   process.on("SIGINT", async () => {
+    console.log(`[${isoNow()}] Shutting down...`);
     await cleanup();
     process.exit(0);
   });
 
   process.on("SIGTERM", async () => {
+    console.log(`[${isoNow()}] Shutting down...`);
     await cleanup();
     process.exit(0);
   });
 
   await new Promise(() => {
-    // Keeps the process alive while subscriptions are active.
+    // Keeps the process alive
   });
 }
 

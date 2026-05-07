@@ -49,7 +49,7 @@ To set up the development environment, follow these steps:
 	- Fill `STRAND_CORE_PROGRAM_ID`, `STRAND_SCORE_PROGRAM_ID`, `STRAND_CREDIT_PROGRAM_ID` in `oracle/.env`.
 	- Set `LLM_PROVIDER` in `oracle/.env` to one of: `ollama`, `openai`, `groq`, `gemini`, `claude`.
 	- If using cloud provider mode, fill the matching API key (`OPENAI_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY`, or `ANTHROPIC_API_KEY`) and provider model/base URL values.
-	- Fill `NEXT_PUBLIC_STRAND_*` values in `app/.env.local`.
+	- Fill `NEXT_PUBLIC_STRAND_*` values in `app/.env`.
 7. Run services:
 	- Oracle: `cd oracle && npm run dev`
 	- Frontend: `cd app && npm run dev`

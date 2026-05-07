@@ -30,12 +30,12 @@ STRAND_CREDIT_PROGRAM_ID=
 - **Devnet USDC mint:** `Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr`
 
 ## Oracle provider configuration
-- **Default local provider:** Ollama
-- **Cloud providers supported:** OpenAI, Groq, Gemini, Claude/Anthropic
-- **Provider selector:** `LLM_PROVIDER`
+- **Default local provider:** Ollama with vision model (llama3.2-vision)
+- **Cloud providers supported:** OpenAI (gpt-4o, gpt-4-turbo), Groq (text-only for now), Gemini (vision), Claude/Anthropic (vision)
+- **Provider selector:** `LLM_PROVIDER` env var
 - **Local Ollama base URL:** `http://localhost:11434`
-- **Local model defaults:** `llama3.2` for Ollama, `gpt-4o-mini` for OpenAI, `llama-3.3-70b-versatile` for Groq, `gemini-1.5-flash` for Gemini, `claude-3-5-sonnet-latest` for Claude
-- **Server-side keys:** `OPENAI_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`
+- **Cloud API Key vars:** `OPENAI_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`
+- **Vision-enabled models:** Ollama (llama3.2-vision), OpenAI (gpt-4o, gpt-4-turbo), Gemini (gemini-1.5-flash or later), Anthropic (claude-3-5-sonnet)
 
 ## Environment variables (.env files)
 
@@ -46,25 +46,38 @@ ANCHOR_PROVIDER_URL=https://api.devnet.solana.com
 ORACLE_KEYPAIR_PATH=./oracle-keypair.json
 STRAND_CORE_PROGRAM_ID=
 STRAND_SCORE_PROGRAM_ID=
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=llama3.2
+STRAND_CREDIT_PROGRAM_ID=
+UPLOADS_DIR=./uploads
+
+# Oracle provider configuration (pick one)
 LLM_PROVIDER=ollama
+
+# Local Ollama (vision model for PDF reading)
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.2-vision
+
+# Cloud providers (fill in only if LLM_PROVIDER set to that provider)
 OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4o-mini
+OPENAI_MODEL=gpt-4o
 OPENAI_BASE_URL=https://api.openai.com/v1
+
+ANTHROPIC_API_KEY=
+CLAUDE_MODEL=claude-3-5-sonnet-latest
+
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-1.5-flash
+
 GROQ_API_KEY=
 GROQ_MODEL=llama-3.3-70b-versatile
 GROQ_BASE_URL=https://api.groq.com/openai/v1
-GEMINI_API_KEY=
-GEMINI_MODEL=gemini-1.5-flash
-ANTHROPIC_API_KEY=
-CLAUDE_MODEL=claude-3-5-sonnet-latest
-### app/.env.local
+### app/.env
 NEXT_PUBLIC_RPC_URL=https://api.devnet.solana.com
 NEXT_PUBLIC_STRAND_CORE_PROGRAM_ID=
 NEXT_PUBLIC_STRAND_SCORE_PROGRAM_ID=
 NEXT_PUBLIC_STRAND_CREDIT_PROGRAM_ID=
 NEXT_PUBLIC_USDC_MINT=Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr
+NEXT_PUBLIC_REGISTRATION_STAKE_LAMPORTS=100000000
+NEXT_PUBLIC_INR_TO_USD_RATE=83
 
 ## Ports
 - Next.js dev server: 3000
@@ -72,13 +85,22 @@ NEXT_PUBLIC_USDC_MINT=Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr
 - Solana test validator (if used locally): 8899
 
 ## Setup commands (run once, in order)
+
 ```bash
 # 1. Choose the oracle provider
-# Local mode:
-# curl -fsSL https://ollama.com/install.sh | sh
-# ollama pull llama3.2
-# Cloud mode:
-# set LLM_PROVIDER to openai, groq, gemini, or claude and populate the matching API key
+
+# LOCAL MODE (Recommended for MVP):
+# Install Ollama from https://ollama.com
+# Then pull the vision model:
+ollama pull llama3.2-vision
+# Set in oracle/.env: LLM_PROVIDER=ollama
+
+# CLOUD MODE (for production scale):
+# Pick ONE provider and populate its API key in oracle/.env:
+# - OPENAI_API_KEY (for gpt-4o)
+# - ANTHROPIC_API_KEY (for claude-3-5-sonnet)
+# - GEMINI_API_KEY (for gemini-1.5-flash)
+# - GROQ_API_KEY (for llama-3.3-70b, text-only)
 
 # 2. Configure Solana CLI
 solana config set --url devnet
@@ -88,19 +110,18 @@ solana airdrop 5
 # 3. Generate oracle keypair
 solana-keygen new --no-bip39-passphrase -o oracle/oracle-keypair.json
 
-# 4. Install root dependencies
+# 4. Install dependencies
 npm install
-
-# 5. Install oracle dependencies
 cd oracle && npm install && cd ..
-
-# 6. Install frontend dependencies
 cd app && npm install && cd ..
 
-# 7. Build and deploy programs
+# 5. Build and deploy programs
 anchor build
 anchor deploy --provider.cluster devnet
-# → Copy program IDs into ENV.md and all .env files
+# → Copy program IDs into ENV.md, oracle/.env, app/.env
+
+# 6. Create uploads directory for oracle
+mkdir -p oracle/uploads
 ```
 
 ## Run commands

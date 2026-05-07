@@ -3,6 +3,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "ignoreDeprecations": "5.0",
     "baseUrl": ".",
     "paths": {
       "@coral-xyz/anchor": ["../node_modules/@coral-xyz/anchor"],

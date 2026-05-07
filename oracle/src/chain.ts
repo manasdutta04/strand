@@ -6,10 +6,12 @@ import {
   PublicKey,
   SendOptions,
   Signer,
+  SystemProgram,
   Transaction,
   TransactionSignature
 } from "@solana/web3.js";
 import { Program } from "@coral-xyz/anchor";
+import * as anchor from "@coral-xyz/anchor";
 
 export function isoNow(): string {
   return new Date().toISOString();
@@ -94,3 +96,61 @@ export async function getScoreState(
   const account = await (scoreProgram.account as any).scoreState.fetchNullable(scoreStatePda);
   return account ?? null;
 }
+
+export async function submitWorkRecord(
+  workerKey: PublicKey,
+  earningAmountUsdc: number,
+  deliveryCount: number,
+  platform: string,
+  coreProgram: Program,
+  scoreProgram: Program,
+  oracleKeypair: any
+): Promise<string> {
+  const [workerProfilePda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("profile"), workerKey.toBuffer()],
+    coreProgram.programId
+  );
+
+  // Get current total_records to derive work record PDA
+  const profileAccount = await (coreProgram.account as any).workerProfile.fetchNullable(
+    workerProfilePda
+  );
+  const totalRecords = profileAccount?.totalRecords ?? 0;
+
+  const [workRecordPda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("work"), workerKey.toBuffer(), Buffer.from(totalRecords.toString())],
+    coreProgram.programId
+  );
+
+  const [platformLinkPda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("platform"), workerKey.toBuffer(), Buffer.from(platform)],
+    coreProgram.programId
+  );
+
+  const [scoreStatePda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("score"), workerKey.toBuffer()],
+    scoreProgram.programId
+  );
+
+  const tx = await coreProgram.methods
+    .submitWorkRecord(
+      new anchor.BN(earningAmountUsdc),
+      deliveryCount,
+      platform
+    )
+    .accounts({
+      oracle: oracleKeypair.publicKey,
+      worker: workerKey,
+      workerProfile: workerProfilePda,
+      workRecord: workRecordPda,
+      platformLink: platformLinkPda,
+      scoreProgram: scoreProgram.programId,
+      scoreState: scoreStatePda,
+      systemProgram: SystemProgram.programId
+    })
+    .signers([oracleKeypair])
+    .rpc();
+
+  return tx as string;
+}
+

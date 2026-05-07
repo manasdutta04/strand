@@ -49,7 +49,41 @@ is the data is on-chain and verifiable.
 **Reason:** Keeps UX and flow testable immediately during scaffold stage while preserving clear integration points (`lib/programs.ts`, env IDs) for on-chain wiring.
 **Date:** 2026-04-07
 
-<!-- Add new decisions here as you make them during the build -->
+## D-007: Gig worker earnings PDF flow replaces job-based flow
+**Decision:** Core mechanic is: worker uploads Zomato/Swiggy/Blinkit/Ola/Uber earnings PDF → oracle vision model reads → WorkRecord PDA minted → score updated. No client job posting.
+**Alternatives:** Keep job-based model; add PDF as optional secondary flow; hybrid model
+**Reason:** Colosseum Frontier hackathon targets India's 12M gig workers. Earnings proof is the atomic unit, not job postings. This aligns with real Zomato/Swiggy workflows and creates portable work history that workers own.
+**Date:** 2026-05-07
+
+## D-008: Ollama vision model (llama3.2-vision) for PDF parsing, with cloud provider fallback
+**Decision:** Use `ollama run llama3.2-vision` locally by default. Support OpenAI (gpt-4o, gpt-4-turbo), Anthropic Claude (claude-3-5-sonnet), Google Gemini (vision-capable model), and Groq (if available). All providers read earnings PDFs deterministically.
+**Alternatives:** Cloud-only; Tesseract OCR + LLM; hard-coded PDF parsing library
+**Reason:** Vision models extract earning amount, date, platform, and delivery count from unstructured PDFs reliably. Ollama keeps MVP offline-capable. Cloud fallbacks scale for production.
+**Date:** 2026-05-07
+
+## D-009: PlatformLink account tracks worker across multiple platforms
+**Decision:** Add `PlatformLink` PDA with seeds `[\"platform\", worker_pubkey, platform_name]` storing verified identity on Zomato/Swiggy/Blinkit/Ola/Uber/UberEats etc.
+**Alternatives:** Consolidate all platforms into single WorkerProfile; separate program per platform
+**Reason:** Indian gig workers typically work 2-3 platforms simultaneously. Linking creates portable reputation across platforms, which is the core value prop vs. Zomato-locked profiles.
+**Date:** 2026-05-07
+
+## D-010: Single protocol-owned vault instead of per-lender vaults
+**Decision:** strand-credit maintains a single `ProtocolVault` PDA. Lenders deposit USDC as insurance. Loans are issued from this shared vault. Interest accrues to protocol (future revenue).
+**Alternatives:** Per-lender vaults; RWA collateral model; peer-to-peer lending
+**Reason:** Simpler, cheaper on-chain; works with limited Solana accounts in 10-minute demo window. Post-hackathon can migrate to peer-lender model for scalability.
+**Date:** 2026-05-07
+
+## D-011: Gig-worker scoring formula (6 components, max 1000 points)
+**Decision:** Score = delivery_volume (200) + earnings_consistency (150) + tenure_months (150) + rating_points (200) + cross_platform_count (150) + repayment_history (150). All integer math on-chain.
+**Alternatives:** Machine learning scoring; weighted by platform reputation; skill-only scoring
+**Reason:** Simple, auditable, trustless. Reflects gig work reality: volume + reliability + reputation across platforms = creditworthiness. Credit limit = (score - 400) × $10 USDC.
+**Date:** 2026-05-07
+
+## D-012: Registration stake (0.1 SOL) required to prevent sybil attacks
+**Decision:** Worker must lock 0.1 SOL (~$5 USD) in `WorkerProfile` on `register_worker` to create account. Withdrawable after 30 days or upon account closure.
+**Alternatives:** No stake; captcha; social proof; email verification
+**Reason:** On-chain sybil protection without external dependencies. 0.1 SOL is trivial for real gig workers (single job earnings) but expensive for spam bots. Aligns with real Web3 UX.
+**Date:** 2026-05-07
 
 ---
-*Last updated: 2026-04-07 09:19 IST*
+*Last updated: 2026-05-07 11:15 IST (Gig Worker Rebuild for Colosseum Frontier)*

@@ -1,82 +1,83 @@
-# Strand - Portable Work History & Credit Protocol
+# Strand - Portable Gig Reputation & Credit Protocol
 
-> Your wallet is your résumé. Your work history is your credit score.
+> Your wallet is your résumé. Your earnings history is your credit history.
 
 ## The Problem
-Gig work is massive, but reputation is still trapped inside closed platforms. More than 1.5 billion workers cannot carry verified proof of completed work between marketplaces, so they repeatedly start from zero. Without portable work history, most freelancers also have no path to undercollateralized credit.
+India’s gig economy is huge, but reputation stays trapped inside each platform. A delivery rider on Zomato or Swiggy cannot carry verified earnings history to the next marketplace, and most workers still have no practical path to small, undercollateralized credit for bikes, phones, or emergencies.
 
 ## What Strand Does
-- Work NFTs: Every completed job mints a dual-signed on-chain work record owned by the worker wallet.
-- Strand Score: A transparent 0-1000 on-chain reputation score updates from verified work and consistency.
-- AI-verified skills via a pluggable oracle: Skill claims are graded through Ollama locally or via user-provided API keys for OpenAI, Groq, Gemini, or Claude.
-- Credit layer: Lenders read score accounts on Solana to open USDC credit lines and enable borrowing.
+- WorkRecords: Each verified earnings PDF creates an on-chain record owned by the worker wallet.
+- Strand Score: A transparent 0-1000 reputation score updates from earnings volume, consistency, tenure, ratings, cross-platform activity, and repayment.
+- Multi-provider oracle: PDFs can be parsed locally with Ollama or through OpenAI, Anthropic, Gemini, or Groq.
+- Credit layer: A single protocol vault issues USDC credit lines once a worker reaches the minimum score.
+- INR/USD display: The app shows both USDC and INR so Indian workers can understand their borrowing power instantly.
 
 ## Why This Wins
-1. Functionality first: End-to-end protocol architecture spans job escrow, score computation, oracle attestations, and credit lines.
-2. Composable impact: `strand-score` is a standalone primitive any Solana lending app can CPI into.
-3. Novel UX + business fit: Wallet-native profiles and instant share links solve user trust and lender underwriting at the same time.
+1. It fits the real workflow: upload an earnings screenshot or PDF, get reputation, then unlock credit.
+2. It is portable: the score follows the worker across Zomato, Swiggy, Blinkit, Ola, Uber, and similar platforms.
+3. It is composable: `strand-score` is a standalone primitive that other Solana apps can CPI into.
 
 ## Architecture
 ```text
-User (Phantom wallet)
+Worker wallet
 │
-├─► strand-core ──CPI──► strand-score (triggered on job completion)
+├─► Upload earnings PDF
 │       │
-│       └─► JobEscrow (USDC SPL token account, PDA-owned)
+│       └─► Oracle service (Ollama / OpenAI / Claude / Gemini / Groq)
+│               └─► Extract earning amount, delivery count, platform
 │
-├─► strand-score ──read──► strand-credit (score check before borrow)
+├─► strand-core ──CPI──► strand-score
 │       │
-│       └─► Oracle service (off-chain Node.js service)
-│               ├─► Ollama: POST http://localhost:11434/api/generate
-│               └─► Cloud providers via user-supplied API keys
+│       ├─► WorkRecord PDA
+│       └─► PlatformLink PDA
+│
+├─► strand-score ──read──► strand-credit
+│       │
+│       └─► ScoreState PDA
 │
 └─► strand-credit
-└─► Lender Vault (USDC SPL token account, PDA-owned)
+	├─► ProtocolVault PDA
+	├─► CreditLine PDA
+	└─► LoanPosition PDA
 ```
 
 ## SaaS App Routing (Frontend)
 
-The frontend is now role-oriented and multi-page:
+The frontend is role-oriented, but the worker path is the main demo surface:
 
 - Landing and role entry:
-  - `/` role selection hub
-  - `/login/worker`
-  - `/login/client`
-  - `/login/lender`
+	- `/` role selection hub
+	- `/login/worker`
+	- `/login/client`
+	- `/login/lender`
 
 - Worker workspace:
-  - `/worker/dashboard` overview
-  - `/worker/work`
-  - `/worker/skills`
-  - `/worker/credit`
+	- `/worker/dashboard` earnings upload, score, and credit overview
+	- `/worker/work` record history
+	- `/worker/skills` attestations
+	- `/worker/credit` borrowing and repayment
 
-- Client workspace:
-  - `/client/dashboard`
-  - `/client/jobs/new`
+- Public profile:
+	- `/profile/[wallet]` shareable worker reputation page
 
-- Lender workspace:
-  - `/lender/dashboard`
-  - `/lender/dashboard/queue`
+- Client and lender routes still exist for compatibility, but the hackathon demo is worker-first.
 
 ## Quick Start
 1. Install prerequisites: Node.js 18+, Rust 1.75+, Solana CLI 1.18+, Anchor 0.31.x.
-2. Choose an oracle provider:
-	- Local Ollama: install Ollama and run `ollama pull llama3.2`
-	- Cloud mode: set `LLM_PROVIDER` to `openai`, `groq`, `gemini`, or `claude`, then provide the matching API key in `oracle/.env`
+2. Pick an oracle provider:
+	- Local Ollama: install Ollama and run `ollama pull llama3.2-vision`
+	- Cloud mode: set `LLM_PROVIDER` to `openai`, `anthropic`, `gemini`, or `groq`, then add the matching API key in `oracle/.env`
 3. Configure Solana to devnet:
 	- `solana config set --url devnet`
 4. Install dependencies:
 	- `npm install`
 5. Build programs:
 	- `anchor build`
-6. Configure oracle provider and keys:
+6. Configure oracle and frontend env files:
 	- Run `npm run setup:oracle-env`
-	- Choose `LLM_PROVIDER` (`ollama`, `openai`, `groq`, `gemini`, or `claude`)
-	- Paste your own provider API key when prompted for cloud providers
-	- Fill `STRAND_CORE_PROGRAM_ID` and `STRAND_SCORE_PROGRAM_ID` in `oracle/.env`
-7. Configure frontend environment:
-	- Fill `NEXT_PUBLIC_STRAND_*` values in `app/.env.local`
-8. Run services:
+	- Fill `STRAND_CORE_PROGRAM_ID`, `STRAND_SCORE_PROGRAM_ID`, and `STRAND_CREDIT_PROGRAM_ID` in `oracle/.env`
+	- Fill `NEXT_PUBLIC_STRAND_*` values and `NEXT_PUBLIC_INR_TO_USD_RATE` in `app/.env`
+7. Run services:
 	- Oracle: `cd oracle && npm run dev`
 	- Frontend: `cd app && npm run dev`
 
@@ -98,7 +99,7 @@ npm install
 # 2. Generate oracle env file and choose provider
 npm run setup:oracle-env
 
-# 3. Fill app/.env.local and oracle/.env
+# 3. Fill app/.env and oracle/.env
 
 # 4. Start the oracle in one terminal
 npm run dev:oracle
@@ -149,11 +150,11 @@ Why: the oracle is a long-running event listener (Solana websocket subscriber), 
 ## Demo
 Demo video: https://example.com/strand-demo
 
-Or run `scripts/seed-demo.ts` to seed devnet data locally.
+Or run `scripts/seed-demo.ts` to print the Ravi demo flow locally.
 
 ## Business Model
-Protocol fee: 0.5% on loan origination. API tier for enterprise lenders.
-At 100K active workers × avg $1,000 credit = $500K annual revenue at scale.
+Protocol fee: 0.5% on loan origination. Enterprise API tier for lenders and fintech partners.
+At 100K active workers × average $1,000 credit, Strand can support meaningful transaction volume while keeping the worker UX simple.
 
 ## Judging Criteria
 | Criterion | How Strand addresses it |
