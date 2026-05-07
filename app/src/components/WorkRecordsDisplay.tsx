@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "./ui/badge";
 
 export interface WorkRecord {
   id: string;
@@ -46,90 +47,80 @@ export function WorkRecordsDisplay({ records, inrRate = 83, isLoading }: WorkRec
 
   return (
     <div className="space-y-6">
-      {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card className="border-border/60">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
-              Total Earnings
-            </CardTitle>
+            <CardTitle className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">Earnings</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold tracking-tight">${totalEarnings.toLocaleString()}</div>
-            <p className="text-sm text-muted-foreground">
-              ₹{Math.round(totalEarnings * inrRate).toLocaleString()} INR
-            </p>
+            <p className="text-sm text-muted-foreground">₹{Math.round(totalEarnings * inrRate).toLocaleString()}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/60">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
-              Total Deliveries
-            </CardTitle>
+            <CardTitle className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">Trips</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold tracking-tight">{totalDeliveries.toLocaleString()}</div>
-            <p className="text-sm text-muted-foreground">{records.length} verified records</p>
+            <p className="text-sm text-muted-foreground">{records.length} records</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/60">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
-              Platforms
-            </CardTitle>
+            <CardTitle className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">Platforms</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold tracking-tight">{Object.keys(platformBreakdown).length}</div>
-            <p className="text-sm text-muted-foreground">
-              {Object.entries(platformBreakdown)
-                .map(([p, c]) => `${p}: ${c}`)
-                .join(", ")}
-            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {Object.entries(platformBreakdown).map(([platform, count]) => (
+                <Badge key={platform} variant="secondary">
+                  {platform} {count}
+                </Badge>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Work Records List */}
-      <Card>
+      <Card className="border-border/60">
         <CardHeader>
-          <CardTitle className="text-base">Work History</CardTitle>
+          <CardTitle className="text-base">Recent work</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Loading work records...</p>
+            <div className="py-8 text-center">
+              <p className="text-sm text-muted-foreground">Loading...</p>
             </div>
           ) : records.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">No work records yet. Upload your first earnings PDF to get started.</p>
+            <div className="py-8 text-center">
+              <p className="text-sm text-muted-foreground">No records yet.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="border-b">
+                <thead className="border-b text-muted-foreground">
                   <tr>
-                    <th className="text-left py-3 px-4 font-medium">Date</th>
-                    <th className="text-left py-3 px-4 font-medium">Platform</th>
-                    <th className="text-right py-3 px-4 font-medium">Earnings</th>
-                    <th className="text-center py-3 px-4 font-medium">Deliveries</th>
+                    <th className="px-4 py-3 text-left font-medium">Date</th>
+                    <th className="px-4 py-3 text-left font-medium">Platform</th>
+                    <th className="px-4 py-3 text-right font-medium">Earnings</th>
+                    <th className="px-4 py-3 text-center font-medium">Trips</th>
                   </tr>
                 </thead>
                 <tbody>
                   {records.map((record) => (
                     <tr key={record.id} className="border-b hover:bg-muted/50 transition-colors">
-                      <td className="py-3 px-4">{formatDate(record.created_at)}</td>
-                      <td className="py-3 px-4">
-                        <span className="inline-block px-2 py-1 rounded bg-primary/10 text-primary text-xs font-medium capitalize">
+                      <td className="px-4 py-3">{formatDate(record.created_at)}</td>
+                      <td className="px-4 py-3">
+                        <Badge variant="outline" className="capitalize">
                           {record.platform}
-                        </span>
+                        </Badge>
                       </td>
-                      <td className="py-3 px-4 text-right font-medium">
+                      <td className="px-4 py-3 text-right font-medium">
                         ${record.earning_amount_usdc.toLocaleString()}
-                        <div className="text-xs text-muted-foreground">
-                          ₹{Math.round(record.earning_amount_usdc * inrRate).toLocaleString()}
-                        </div>
+                        <div className="text-xs text-muted-foreground">₹{Math.round(record.earning_amount_usdc * inrRate).toLocaleString()}</div>
                       </td>
-                      <td className="py-3 px-4 text-center">{record.delivery_count}</td>
+                      <td className="px-4 py-3 text-center">{record.delivery_count}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -38,7 +38,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-title"
       className={cn(
-        "text-base leading-snug font-medium tracking-tight group-data-[size=sm]/card:text-sm",
+        "text-base leading-snug font-medium tracking-tight text-foreground group-data-[size=sm]/card:text-sm",
         className
       )}
       {...props}
@@ -73,7 +73,7 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-content"
-      className={cn("px-6 pb-6 group-data-[size=sm]/card:px-4 group-data-[size=sm]/card:pb-4", className)}
+      className={cn("px-6 pb-6 text-foreground group-data-[size=sm]/card:px-4 group-data-[size=sm]/card:pb-4", className)}
       {...props}
     />
   )

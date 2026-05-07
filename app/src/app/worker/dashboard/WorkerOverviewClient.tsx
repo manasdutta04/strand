@@ -10,6 +10,7 @@ import { EarningsUpload } from "../../../components/EarningsUpload";
 import { WorkRecordsDisplay } from "../../../components/WorkRecordsDisplay";
 import { useWorkerProfile } from "../../../hooks/useWorkerProfile";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import { Badge } from "../../../components/ui/badge";
 import { formatErrorMessage } from "../../../lib/error-formatter";
 
 const NAV = [
@@ -38,35 +39,56 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
   const [selectedPlatform, setSelectedPlatform] = useState(PLATFORMS[0].name);
 
   const shouldRequireWallet = !demoMode;
+  const eligibleCredit = totalScore >= 400;
+  const estimatedCredit = eligibleCredit ? Math.max(0, (totalScore - 400) * 10) : 0;
 
   const content = (
     <SaasShell
       productLabel={demoMode ? "Worker Workspace · Demo" : "Worker Workspace"}
       title="Dashboard"
-      subtitle={demoMode ? "Explore the product with simulated worker data." : "Track earnings, build reputation, and access credit."}
+      subtitle={demoMode ? "Demo data. No wallet needed." : "Track earnings and unlock credit."}
       nav={NAV}
     >
       {demoMode && (
-        <div className="mb-6 rounded-2xl border border-primary/20 bg-[linear-gradient(135deg,rgba(111,255,0,0.14),rgba(255,255,255,0.03))] px-4 py-4 text-sm text-muted-foreground shadow-[0_0_0_1px_rgba(111,255,0,0.08),0_12px_30px_rgba(0,0,0,0.18)]">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-primary">Sandbox mode</p>
-              <p className="mt-1 font-medium text-foreground">Wallet is optional here. The demo loads instantly.</p>
-            </div>
-            <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-primary">
-              <span className="rounded-full border border-primary/20 bg-background/70 px-3 py-1">No wallet needed</span>
-              <span className="rounded-full border border-primary/20 bg-background/70 px-3 py-1">Simulated earnings</span>
-              <span className="rounded-full border border-primary/20 bg-background/70 px-3 py-1">Instant score</span>
-            </div>
-          </div>
+        <div className="mb-6 flex flex-wrap items-center gap-2 rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
+          <Badge variant="outline" className="border-primary/20 bg-background/70 text-primary">
+            Demo mode
+          </Badge>
+          <span>No wallet. Seeded data.</span>
         </div>
       )}
 
-      <div className="space-y-4 mb-8">
+      <section className="grid gap-4 md:grid-cols-4">
+        <Card className="border-border/60">
+          <CardContent className="pt-6">
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Score</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight">{totalScore || "—"}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/60">
+          <CardContent className="pt-6">
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Credit</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight">${estimatedCredit.toLocaleString()}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/60">
+          <CardContent className="pt-6">
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Records</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight">{workRecords.length || "—"}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-border/60">
+          <CardContent className="pt-6">
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Status</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight">{eligibleCredit ? "Open" : "Build"}</p>
+          </CardContent>
+        </Card>
+      </section>
+
+      <div className="mt-6 space-y-4 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold">Choose Platform</h2>
-            <p className="text-sm text-muted-foreground">Pick the source for the record you want to add</p>
+            <h2 className="text-base font-semibold">Add earnings</h2>
           </div>
         </div>
 
@@ -75,10 +97,10 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
             <button
               key={platform.name}
               onClick={() => setSelectedPlatform(platform.name)}
-              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+              className={`rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
                 selectedPlatform === platform.name
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "border border-border bg-background text-muted-foreground hover:bg-muted/80"
               }`}
             >
               {platform.label}
@@ -91,7 +113,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
 
       <div className="space-y-8">
         <div>
-          <h2 className="text-lg font-semibold mb-4">Reputation Score</h2>
+          <h2 className="mb-3 text-base font-semibold">Score</h2>
           {scoreComponents ? (
             <ScoreBreakdown
               components={scoreComponents}
@@ -99,16 +121,16 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
               inrRate={INR_TO_USD_RATE}
             />
           ) : (
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-center text-muted-foreground">No score data yet. Upload your first earnings to get started.</p>
+            <Card className="border-border/60">
+              <CardContent className="py-8">
+                <p className="text-center text-sm text-muted-foreground">No score yet.</p>
               </CardContent>
             </Card>
           )}
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold mb-4">Work History</h2>
+          <h2 className="mb-3 text-base font-semibold">History</h2>
           <WorkRecordsDisplay
             records={workRecords}
             inrRate={INR_TO_USD_RATE}
@@ -116,36 +138,18 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
           />
         </div>
 
-        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+        <Card className="border-primary/15 bg-primary/5">
           <CardHeader>
-            <CardTitle className="text-base">Credit Access</CardTitle>
+            <CardTitle className="text-base">Credit</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Your Strand Score determines how much credit you can access. Build your reputation by adding work
-              records and maintaining consistent earnings.
-            </p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">Status</p>
-                <p className="text-lg font-semibold">
-                  {totalScore >= 400 ? (
-                    <span className="text-green-600">✓ Eligible</span>
-                  ) : (
-                    <span className="text-yellow-600">Build Score</span>
-                  )}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">Next Step</p>
-                <Link
-                  href="/worker/credit"
-                  className="text-sm font-medium text-primary hover:underline"
-                >
-                  View Credit →
-                </Link>
-              </div>
+          <CardContent className="flex items-center justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">{eligibleCredit ? "Ready for credit" : "Build to unlock credit"}</p>
+              <p className="text-lg font-semibold">{eligibleCredit ? "Eligible" : "Build score"}</p>
             </div>
+            <Link href="/worker/credit" className="btn-accent">
+              Open credit
+            </Link>
           </CardContent>
         </Card>
       </div>

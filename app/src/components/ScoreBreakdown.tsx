@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "./ui/badge";
 
 export interface ScoreComponents {
   delivery_volume: number;
@@ -35,24 +36,17 @@ export function ScoreBreakdown({ components, totalScore, inrRate = 83 }: ScoreBr
 
   return (
     <div className="space-y-6">
-      {/* Main Score Display */}
-      <Card className="border-2 border-primary/20">
+      <Card className="border-border/60">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
-            Strand Score
+          <CardTitle className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            Score
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-5xl font-bold tracking-tight">{totalScore}</div>
-              <p className="text-sm text-muted-foreground mt-1">/ {maxScore} max</p>
-            </div>
+        <CardContent className="grid gap-6 md:grid-cols-[180px_1fr] md:items-center">
+          <div className="flex items-center justify-center">
             <div className="w-32 h-32">
-              <svg viewBox="0 0 120 120" className="w-full h-full">
-                {/* Circle background */}
+              <svg viewBox="0 0 120 120" className="h-full w-full">
                 <circle cx="60" cy="60" r="55" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/20" />
-                {/* Score arc */}
                 <circle
                   cx="60"
                   cy="60"
@@ -65,45 +59,39 @@ export function ScoreBreakdown({ components, totalScore, inrRate = 83 }: ScoreBr
                   className="text-primary transition-all"
                   style={{ transform: "rotate(-90deg)", transformOrigin: "60px 60px" }}
                 />
-                {/* Center text */}
-                <text x="60" y="65" textAnchor="middle" className="text-sm font-bold fill-foreground">
+                <text x="60" y="65" textAnchor="middle" className="fill-foreground text-sm font-bold">
                   {Math.round((totalScore / maxScore) * 100)}%
                 </text>
               </svg>
             </div>
           </div>
 
-          {/* Credit Eligibility */}
-          <div className="pt-4 border-t">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Credit Access</p>
-            <div className="mt-3 space-y-2">
+          <div className="space-y-3">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <div className="text-5xl font-bold tracking-tight">{totalScore}</div>
+                <p className="text-sm text-muted-foreground">/ {maxScore}</p>
+              </div>
+              <Badge variant={creditEligible ? "default" : "secondary"}>{creditEligible ? "Credit open" : "Build score"}</Badge>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-2">
               {creditEligible ? (
                 <>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Available Credit</span>
-                    <span className="text-lg font-bold text-green-600">${creditLimitUsdc.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">in Indian Rupees</span>
-                    <span className="text-sm text-muted-foreground">₹{creditLimitInr.toLocaleString()}</span>
-                  </div>
+                  <Badge variant="outline">${creditLimitUsdc.toLocaleString()} USDC</Badge>
+                  <Badge variant="outline">₹{creditLimitInr.toLocaleString()}</Badge>
                 </>
               ) : (
-                <div className="bg-yellow-500/10 border border-yellow-500/20 rounded p-3">
-                  <p className="text-sm text-yellow-700 dark:text-yellow-400">
-                    Score must reach 400+ for credit access. You need {400 - totalScore} more points.
-                  </p>
-                </div>
+                <Badge variant="secondary">{400 - totalScore} more points needed</Badge>
               )}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Component Breakdown Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {componentData.map((component) => (
-          <Card key={component.label}>
+          <Card key={component.label} className="border-border/60">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium">{component.label}</CardTitle>
             </CardHeader>
@@ -112,16 +100,12 @@ export function ScoreBreakdown({ components, totalScore, inrRate = 83 }: ScoreBr
                 <span className="text-2xl font-bold">{component.value}</span>
                 <span className="text-xs text-muted-foreground">/ {component.max}</span>
               </div>
-              {/* Progress bar */}
               <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                 <div
                   className={`h-full ${component.color} transition-all`}
                   style={{ width: `${Math.min((component.value / component.max) * 100, 100)}%` }}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
-                {Math.round((component.value / component.max) * 100)}% of max
-              </p>
             </CardContent>
           </Card>
         ))}

@@ -54,7 +54,7 @@ export function EarningsUpload({ platform, onUploadStart, onUploadComplete }: Ea
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Evidence drop box</CardTitle>
+        <CardTitle className="text-base">Upload evidence</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="relative border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
@@ -95,7 +95,7 @@ export function EarningsUpload({ platform, onUploadStart, onUploadComplete }: Ea
         )}
         {error && (
           <div className="bg-red-500/10 border border-red-500/20 rounded p-3">
-            <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+            <p className="mt-1 text-xs text-muted-foreground">PNG, JPG, PDF up to 10MB</p>
           </div>
         )}
 
