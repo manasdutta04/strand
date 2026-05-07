@@ -6,17 +6,17 @@ import { ChevronRight } from "lucide-react";
 const featureCards = [
   {
     title: "Work history",
-    description: "Portable proof of completed work that follows the wallet instead of the platform.",
+    description: "Verified proof of completed work that travels with the wallet.",
     eyebrow: "Verified"
   },
   {
     title: "Strand Score",
-    description: "A transparent score that updates from job completion, consistency, and attestation.",
+    description: "A live score built from earnings, consistency, and attestations.",
     eyebrow: "0 - 1000"
   },
   {
     title: "Credit access",
-    description: "Partners can underwrite from on-chain reputation and open USDC credit lines.",
+    description: "Partners underwrite from on-chain reputation and issue USDC credit.",
     eyebrow: "USDC-ready"
   }
 ] as const;
@@ -24,15 +24,15 @@ const featureCards = [
 const signalCards = [
   {
     title: "Worker workspace",
-    description: "Track jobs, claims, skills, and score updates from a single wallet-native account."
+    description: "Track earnings, skills, and score in one workspace."
   },
   {
     title: "Client workflow",
-    description: "Review job history and verified delivery before assigning work or releasing escrow."
+    description: "Review verified work before assigning or releasing payment."
   },
   {
     title: "Partner workflow",
-    description: "Read score signals and portability proof before opening or adjusting credit lines."
+    description: "Read score signals before opening or adjusting credit."
   }
 ] as const;
 
@@ -51,14 +51,14 @@ const pricingPlans = [
   {
     name: "Free",
     price: "Own key",
-    description: "Bring your own key and start with the core wallet-native proof flow.",
+    description: "Bring your own key and start with the core proof flow.",
     cta: "Start free",
     featured: false
   },
   {
     name: "Pro",
     price: "$9/month",
-    description: "Key provided. Coming soon for teams that want managed access and workflow automation.",
+    description: "Key provided. Coming soon for teams that want managed access.",
     cta: "Coming soon",
     featured: true
   }
@@ -126,17 +126,15 @@ export default function StrandLandingPage() {
           <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
             <div className="relative max-w-4xl lg:ml-28">
               <p className="mb-6 font-grotesk text-[11px] uppercase tracking-[0.35em] text-[#6FFF00] sm:text-xs">
-                Built on Solana • India gig-worker earnings and credit protocol
+                Built on Solana • earnings and credit for gig workers
               </p>
 
               <h1 className="max-w-4xl font-grotesk text-[42px] uppercase leading-[1.05] text-[#EFF4FF] sm:text-[60px] md:text-[75px] lg:text-[90px] lg:leading-[1]">
-                Portable work history,
+                Work history,
                 <br />
-                reputation, and
-                <br/>
-                credit for gig workers
-                <br/>
-                <span className="font-condiment normal-case text-[#6FFF00]">across India</span>
+                score, and credit
+                <br />
+                <span className="font-condiment normal-case text-[#6FFF00]">for workers in India</span>
               </h1>
 
               
@@ -157,7 +155,7 @@ export default function StrandLandingPage() {
       <section className="relative border-y border-white/10 bg-[#010828] py-5">
         <div className="mx-auto flex max-w-[1831px] items-center gap-6 overflow-hidden px-4 sm:px-6 lg:px-16">
           <p className="shrink-0 font-grotesk text-[11px] uppercase tracking-[0.3em] text-[#6FFF00] sm:text-xs">
-            Trusted by
+            Built for
           </p>
 
             <div className="relative flex-1 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
@@ -201,7 +199,7 @@ export default function StrandLandingPage() {
             </div>
 
             <p className="max-w-md font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF] sm:text-[16px] lg:justify-self-end">
-              One wallet-native SaaS workspace for workers and partners on Solana. Every side reads the same verified work history, score, and credit signal.
+              One SaaS workspace for workers and partners on Solana. Everyone reads the same verified work history, score, and credit signal.
             </p>
           </div>
 
@@ -221,7 +219,7 @@ export default function StrandLandingPage() {
             </div>
 
             <p className="max-w-md font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF]/80 sm:text-[16px] lg:justify-self-end">
-              The app looks like a product, not a protocol diagram. These Solana-based modules show the on-chain proof layer that powers Strand.
+              A product-first flow built around proof, score, and credit.
             </p>
           </div>
 
@@ -322,7 +320,7 @@ export default function StrandLandingPage() {
 
           <h2 className="max-w-2xl font-grotesk text-[18px] uppercase leading-[1.1] text-[#EFF4FF] sm:text-[32px] md:text-[48px] lg:text-[60px]">
             <span className="block mb-4 lg:mb-8">SOLANA WORK NFTs.</span>
-            <span className="block">STRAND SCORE (On-Chain).</span>
+            <span className="block">STRAND SCORE.</span>
             <span className="block">ORACLE-VERIFIED SKILLS.</span>
             <span className="block">USDC CREDIT LAYER.</span>
           </h2>
@@ -359,7 +357,7 @@ export default function StrandLandingPage() {
               <div className="mt-5 space-y-4 font-mono text-[14px] text-[#EFF4FF]/60">
                 <a href="#product" className="block transition-colors hover:text-[#EFF4FF]">Features</a>
                 <a href="#pricing" className="block transition-colors hover:text-[#EFF4FF]">Pricing</a>
-                <a href="#stack" className="block transition-colors hover:text-[#EFF4FF]">Built for</a>
+                <a href="#stack" className="block transition-colors hover:text-[#EFF4FF]">Stack</a>
               </div>
             </div>
 
@@ -383,7 +381,7 @@ export default function StrandLandingPage() {
           </div>
 
           <div className="mt-14 border-t border-white/10 pt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="font-mono text-sm text-[#EFF4FF]/55">Strand © 2026 • Apache Licensed • Built on Solana</p>
+            <p className="font-mono text-sm text-[#EFF4FF]/55">Strand © 2026 • Apache Licensed • Solana-based</p>
             <div className="flex items-center gap-4 font-mono text-[13px] uppercase tracking-[0.18em] text-[#EFF4FF]/55">
               <span>Build by</span>
               <span>Manas &amp; Priya</span>
