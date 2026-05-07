@@ -17,7 +17,7 @@ export interface ScoreComponents {
   repayment: number;
 }
 
-export function useWorkerProfile(wallet: string | null) {
+export function useWorkerProfile(wallet: string | null, demoMode = false) {
   const [workRecords, setWorkRecords] = useState<WorkRecord[]>([]);
   const [scoreComponents, setScoreComponents] = useState<ScoreComponents | null>(null);
   const [totalScore, setTotalScore] = useState(0);
@@ -25,7 +25,7 @@ export function useWorkerProfile(wallet: string | null) {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (!wallet) {
+    if (!wallet && !demoMode) {
       setWorkRecords([]);
       setScoreComponents(null);
       setTotalScore(0);
@@ -37,57 +37,63 @@ export function useWorkerProfile(wallet: string | null) {
       setError(null);
 
       try {
-        // In a real implementation, this would fetch from the Solana blockchain
-        // For now, return mock data for demo purposes
-        const mockRecords: WorkRecord[] = [
-          {
-            id: "record1",
-            earning_amount_usdc: 45.5,
-            delivery_count: 12,
-            platform: "zomato",
-            created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: "record2",
-            earning_amount_usdc: 38.2,
-            delivery_count: 8,
-            platform: "swiggy",
-            created_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: "record3",
-            earning_amount_usdc: 52.75,
-            delivery_count: 15,
-            platform: "zomato",
-            created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: "record4",
-            earning_amount_usdc: 31.4,
-            delivery_count: 6,
-            platform: "blinkit",
-            created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-          }
-        ];
+        // In a real implementation, this would fetch from the Solana blockchain.
+        // Demo mode keeps the product explorable without seeded on-chain data.
+        const mockRecords: WorkRecord[] = demoMode
+          ? [
+              {
+                id: "demo-record-1",
+                earning_amount_usdc: 45.5,
+                delivery_count: 12,
+                platform: "zomato",
+                created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+              },
+              {
+                id: "demo-record-2",
+                earning_amount_usdc: 38.2,
+                delivery_count: 8,
+                platform: "swiggy",
+                created_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
+              },
+              {
+                id: "demo-record-3",
+                earning_amount_usdc: 52.75,
+                delivery_count: 15,
+                platform: "zomato",
+                created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+              },
+              {
+                id: "demo-record-4",
+                earning_amount_usdc: 31.4,
+                delivery_count: 6,
+                platform: "blinkit",
+                created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+              }
+            ]
+          : [];
 
-        const mockComponents: ScoreComponents = {
-          delivery_volume: 167, // ~83% (41 deliveries / 1000 * 200 = 8.2, but scoring is different)
-          earnings_consistency: 120, // 80% of max 150
-          tenure: 45, // ~30% (account 40 days old)
-          rating_points: 187, // 93% of max 200
-          cross_platform: 90, // 3 platforms * 30 = 90
-          repayment: 0 // No loans yet
-        };
+        const mockComponents: ScoreComponents | null = demoMode
+          ? {
+              delivery_volume: 167,
+              earnings_consistency: 120,
+              tenure: 45,
+              rating_points: 187,
+              cross_platform: 90,
+              repayment: 0
+            }
+          : null;
 
         setWorkRecords(mockRecords);
         setScoreComponents(mockComponents);
         setTotalScore(
-          mockComponents.delivery_volume +
-            mockComponents.earnings_consistency +
-            mockComponents.tenure +
-            mockComponents.rating_points +
-            mockComponents.cross_platform +
-            mockComponents.repayment
+          mockComponents
+            ? mockComponents.delivery_volume +
+              mockComponents.earnings_consistency +
+              mockComponents.tenure +
+              mockComponents.rating_points +
+              mockComponents.cross_platform +
+              mockComponents.repayment
+            : 0
         );
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Failed to fetch profile"));
@@ -97,7 +103,7 @@ export function useWorkerProfile(wallet: string | null) {
     };
 
     fetchProfile();
-  }, [wallet]);
+  }, [demoMode, wallet]);
 
   return {
     workRecords,

@@ -42,7 +42,7 @@ export default function HelpPage() {
               </div>
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: Can I claim work retroactively?</h3>
-                <p className="ml-4">A: Yes, but claims must be verified within 90 days of completion. Older claims require lender approval. This prevents score manipulation.</p>
+                <p className="ml-4">A: Yes, but claims must be verified within 90 days of completion. Older claims require partner approval. This prevents score manipulation.</p>
               </div>
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: What happens if my claim is disputed?</h3>
@@ -60,7 +60,7 @@ export default function HelpPage() {
             <div className="space-y-6">
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: What is my Strand Score?</h3>
-                <p className="ml-4">A: Your score (0–1000) reflects your work reliability, consistency, and lender history. Higher scores unlock better credit terms. Score updates daily based on new work and oracle data.</p>
+                <p className="ml-4">A: Your score (0–1000) reflects your work reliability, consistency, and partner history. Higher scores unlock better credit terms. Score updates daily based on new work and oracle data.</p>
               </div>
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: How can I improve my score?</h3>
@@ -68,7 +68,7 @@ export default function HelpPage() {
               </div>
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: Can I see my score breakdown?</h3>
-                <p className="ml-4">A: Yes. Your Strand dashboard shows the 4 score components: Completion Rate (40%), Consistency (30%), Skills (20%), and Lender Feedback (10%).</p>
+                <p className="ml-4">A: Yes. Your Strand dashboard shows the 4 score components: Completion Rate (40%), Consistency (30%), Skills (20%), and Partner Feedback (10%).</p>
               </div>
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: What if my score drops?</h3>
@@ -82,11 +82,11 @@ export default function HelpPage() {
             <div className="space-y-6">
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: How do I access credit?</h3>
-                <p className="ml-4">A: Build work history (5+ projects), achieve a Strand Score of 400+, then apply for USDC credit lines. Lenders review your on-chain reputation and decide in 24-48 hours.</p>
+                <p className="ml-4">A: Build work history (5+ projects), achieve a Strand Score of 400+, then apply for USDC credit lines. Partners review your on-chain reputation and decide in 24-48 hours.</p>
               </div>
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: What interest rates should I expect?</h3>
-                <p className="ml-4">A: Rates range from 8–18% APY depending on your score and lender. Higher scores = lower rates. All terms are transparent on-chain before you borrow.</p>
+                <p className="ml-4">A: Rates range from 8–18% APY depending on your score and partner. Higher scores = lower rates. All terms are transparent on-chain before you borrow.</p>
               </div>
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: How do I repay credit?</h3>
@@ -94,7 +94,7 @@ export default function HelpPage() {
               </div>
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: What happens if I miss a payment?</h3>
-                <p className="ml-4">A: Late payments trigger penalties and damage your lender feedback score. After 30 days overdue, lenders can initiate on-chain collection. Defaults can result in account restrictions.</p>
+                <p className="ml-4">A: Late payments trigger penalties and damage your partner feedback score. After 30 days overdue, partners can initiate on-chain collection. Defaults can result in account restrictions.</p>
               </div>
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: Can I refinance my credit line?</h3>

@@ -12,11 +12,11 @@ import { executeOpenCreditLine } from "../../../../lib/tx-helpers";
 import { formatErrorMessage } from "../../../../lib/error-formatter";
 
 const NAV = [
-  { label: "Portfolio", href: "/lender/dashboard" },
-  { label: "Underwriting Queue", href: "/lender/dashboard/queue" }
+  { label: "Portfolio", href: "/partner/dashboard" },
+  { label: "Underwriting Queue", href: "/partner/dashboard/queue" }
 ];
 
-export default function LenderQueuePage() {
+export default function PartnerQueuePage() {
   const { publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
   const wallet = publicKey?.toBase58() ?? null;
@@ -84,7 +84,7 @@ export default function LenderQueuePage() {
 
   async function approveRequest(jobId: number): Promise<void> {
     if (!publicKey || !sendTransaction) return;
-    
+
     setProcessingJob(jobId);
     setActionErrors((prev) => ({ ...prev, [jobId]: "" }));
 
@@ -147,9 +147,9 @@ export default function LenderQueuePage() {
   }
 
   return (
-    <RequireWallet redirectTo="/login/lender">
+    <RequireWallet redirectTo="/login/partner">
       <SaasShell
-        productLabel="Lender Workspace"
+        productLabel="Partner Workspace"
         title="Underwriting Queue"
         subtitle="Review and approve credit lines for score-verified borrowers."
         nav={NAV}

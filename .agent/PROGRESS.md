@@ -89,6 +89,8 @@
 - [x] useWorkerProfile hook (fetch work records and score components, mock data for demo)
 - [x] Worker dashboard page (updated with upload form, score breakdown, work history)
 - [x] Public profile page (shareable gig-worker profile with score + work records)
+- [x] Legacy /client routes redirected away from the old category flow
+- [x] Worker demo renders on first load without wallet connection
 - [x] app/.env configured with all program IDs + INR rate
 - [x] Frontend build verified with `npm run build`
 - [ ] Full end-to-end frontend demo working (depends on blockchain deployment)

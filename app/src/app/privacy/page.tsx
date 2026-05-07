@@ -30,7 +30,7 @@ export default function PrivacyPage() {
             <div className="space-y-3">
               <p><strong>Wallet Address:</strong> We collect your Solana wallet address when you connect to Strand.</p>
               <p><strong>Work History:</strong> Verified work completions, client names, project descriptions, and delivery dates.</p>
-              <p><strong>Attestations:</strong> Skill verifications, references, and lender assessments tied to your wallet.</p>
+              <p><strong>Attestations:</strong> Skill verifications, references, and partner assessments tied to your wallet.</p>
               <p><strong>Usage Data:</strong> How you interact with Strand (login times, features used, platform activity).</p>
               <p><strong>Device Information:</strong> Browser type, IP address, operating system (for platform analytics and security).</p>
             </div>
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
             <ul className="space-y-2 ml-4 list-disc">
               <li>To verify work completion and issue Work NFTs</li>
               <li>To calculate and maintain your Strand Score</li>
-              <li>To facilitate credit access and lender underwriting</li>
+              <li>To facilitate credit access and partner underwriting</li>
               <li>To prevent fraud and enforce our Terms of Service</li>
               <li>To improve and maintain the Strand platform</li>
               <li>To send you security alerts and platform updates</li>
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="font-grotesk text-xl uppercase text-[#EFF4FF] mb-4">5. Data Sharing & Third Parties</h2>
             <p>
-              <strong>Lenders:</strong> We share your work history and Strand Score with partner lenders when you apply for credit. Lenders use this data for underwriting and credit decisions.
+              <strong>Partners:</strong> We share your work history and Strand Score with partner institutions when you apply for credit. Partners use this data for underwriting and credit decisions.
             </p>
             <p className="mt-3">
               <strong>Clients & Workers:</strong> When you work with other users on Strand, they may view your work history and Strand Score.

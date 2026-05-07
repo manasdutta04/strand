@@ -35,14 +35,14 @@ export default function TermsPage() {
           <section>
             <h2 className="font-grotesk text-xl uppercase text-[#EFF4FF] mb-4">4. Strand Score & Reputation</h2>
             <p>
-              Your Strand Score is calculated based on verified work history, on-time delivery, skill attestations, and lender assessments. The score is dynamic and may change as new verified work is added to your history. Strand does not guarantee any specific score calculation methodology and reserves the right to update scoring logic with notice.
+              Your Strand Score is calculated based on verified work history, on-time delivery, skill attestations, and partner assessments. The score is dynamic and may change as new verified work is added to your history. Strand does not guarantee any specific score calculation methodology and reserves the right to update scoring logic with notice.
             </p>
           </section>
 
           <section>
             <h2 className="font-grotesk text-xl uppercase text-[#EFF4FF] mb-4">5. Credit Lines & Financial Terms</h2>
             <p>
-              USDC credit lines offered through Strand are provided by partner lenders, not by Strand directly. Strand facilitates access to credit based on your on-chain work history and Strand Score. All credit terms, interest rates, repayment schedules, and penalties are determined by the lender. You are responsible for understanding and complying with your specific credit agreement.
+              USDC credit lines offered through Strand are provided by partner institutions, not by Strand directly. Strand facilitates access to credit based on your on-chain work history and Strand Score. All credit terms, interest rates, repayment schedules, and penalties are determined by the partner. You are responsible for understanding and complying with your specific credit agreement.
             </p>
           </section>
 

@@ -8,11 +8,11 @@ import { useLenderPortfolio } from "../../../hooks/useLenderPortfolio";
 import { formatErrorMessage } from "../../../lib/error-formatter";
 
 const NAV = [
-  { label: "Portfolio", href: "/lender/dashboard" },
-  { label: "Underwriting Queue", href: "/lender/dashboard/queue" }
+  { label: "Portfolio", href: "/partner/dashboard" },
+  { label: "Underwriting Queue", href: "/partner/dashboard/queue" }
 ];
 
-export default function LenderDashboardPage() {
+export default function PartnerDashboardPage() {
   const { publicKey } = useWallet();
   const wallet = publicKey?.toBase58() ?? null;
   const { portfolio, isLoading, error } = useLenderPortfolio(wallet);
@@ -26,9 +26,9 @@ export default function LenderDashboardPage() {
   const utilizationRate = portfolio.length > 0 ? Math.round((portfolio.reduce((sum, item) => sum + item.utilization, 0) / portfolio.length) * 100) : 0;
 
   return (
-    <RequireWallet redirectTo="/login/lender">
+    <RequireWallet redirectTo="/login/partner">
       <SaasShell
-        productLabel="Lender Workspace"
+        productLabel="Partner Workspace"
         title="Overview"
         subtitle="Monitor capital deployment, APR, and borrower utilization."
         nav={NAV}
@@ -66,7 +66,7 @@ export default function LenderDashboardPage() {
               {formatErrorMessage(error)}
             </p>
           ) : isLoading ? (
-            <p className="text-sm text-muted-foreground">Loading lender portfolio...</p>
+            <p className="text-sm text-muted-foreground">Loading partner portfolio...</p>
           ) : portfolio.length === 0 ? (
             <p className="text-sm text-muted-foreground">No active credit lines found for this wallet.</p>
           ) : (

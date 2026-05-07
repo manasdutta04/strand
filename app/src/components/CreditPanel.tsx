@@ -61,9 +61,9 @@ export function CreditPanel({ creditLine, onBorrow, onRepay }: CreditPanelProps)
   if (!creditLine) {
     return (
       <section className="panel space-y-4 p-6">
-        <h3 className="text-lg font-semibold tracking-tight">No lender has opened a credit line for your score yet.</h3>
+        <h3 className="text-lg font-semibold tracking-tight">No partner has opened a credit line for your score yet.</h3>
         <p className="text-sm text-muted-foreground">
-          Share your profile to attract lenders. Your live score and work history make underwriting
+          Share your profile to attract partners. Your live score and work history make underwriting
           portable.
         </p>
         <div className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">

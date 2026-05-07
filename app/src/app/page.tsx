@@ -16,7 +16,7 @@ const featureCards = [
   },
   {
     title: "Credit access",
-    description: "Lenders can underwrite from on-chain reputation and open USDC credit lines.",
+    description: "Partners can underwrite from on-chain reputation and open USDC credit lines.",
     eyebrow: "USDC-ready"
   }
 ] as const;
@@ -31,7 +31,7 @@ const signalCards = [
     description: "Review job history and verified delivery before assigning work or releasing escrow."
   },
   {
-    title: "Lender workflow",
+    title: "Partner workflow",
     description: "Read score signals and portability proof before opening or adjusting credit lines."
   }
 ] as const;
@@ -44,7 +44,7 @@ const trustedUsers = [
   "Contractors",
   "Small teams",
   "Marketplaces",
-  "Lenders"
+  "Partners"
 ] as const;
 
 const pricingPlans = [
@@ -126,17 +126,17 @@ export default function StrandLandingPage() {
           <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
             <div className="relative max-w-4xl lg:ml-28">
               <p className="mb-6 font-grotesk text-[11px] uppercase tracking-[0.35em] text-[#6FFF00] sm:text-xs">
-                Built on Solana • Portable work history and credit protocol
+                Built on Solana • India gig-worker earnings and credit protocol
               </p>
 
               <h1 className="max-w-4xl font-grotesk text-[42px] uppercase leading-[1.05] text-[#EFF4FF] sm:text-[60px] md:text-[75px] lg:text-[90px] lg:leading-[1]">
-                Work, reputation,
+                Portable work history,
                 <br />
-                and credit
-                <br />
-                in one
+                reputation, and
                 <br/>
-                <span className="font-condiment normal-case text-[#6FFF00]">wallet-native system</span>
+                credit for gig workers
+                <br/>
+                <span className="font-condiment normal-case text-[#6FFF00]">across India</span>
               </h1>
 
               
@@ -201,7 +201,7 @@ export default function StrandLandingPage() {
             </div>
 
             <p className="max-w-md font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF] sm:text-[16px] lg:justify-self-end">
-              One wallet-native workspace for workers, clients, and lenders on Solana. Each side sees the same trusted on-chain work history and score signal.
+              One wallet-native SaaS workspace for workers and partners on Solana. Every side reads the same verified work history, score, and credit signal.
             </p>
           </div>
 

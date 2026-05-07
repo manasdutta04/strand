@@ -81,7 +81,7 @@ export default function DocsPage() {
               <p><strong>40% – Work Completion Rate:</strong> Percentage of projects completed on time</p>
               <p><strong>30% – Consistency Signal:</strong> Regular work history and delivery frequency</p>
               <p><strong>20% – Skill Attestations:</strong> Oracle-verified competencies in your field</p>
-              <p><strong>10% – Lender Feedback:</strong> Credit payment history and on-chain reputation</p>
+              <p><strong>10% – Partner Feedback:</strong> Credit payment history and on-chain reputation</p>
             </div>
             <p className="mt-4">
               Your score updates daily based on new verified work and oracle data. Higher scores unlock larger credit lines.
@@ -91,13 +91,13 @@ export default function DocsPage() {
           <section id="credit-access">
             <h2 className="font-grotesk text-xl uppercase text-[#EFF4FF] mb-4">Accessing USDC Credit Lines</h2>
             <p>
-              Strand connects you with lenders who underwrite based on your on-chain reputation:
+              Strand connects you with partners who underwrite based on your on-chain reputation:
             </p>
             <ol className="mt-4 ml-4 space-y-2 list-decimal">
               <li>Build work history (minimum 5 verified projects recommended)</li>
               <li>Achieve Strand Score of 400+ for initial credit eligibility</li>
               <li>Apply for USDC credit lines through Strand dashboard</li>
-              <li>Lender reviews your score, work history, and prior repayment</li>
+              <li>Partner reviews your score, work history, and prior repayment</li>
               <li>Upon approval, USDC is transferred directly to your wallet</li>
               <li>Repayments are on-chain via SPL token transfers</li>
             </ol>
