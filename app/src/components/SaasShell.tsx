@@ -20,6 +20,7 @@ interface SaasShellProps {
 
 export function SaasShell({ productLabel, title, subtitle, nav, children }: SaasShellProps) {
   const pathname = usePathname();
+  const isDemoRoute = pathname.startsWith("/worker/demo") || pathname.startsWith("/partner/demo");
 
   return (
     <main className="min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-8">
@@ -33,7 +34,30 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
             <p className="max-w-2xl text-sm text-muted-foreground">{subtitle}</p>
           </div>
-          <StrandWalletButton className="!h-10 !rounded-md !text-sm" />
+          {isDemoRoute ? (
+            <div className="inline-flex h-10 items-center gap-2 rounded-md border border-primary/20 bg-primary/5 px-3 text-sm font-medium text-foreground">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                className="h-4 w-4"
+                fill="none"
+              >
+                <path d="M3 6h6l2 4H5L3 6Z" fill="url(#solana-demo-gradient)" />
+                <path d="M3 12h6l2 4H5l-2-4Z" fill="url(#solana-demo-gradient)" />
+                <path d="M3 18h6l2-4H5l-2 4Z" fill="url(#solana-demo-gradient)" />
+                <defs>
+                  <linearGradient id="solana-demo-gradient" x1="3" y1="6" x2="21" y2="18" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#14F195" />
+                    <stop offset="0.5" stopColor="#00C2FF" />
+                    <stop offset="1" stopColor="#9945FF" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              Demo wallet
+            </div>
+          ) : (
+            <StrandWalletButton className="!h-10 !rounded-md !text-sm" />
+          )}
         </header>
 
         <nav className="flex flex-wrap gap-2">
