@@ -65,8 +65,8 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
       <div className="space-y-4 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold">Add Earnings</h2>
-            <p className="text-sm text-muted-foreground">Upload a screenshot from one of your delivery platforms</p>
+            <h2 className="text-lg font-semibold">Choose Platform</h2>
+            <p className="text-sm text-muted-foreground">Pick the source for the record you want to add</p>
           </div>
         </div>
 

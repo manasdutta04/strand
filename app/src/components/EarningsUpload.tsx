@@ -54,24 +54,18 @@ export function EarningsUpload({ platform, onUploadStart, onUploadComplete }: Ea
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Upload Earnings Screenshot</CardTitle>
+        <CardTitle className="text-base">Evidence drop box</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Upload your {platform} earnings screenshot or PDF. Our oracle will automatically extract your earnings
-          and delivery count.
-        </p>
-
-        <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
+        <div className="relative border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
           <input
             type="file"
             accept=".pdf,.png,.jpg,.jpeg,.gif"
             onChange={handleFileSelect}
             disabled={isLoading || !publicKey}
-            className="w-full opacity-0 cursor-pointer absolute inset-0"
-            style={{ width: "100%", height: "100%" }}
+            className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
           />
-          <div className="pointer-events-none">
+          <div className="pointer-events-none relative z-0">
             <svg
               className="mx-auto h-12 w-12 text-muted-foreground/40"
               stroke="currentColor"
@@ -99,7 +93,6 @@ export function EarningsUpload({ platform, onUploadStart, onUploadComplete }: Ea
             </p>
           </div>
         )}
-
         {error && (
           <div className="bg-red-500/10 border border-red-500/20 rounded p-3">
             <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
