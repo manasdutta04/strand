@@ -3,6 +3,58 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { useState } from "react";
+
+function MobileMenuButton() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        aria-label="Open menu"
+        className="inline-flex items-center justify-center rounded-full p-2 liquid-glass"
+      >
+        <svg className="w-6 h-6 text-[#EFF4FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      {open ? (
+        <div className="fixed inset-0 z-50 flex">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
+          <div className="ml-auto w-64 max-w-[80%] bg-[#010828] p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img src="/logo.svg" alt="Strand" className="h-8 w-auto" />
+                <span className="font-grotesk text-[16px] uppercase text-[#EFF4FF]">Strand</span>
+              </div>
+              <button onClick={() => setOpen(false)} className="liquid-glass rounded-full px-2 py-1">
+                Close
+              </button>
+            </div>
+
+            <nav className="mt-6 flex flex-col gap-4">
+              <a href="#product" className="font-grotesk uppercase text-[#EFF4FF]">Features</a>
+              <a href="#pricing" className="font-grotesk uppercase text-[#EFF4FF]">Pricing</a>
+              <a href="/docs" className="font-grotesk uppercase text-[#EFF4FF]">Docs</a>
+              <a href="/help" className="font-grotesk uppercase text-[#EFF4FF]">Help</a>
+              <a href="https://github.com/manasdutta04/strand" target="_blank" rel="noopener noreferrer" className="font-grotesk uppercase text-[#EFF4FF]">GitHub</a>
+
+              <Link href="/who" className="mt-4 liquid-glass rounded-full px-6 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF]">
+                Get Started
+              </Link>
+            </nav>
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+function MobileMenu() {
+  return null;
+}
 
 const featureCards = [
   {
@@ -89,11 +141,16 @@ export default function StrandLandingPage() {
 
         <header className="relative z-10 mx-auto flex max-w-[1831px] items-center justify-between px-4 py-6 sm:px-6 lg:px-16 lg:py-8">
           <a href="#home" className="flex items-center gap-3">
-            <img src="/logo.svg" alt="Strand" className="h-10 w-auto" />
+            <img src="/logo.svg" alt="Strand" className="h-8 sm:h-10 w-auto" />
             <span className="ml-2 font-grotesk text-[20px] uppercase text-white tracking-[0.03em] sm:text-[22px] md:text-[24px]">
               Strand
             </span>
           </a>
+
+          {/* Mobile menu button */}
+          <div className="lg:hidden">
+            <MobileMenuButton />
+          </div>
 
           <nav className="hidden lg:flex items-center gap-6">
             <div className="rounded-[28px] px-6 py-3 liquid-glass flex items-center">
@@ -117,6 +174,9 @@ export default function StrandLandingPage() {
 
           
           </nav>
+          
+          {/* Mobile menu panel (renders into the page root when open) */}
+          <MobileMenu />
         </header>
 
         <div className="relative z-10 mx-auto max-w-[1831px] px-4 pb-16 pt-14 sm:px-6 lg:px-16 lg:pb-20 lg:pt-20">
@@ -162,7 +222,7 @@ export default function StrandLandingPage() {
                   alt={brand.name}
                   width={brand.width}
                   height={brand.height}
-                  className="h-7 w-auto select-none object-contain opacity-95 sm:h-8"
+                  className="h-6 sm:h-7 md:h-8 w-auto select-none object-contain opacity-95"
                   draggable={false}
                   priority={brand.name === "Zomato"}
                 />
