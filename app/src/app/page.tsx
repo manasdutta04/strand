@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { Star } from "lucide-react";
 
 function MobileMenuButton() {
   const [open, setOpen] = useState(false);
@@ -39,10 +40,10 @@ function MobileMenuButton() {
 
                   <nav className="mt-6 flex flex-col gap-4">
                     <a href="#product" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Features</a>
+                    <a href="#stack" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Stack</a>
                     <a href="#pricing" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Pricing</a>
                     <a href="/docs" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Docs</a>
                     <a href="/help" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Help</a>
-                    <a href="https://github.com/manasdutta04/strand" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">GitHub</a>
 
                     <Link href="/who" onClick={() => setOpen(false)} className="mt-4 liquid-glass rounded-full px-6 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF]">
                       Get Started
@@ -162,10 +163,10 @@ export default function StrandLandingPage() {
             <div className="rounded-[28px] px-6 py-3 liquid-glass flex items-center">
               {[
                 ["Features", "#product"],
+                ["Stack", "#stack"],
                 ["Pricing", "#pricing"],
                 ["Docs", "/docs"],
-                ["Help", "/help"],
-                ["GitHub", "https://github.com/manasdutta04/strand"]
+                ["Help", "/help"]
               ].map(([label, href]) => (
                 <a
                   key={label}
@@ -202,10 +203,19 @@ export default function StrandLandingPage() {
                 <span className="font-condiment normal-case text-[#6FFF00]">for India</span>
               </h1>
 
-              <div className="mt-8 flex items-center">
+              <div className="mt-8 flex items-center gap-4">
                 <Link href="/who" className="liquid-glass rounded-full px-6 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] transition-colors hover:text-[#6FFF00]">
                   Get Started
                 </Link>
+                <a 
+                  href="https://github.com/manasdutta04/strand" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="liquid-glass rounded-full px-6 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] transition-colors hover:text-[#6FFF00] flex items-center gap-2"
+                >
+                  <Star className="w-4 h-4" />
+                  Star on GitHub
+                </a>
               </div>
               
 
