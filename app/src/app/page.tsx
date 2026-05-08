@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
@@ -37,17 +38,13 @@ const signalCards = [
 ] as const;
 
 const trustedUsers = [
-  "Zomato",
-  "Swiggy",
-  "Blinkit",
-  "Ola",
-  "Uber",
-  "Urban Company",
-  "Workers",
-  "Partners"
+  { name: "Zomato", src: "/brands/zomato.svg", width: 144, height: 44 },
+  { name: "Swiggy", src: "/brands/swiggy.svg", width: 154, height: 48 },
+  { name: "Blinkit", src: "/brands/blinkit.svg", width: 182, height: 48 },
+  { name: "Ola", src: "/brands/ola.svg", width: 145, height: 55 },
+  { name: "Uber", src: "/brands/uber.svg", width: 156, height: 52 },
+  { name: "Urban Company", src: "/brands/uclub.png", width: 180, height: 54 }
 ] as const;
-
-const trustedUsersLoop = [...trustedUsers, ...trustedUsers];
 
 const pricingPlans = [
   {
@@ -157,25 +154,28 @@ export default function StrandLandingPage() {
       </section>
 
       <section className="relative border-y border-white/10 bg-[#010828] py-5">
-        <div className="mx-auto flex max-w-[1831px] items-center gap-6 overflow-hidden px-4 sm:px-6 lg:px-16">
+        <div className="mx-auto flex max-w-[1831px] flex-col gap-4 px-4 sm:px-6 lg:px-16 xl:flex-row xl:items-center xl:gap-8">
           <p className="shrink-0 font-grotesk text-[11px] uppercase tracking-[0.3em] text-[#6FFF00] sm:text-xs">
             Built for
           </p>
 
-          <div className="relative flex-1 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-            <div
-              className="flex w-max gap-4 whitespace-nowrap will-change-transform"
-              style={{ animation: "marquee-left 32s linear infinite" }}
-            >
-              {trustedUsersLoop.map((label, index) => (
-                <span
-                  key={`${label}-${index}`}
-                  className="rounded-full border border-white/10 bg-white/5 px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.2em] text-[#EFF4FF]/80 sm:px-6 sm:text-[12px]"
+          <div className="grid flex-1 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 xl:gap-4">
+            {trustedUsers.map((brand) => (
+                <div
+                  key={brand.name}
+                  className="flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-3"
                 >
-                  {label}
-                </span>
+                  <Image
+                    src={brand.src}
+                    alt={brand.name}
+                    width={brand.width}
+                    height={brand.height}
+                    className="h-7 w-auto select-none object-contain sm:h-8"
+                    draggable={false}
+                    priority={brand.name === "Zomato"}
+                  />
+                </div>
               ))}
-            </div>
           </div>
         </div>
       </section>
