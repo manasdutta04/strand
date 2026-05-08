@@ -448,8 +448,8 @@ export default function StrandLandingPage() {
           <div className="mt-14 border-t border-white/10 pt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="font-mono text-sm text-[#EFF4FF]/55">Strand © 2026 • Apache Licensed • Solana-based</p>
             <div className="flex items-center gap-4 font-mono text-[13px] uppercase tracking-[0.18em] text-[#EFF4FF]/55">
-              <span>Build by</span>
-              <span>Manas &amp; Priya</span>
+              <span>Build For</span>
+              <span>India ❤️</span>
             </div>
           </div>
         </div>
