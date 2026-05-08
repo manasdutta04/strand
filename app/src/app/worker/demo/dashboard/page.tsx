@@ -78,16 +78,16 @@ export default function WorkerDemoDashboardPage() {
       subtitle="Explore the product with simulated worker data."
       nav={NAV}
     >
-      <div className="mb-6 rounded-2xl border border-primary/20 bg-[linear-gradient(135deg,rgba(111,255,0,0.14),rgba(255,255,255,0.03))] px-4 py-4 text-sm text-muted-foreground shadow-[0_0_0_1px_rgba(111,255,0,0.08),0_12px_30px_rgba(0,0,0,0.18)]">
+      <div className="mb-6 rounded-2xl border border-[#6FFF00]/20 bg-[linear-gradient(135deg,rgba(111,255,0,0.14),rgba(255,255,255,0.03))] px-4 py-4 text-sm text-[#EFF4FF]/75 shadow-[0_0_0_1px_rgba(111,255,0,0.08),0_12px_30px_rgba(0,0,0,0.18)]">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-primary">Demo Mode</p>
-            <p className="mt-1 font-medium text-foreground">Wallet is optional here. The demo loads instantly.</p>
+            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#6FFF00]">Demo Mode</p>
+            <p className="mt-1 font-grotesk font-medium text-[#EFF4FF]">Wallet is optional here. The demo loads instantly.</p>
           </div>
-          <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-primary">
-            <span className="rounded-full border border-primary/20 bg-background/70 px-3 py-1">No wallet needed</span>
-            <span className="rounded-full border border-primary/20 bg-background/70 px-3 py-1">Simulated earnings</span>
-            <span className="rounded-full border border-primary/20 bg-background/70 px-3 py-1">Instant score</span>
+          <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-[#6FFF00] font-grotesk">
+            <span className="rounded-full border border-[#6FFF00]/20 bg-white/5 backdrop-blur-sm px-3 py-1">No wallet needed</span>
+            <span className="rounded-full border border-[#6FFF00]/20 bg-white/5 backdrop-blur-sm px-3 py-1">Simulated earnings</span>
+            <span className="rounded-full border border-[#6FFF00]/20 bg-white/5 backdrop-blur-sm px-3 py-1">Instant score</span>
           </div>
         </div>
       </div>
@@ -95,8 +95,8 @@ export default function WorkerDemoDashboardPage() {
       <div className="space-y-4 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold">Add Earnings</h2>
-            <p className="text-sm text-muted-foreground">Upload a screenshot from one of your delivery platforms</p>
+            <h2 className="font-grotesk text-lg font-semibold text-[#EFF4FF]">Add Earnings</h2>
+            <p className="font-mono text-sm text-[#EFF4FF]/75">Upload a screenshot from one of your delivery platforms</p>
           </div>
         </div>
 
@@ -105,17 +105,17 @@ export default function WorkerDemoDashboardPage() {
             <button
               key={platform.name}
               disabled
-              className="px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors bg-muted text-muted-foreground cursor-not-allowed opacity-60"
+              className="px-4 py-2 rounded-lg font-grotesk font-medium whitespace-nowrap transition-colors bg-white/5 text-[#EFF4FF]/60 cursor-not-allowed opacity-60"
             >
               {platform.label}
             </button>
           ))}
         </div>
 
-        <Card className="border border-border/50 bg-muted/30">
+        <Card className="border border-white/10 bg-white/5">
           <CardContent className="pt-6">
-            <p className="text-center text-sm text-muted-foreground">
-              Upload disabled in demo mode. <Link href="/worker/dashboard" className="text-primary hover:underline">Open real dashboard</Link> to upload earnings.
+            <p className="text-center font-mono text-sm text-[#EFF4FF]/75">
+              Upload disabled in demo mode. <Link href="/worker/dashboard" className="text-[#6FFF00] hover:underline">Open real dashboard</Link> to upload earnings.
             </p>
           </CardContent>
         </Card>
@@ -123,7 +123,7 @@ export default function WorkerDemoDashboardPage() {
 
       <div className="space-y-8">
         <div>
-          <h2 className="text-lg font-semibold mb-4">Reputation Score</h2>
+          <h2 className="font-grotesk text-lg font-semibold text-[#EFF4FF] mb-4">Reputation Score</h2>
           <ScoreBreakdown
             components={DEMO_SCORE_COMPONENTS}
             totalScore={DEMO_TOTAL_SCORE}
@@ -132,7 +132,7 @@ export default function WorkerDemoDashboardPage() {
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold mb-4">Work History</h2>
+          <h2 className="font-grotesk text-lg font-semibold text-[#EFF4FF] mb-4">Work History</h2>
           <WorkRecordsDisplay
             records={DEMO_WORK_RECORDS}
             inrRate={INR_TO_USD_RATE}
@@ -140,27 +140,27 @@ export default function WorkerDemoDashboardPage() {
           />
         </div>
 
-        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+        <Card className="border-2 border-[#6FFF00]/20 bg-gradient-to-br from-[#6FFF00]/5 to-transparent">
           <CardHeader>
-            <CardTitle className="text-base">Credit Access</CardTitle>
+            <CardTitle className="font-grotesk text-base text-[#EFF4FF]">Credit Access</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
+            <p className="font-mono text-sm text-[#EFF4FF]/75">
               Your Strand Score determines how much credit you can access. Build your reputation by adding work
               records and maintaining consistent earnings.
             </p>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">Status</p>
-                <p className="text-lg font-semibold">
-                  <span className="text-yellow-600">Build Score</span>
+                <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60 mb-2">Status</p>
+                <p className="font-grotesk text-lg font-semibold">
+                  <span className="text-yellow-500">Build Score</span>
                 </p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">Next Step</p>
+                <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60 mb-2">Next Step</p>
                 <Link
                   href="/worker/demo/credit"
-                  className="text-sm font-medium text-primary hover:underline"
+                  className="font-grotesk text-sm font-medium text-[#6FFF00] hover:underline"
                 >
                   View Credit →
                 </Link>

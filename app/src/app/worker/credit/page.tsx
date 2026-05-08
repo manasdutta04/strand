@@ -36,12 +36,12 @@ export default function WorkerCreditPage() {
           <div className="flex items-center justify-center h-64">
             {hasErrors ? (
               <div className="text-center space-y-2">
-                <p className="text-red-600 font-medium">Unable to load credit data</p>
-                {scoreError && <p className="text-sm text-muted-foreground">{formatErrorMessage(scoreError)}</p>}
-                {creditError && <p className="text-sm text-muted-foreground">{formatErrorMessage(creditError)}</p>}
+                <p className="font-grotesk font-medium text-red-400">Unable to load credit data</p>
+                {scoreError && <p className="font-mono text-sm text-[#EFF4FF]/75">{formatErrorMessage(scoreError)}</p>}
+                {creditError && <p className="font-mono text-sm text-[#EFF4FF]/75">{formatErrorMessage(creditError)}</p>}
               </div>
             ) : (
-              <p className="text-muted-foreground">Loading...</p>
+              <p className="font-mono text-[#EFF4FF]/75">Loading...</p>
             )}
           </div>
         </SaasShell>

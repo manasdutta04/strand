@@ -35,55 +35,55 @@ export default function PartnerDemoDashboardPage() {
       subtitle="Monitor capital deployment, APR, and borrower utilization."
       nav={NAV}
     >
-      <div className="mb-6 rounded-2xl border border-primary/20 bg-[linear-gradient(135deg,rgba(118,169,255,0.14),rgba(255,255,255,0.03))] px-4 py-4 text-sm text-muted-foreground shadow-[0_0_0_1px_rgba(118,169,255,0.08),0_12px_30px_rgba(0,0,0,0.18)]">
+      <div className="mb-6 rounded-2xl border border-[#76A9FF]/20 bg-[linear-gradient(135deg,rgba(118,169,255,0.14),rgba(255,255,255,0.03))] px-4 py-4 text-sm text-[#EFF4FF]/75 shadow-[0_0_0_1px_rgba(118,169,255,0.08),0_12px_30px_rgba(0,0,0,0.18)]">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-primary">Demo Mode</p>
-            <p className="mt-1 font-medium text-foreground">This page shows simulated portfolio data.</p>
+            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#76A9FF]">Demo Mode</p>
+            <p className="font-grotesk mt-1 font-medium text-[#EFF4FF]">This page shows simulated portfolio data.</p>
           </div>
-          <span className="rounded-full border border-primary/20 bg-background/70 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-primary font-medium">Seeded data</span>
+          <span className="rounded-full border border-[#76A9FF]/20 bg-white/5 backdrop-blur-sm px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-[#76A9FF] font-grotesk font-medium">Seeded data</span>
         </div>
       </div>
 
       <div className="space-y-6">
-        <div className="panel p-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Total capital deployed</p>
-          <div className="mt-2 text-5xl font-semibold tracking-tight">${totalExposure.toLocaleString()}</div>
-          <p className="mt-2 text-sm text-muted-foreground">Active lending portfolio • risk diversified</p>
+        <div className="panel p-6 border border-white/10 bg-white/5 backdrop-blur-sm rounded-[32px]">
+          <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Total capital deployed</p>
+          <div className="font-grotesk mt-2 text-5xl font-semibold tracking-tight text-[#EFF4FF]">${totalExposure.toLocaleString()}</div>
+          <p className="font-mono mt-2 text-sm text-[#EFF4FF]/75">Active lending portfolio • risk diversified</p>
         </div>
 
         <section className="grid gap-4 md:grid-cols-4">
-          <article className="panel p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Active Borrowers</p>
-            <p className="mt-2 text-3xl font-semibold tracking-tight">{activeBorrowers}</p>
+          <article className="panel p-4 border border-white/10 bg-white/5 backdrop-blur-sm rounded-[32px]">
+            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Active Borrowers</p>
+            <p className="font-grotesk mt-2 text-3xl font-semibold tracking-tight text-[#EFF4FF]">{activeBorrowers}</p>
           </article>
-          <article className="panel p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Average APR</p>
-            <p className="mt-2 text-3xl font-semibold tracking-tight">{avgApr.toFixed(1)}%</p>
+          <article className="panel p-4 border border-white/10 bg-white/5 backdrop-blur-sm rounded-[32px]">
+            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Average APR</p>
+            <p className="font-grotesk mt-2 text-3xl font-semibold tracking-tight text-[#EFF4FF]">{avgApr.toFixed(1)}%</p>
           </article>
-          <article className="panel p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Utilization Rate</p>
-            <p className="mt-2 text-3xl font-semibold tracking-tight">{utilizationRate}%</p>
+          <article className="panel p-4 border border-white/10 bg-white/5 backdrop-blur-sm rounded-[32px]">
+            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Utilization Rate</p>
+            <p className="font-grotesk mt-2 text-3xl font-semibold tracking-tight text-[#EFF4FF]">{utilizationRate}%</p>
           </article>
-          <article className="panel p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Yield Generated</p>
-            <p className="mt-2 text-3xl font-semibold tracking-tight">${Math.round(totalExposure * (avgApr / 100) / 12).toLocaleString()}</p>
-            <p className="mt-1 text-xs text-muted-foreground">Monthly estimate</p>
+          <article className="panel p-4 border border-white/10 bg-white/5 backdrop-blur-sm rounded-[32px]">
+            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Yield Generated</p>
+            <p className="font-grotesk mt-2 text-3xl font-semibold tracking-tight text-[#EFF4FF]">${Math.round(totalExposure * (avgApr / 100) / 12).toLocaleString()}</p>
+            <p className="font-mono mt-1 text-xs text-[#EFF4FF]/75">Monthly estimate</p>
           </article>
         </section>
 
-        <section className="panel p-4">
-          <h2 className="mb-3 text-lg font-semibold">Live Loan Book</h2>
+        <section className="panel p-4 border border-white/10 bg-white/5 backdrop-blur-sm rounded-[32px]">
+          <h2 className="font-grotesk mb-3 text-lg font-semibold text-[#EFF4FF]">Live Loan Book</h2>
           <div className="space-y-2">
             {DEMO_PORTFOLIO.map((item) => (
               <div
                 key={`${item.worker}-${item.maxUsdc}`}
-                className="grid grid-cols-[1fr_auto_auto_auto] gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm"
+                className="grid grid-cols-[1fr_auto_auto_auto] gap-3 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-sm font-mono text-[#EFF4FF]"
               >
                 <span>Worker {item.worker.slice(0, 6)}…{item.worker.slice(-4)}</span>
                 <span>{item.active ? `APR ${item.apr.toFixed(1)}%` : "Inactive"}</span>
                 <span>${item.borrowedUsdc.toLocaleString()} / ${item.maxUsdc.toLocaleString()}</span>
-                <span className="text-muted-foreground">
+                <span className="text-[#EFF4FF]/60">
                   {Math.round(item.utilization * 100)}%
                 </span>
               </div>

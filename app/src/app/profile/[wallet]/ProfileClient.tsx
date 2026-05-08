@@ -64,13 +64,13 @@ export default function ProfileClient({ wallet }: { wallet: string }) {
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-6xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
-      <header className="panel flex flex-wrap items-center justify-between gap-4 p-5">
+      <header className="panel flex flex-wrap items-center justify-between gap-4 p-5 border border-white/10 bg-white/5 backdrop-blur-sm rounded-[32px]">
         <div>
-          <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Public profile</div>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight">{truncateWallet(wallet)}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Portable gig work history on Solana</p>
+          <div className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Public profile</div>
+          <h1 className="font-grotesk mt-2 text-2xl font-semibold tracking-tight text-[#EFF4FF]">{truncateWallet(wallet)}</h1>
+          <p className="font-mono mt-1 text-sm text-[#EFF4FF]/75">Portable gig work history on Solana</p>
         </div>
-        <div className="rounded-full border border-border bg-muted/40 px-4 py-2 text-sm text-muted-foreground">
+        <div className="rounded-full border border-white/15 bg-white/5 backdrop-blur-sm px-4 py-2 text-sm text-[#EFF4FF]/75 font-mono">
           Strand Score {demoProfile.totalScore} • {demoProfile.tier}
         </div>
       </header>
@@ -78,38 +78,38 @@ export default function ProfileClient({ wallet }: { wallet: string }) {
       <section className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Total Earnings</CardTitle>
+            <CardTitle className="font-grotesk text-xs uppercase tracking-wide text-[#EFF4FF]/60">Total Earnings</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">${totalEarnings.toLocaleString()}</div>
-            <p className="text-sm text-muted-foreground">₹{Math.round(totalEarnings * 83).toLocaleString()}</p>
+            <div className="font-grotesk text-2xl font-semibold text-[#EFF4FF]">${totalEarnings.toLocaleString()}</div>
+            <p className="font-mono text-sm text-[#EFF4FF]/75">₹{Math.round(totalEarnings * 83).toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Deliveries</CardTitle>
+            <CardTitle className="font-grotesk text-xs uppercase tracking-wide text-[#EFF4FF]/60">Deliveries</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">{totalDeliveries.toLocaleString()}</div>
-            <p className="text-sm text-muted-foreground">Across 3 platform records</p>
+            <div className="font-grotesk text-2xl font-semibold text-[#EFF4FF]">{totalDeliveries.toLocaleString()}</div>
+            <p className="font-mono text-sm text-[#EFF4FF]/75">Across 3 platform records</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Platforms</CardTitle>
+            <CardTitle className="font-grotesk text-xs uppercase tracking-wide text-[#EFF4FF]/60">Platforms</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">3</div>
-            <p className="text-sm text-muted-foreground">Zomato, Swiggy, Blinkit</p>
+            <div className="font-grotesk text-2xl font-semibold text-[#EFF4FF]">3</div>
+            <p className="font-mono text-sm text-[#EFF4FF]/75">Zomato, Swiggy, Blinkit</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs uppercase tracking-wide text-muted-foreground">Credit Readiness</CardTitle>
+            <CardTitle className="font-grotesk text-xs uppercase tracking-wide text-[#EFF4FF]/60">Credit Readiness</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">{demoProfile.totalScore >= 400 ? "Yes" : "No"}</div>
-            <p className="text-sm text-muted-foreground">
+            <div className="font-grotesk text-2xl font-semibold text-[#EFF4FF]">{demoProfile.totalScore >= 400 ? "Yes" : "No"}</div>
+            <p className="font-mono text-sm text-[#EFF4FF]/75">
               {demoProfile.totalScore >= 400 ? "Eligible for credit" : "Needs higher score"}
             </p>
           </CardContent>
@@ -125,9 +125,9 @@ export default function ProfileClient({ wallet }: { wallet: string }) {
         <WorkRecordsDisplay records={demoProfile.records} inrRate={83} />
       </section>
 
-      <section className="panel p-5">
-        <h2 className="mb-3 text-xl font-semibold">About this profile</h2>
-        <p className="text-sm text-muted-foreground">
+      <section className="panel p-5 border border-white/10 bg-white/5 backdrop-blur-sm rounded-[32px]">
+        <h2 className="font-grotesk mb-3 text-xl font-semibold text-[#EFF4FF]">About this profile</h2>
+        <p className="font-mono text-sm text-[#EFF4FF]/75">
           This shareable public profile shows verified gig work history, Strand Score, and credit readiness.
           It is designed for Indian delivery and mobility workers who need portable reputation across platforms.
         </p>

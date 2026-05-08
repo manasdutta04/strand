@@ -36,9 +36,9 @@ export function ScoreBreakdown({ components, totalScore, inrRate = 83 }: ScoreBr
 
   return (
     <div className="space-y-6">
-      <Card className="border-border/60">
+      <Card className="border-white/10">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
+          <CardTitle className="font-grotesk text-sm font-medium uppercase tracking-[0.2em] text-[#EFF4FF]/60">
             Score
           </CardTitle>
         </CardHeader>
@@ -46,7 +46,7 @@ export function ScoreBreakdown({ components, totalScore, inrRate = 83 }: ScoreBr
           <div className="flex items-center justify-center">
             <div className="w-32 h-32">
               <svg viewBox="0 0 120 120" className="h-full w-full">
-                <circle cx="60" cy="60" r="55" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/20" />
+                <circle cx="60" cy="60" r="55" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/10" />
                 <circle
                   cx="60"
                   cy="60"
@@ -56,7 +56,7 @@ export function ScoreBreakdown({ components, totalScore, inrRate = 83 }: ScoreBr
                   strokeWidth="2"
                   strokeDasharray={`${(totalScore / maxScore) * (2 * Math.PI * 55)} ${2 * Math.PI * 55}`}
                   strokeLinecap="round"
-                  className="text-primary transition-all"
+                  className="text-[#6FFF00] transition-all"
                   style={{ transform: "rotate(-90deg)", transformOrigin: "60px 60px" }}
                 />
                 <text x="60" y="65" textAnchor="middle" className="fill-foreground text-sm font-bold">

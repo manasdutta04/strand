@@ -28,13 +28,13 @@ export default function WorkerDemoCreditPage() {
       subtitle="View your credit line and borrowing options."
       nav={NAV}
     >
-      <div className="mb-6 rounded-2xl border border-primary/20 bg-[linear-gradient(135deg,rgba(111,255,0,0.14),rgba(255,255,255,0.03))] px-4 py-4 text-sm text-muted-foreground shadow-[0_0_0_1px_rgba(111,255,0,0.08),0_12px_30px_rgba(0,0,0,0.18)]">
+      <div className="mb-6 rounded-2xl border border-[#6FFF00]/20 bg-[linear-gradient(135deg,rgba(111,255,0,0.14),rgba(255,255,255,0.03))] px-4 py-4 text-sm text-[#EFF4FF]/75 shadow-[0_0_0_1px_rgba(111,255,0,0.08),0_12px_30px_rgba(0,0,0,0.18)]">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-primary">Demo Mode</p>
-            <p className="mt-1 font-medium text-foreground">This page shows simulated credit information.</p>
+            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#6FFF00]">Demo Mode</p>
+            <p className="mt-1 font-grotesk font-medium text-[#EFF4FF]">This page shows simulated credit information.</p>
           </div>
-          <span className="rounded-full border border-primary/20 bg-background/70 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-primary font-medium">Seeded data</span>
+          <span className="rounded-full border border-[#6FFF00]/20 bg-white/5 backdrop-blur-sm px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-[#6FFF00] font-grotesk font-medium">Seeded data</span>
         </div>
       </div>
 
@@ -42,51 +42,51 @@ export default function WorkerDemoCreditPage() {
         <CreditPanel data={DEMO_CREDIT_DATA} demoMode={true} />
 
         <div className="grid gap-4 md:grid-cols-2">
-          <Card className="border border-border/50">
+          <Card className="border border-white/10">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+              <CardTitle className="font-grotesk text-sm font-medium uppercase tracking-wide text-[#EFF4FF]/60">
                 Strand Score
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold tracking-tight">{DEMO_CREDIT_DATA.score}</div>
-              <p className="text-xs text-muted-foreground mt-2">Score builds with delivery history</p>
+              <div className="font-grotesk text-4xl font-bold tracking-tight text-[#EFF4FF]">{DEMO_CREDIT_DATA.score}</div>
+              <p className="font-mono text-xs text-[#EFF4FF]/75 mt-2">Score builds with delivery history</p>
             </CardContent>
           </Card>
 
-          <Card className="border border-border/50">
+          <Card className="border border-white/10">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+              <CardTitle className="font-grotesk text-sm font-medium uppercase tracking-wide text-[#EFF4FF]/60">
                 Interest Rate
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold tracking-tight text-primary">{DEMO_CREDIT_DATA.apr}%</div>
-              <p className="text-xs text-muted-foreground mt-2">Annual percentage rate (APR)</p>
+              <div className="font-grotesk text-4xl font-bold tracking-tight text-[#6FFF00]">{DEMO_CREDIT_DATA.apr}%</div>
+              <p className="font-mono text-xs text-[#EFF4FF]/75 mt-2">Annual percentage rate (APR)</p>
             </CardContent>
           </Card>
         </div>
 
-        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+        <Card className="border-2 border-[#6FFF00]/20 bg-gradient-to-br from-[#6FFF00]/5 to-transparent">
           <CardHeader>
-            <CardTitle className="text-base">How Credit Works</CardTitle>
+            <CardTitle className="font-grotesk text-base text-[#EFF4FF]">How Credit Works</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <p className="text-sm font-semibold text-foreground">1. Build Your Score</p>
-              <p className="text-xs text-muted-foreground">Complete deliveries and maintain high ratings</p>
+              <p className="font-grotesk text-sm font-semibold text-[#EFF4FF]">1. Build Your Score</p>
+              <p className="font-mono text-xs text-[#EFF4FF]/75">Complete deliveries and maintain high ratings</p>
             </div>
             <div>
-              <p className="text-sm font-semibold text-foreground">2. Unlock Credit</p>
-              <p className="text-xs text-muted-foreground">Your score determines your credit limit</p>
+              <p className="font-grotesk text-sm font-semibold text-[#EFF4FF]">2. Unlock Credit</p>
+              <p className="font-mono text-xs text-[#EFF4FF]/75">Your score determines your credit limit</p>
             </div>
             <div>
-              <p className="text-sm font-semibold text-foreground">3. Access Capital</p>
-              <p className="text-xs text-muted-foreground">Borrow USD or stablecoins at fixed rates</p>
+              <p className="font-grotesk text-sm font-semibold text-[#EFF4FF]">3. Access Capital</p>
+              <p className="font-mono text-xs text-[#EFF4FF]/75">Borrow USD or stablecoins at fixed rates</p>
             </div>
             <div>
-              <p className="text-sm font-semibold text-foreground">4. Repay Automatically</p>
-              <p className="text-xs text-muted-foreground">Payments deducted from future earnings</p>
+              <p className="font-grotesk text-sm font-semibold text-[#EFF4FF]">4. Repay Automatically</p>
+              <p className="font-mono text-xs text-[#EFF4FF]/75">Payments deducted from future earnings</p>
             </div>
           </CardContent>
         </Card>

@@ -50,8 +50,8 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
       nav={NAV}
     >
       {demoMode && (
-        <div className="mb-6 flex flex-wrap items-center gap-2 rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
-          <Badge variant="outline" className="border-primary/20 bg-background/70 text-primary">
+        <div className="mb-6 flex flex-wrap items-center gap-2 rounded-2xl border border-[#6FFF00]/20 bg-[#6FFF00]/5 px-4 py-3 text-sm text-[#EFF4FF]/75 font-mono">
+          <Badge variant="outline" className="border-[#6FFF00]/20 bg-white/5 text-[#6FFF00] font-grotesk">
             Demo mode
           </Badge>
           <span>No wallet. Seeded data.</span>
@@ -59,28 +59,28 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
       )}
 
       <section className="grid gap-4 md:grid-cols-4">
-        <Card className="border-border/60">
+        <Card className="border-white/10">
           <CardContent className="pt-6">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Score</p>
-            <p className="mt-2 text-3xl font-semibold tracking-tight">{totalScore || "—"}</p>
+            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Score</p>
+            <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#EFF4FF]">{totalScore || "—"}</p>
           </CardContent>
         </Card>
-        <Card className="border-border/60">
+        <Card className="border-white/10">
           <CardContent className="pt-6">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Credit</p>
-            <p className="mt-2 text-3xl font-semibold tracking-tight">${estimatedCredit.toLocaleString()}</p>
+            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Credit</p>
+            <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#6FFF00]">${estimatedCredit.toLocaleString()}</p>
           </CardContent>
         </Card>
-        <Card className="border-border/60">
+        <Card className="border-white/10">
           <CardContent className="pt-6">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Records</p>
-            <p className="mt-2 text-3xl font-semibold tracking-tight">{workRecords.length || "—"}</p>
+            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Records</p>
+            <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#EFF4FF]">{workRecords.length || "—"}</p>
           </CardContent>
         </Card>
-        <Card className="border-border/60">
+        <Card className="border-white/10">
           <CardContent className="pt-6">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Status</p>
-            <p className="mt-2 text-3xl font-semibold tracking-tight">{eligibleCredit ? "Open" : "Build"}</p>
+            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Status</p>
+            <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#EFF4FF]">{eligibleCredit ? "Open" : "Build"}</p>
           </CardContent>
         </Card>
       </section>
@@ -88,7 +88,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
       <div className="mt-6 space-y-4 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-base font-semibold">Add earnings</h2>
+            <h2 className="font-grotesk text-base font-semibold text-[#EFF4FF]">Add earnings</h2>
           </div>
         </div>
 
@@ -97,10 +97,10 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
             <button
               key={platform.name}
               onClick={() => setSelectedPlatform(platform.name)}
-              className={`rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
+              className={`rounded-lg px-4 py-2 font-grotesk text-sm font-medium whitespace-nowrap transition-colors ${
                 selectedPlatform === platform.name
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "border border-border bg-background text-muted-foreground hover:bg-muted/80"
+                  ? "bg-[#6FFF00] text-[#010828] shadow-sm"
+                  : "border border-white/15 bg-transparent text-[#EFF4FF] hover:border-[#6FFF00] hover:text-[#6FFF00]"
               }`}
             >
               {platform.label}
@@ -113,7 +113,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
 
       <div className="space-y-8">
         <div>
-          <h2 className="mb-3 text-base font-semibold">Score</h2>
+          <h2 className="font-grotesk mb-3 text-base font-semibold text-[#EFF4FF]">Score</h2>
           {scoreComponents ? (
             <ScoreBreakdown
               components={scoreComponents}
@@ -121,16 +121,16 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
               inrRate={INR_TO_USD_RATE}
             />
           ) : (
-            <Card className="border-border/60">
+            <Card className="border-white/10">
               <CardContent className="py-8">
-                <p className="text-center text-sm text-muted-foreground">No score yet.</p>
+                <p className="text-center font-mono text-sm text-[#EFF4FF]/75">No score yet.</p>
               </CardContent>
             </Card>
           )}
         </div>
 
         <div>
-          <h2 className="mb-3 text-base font-semibold">History</h2>
+          <h2 className="font-grotesk mb-3 text-base font-semibold text-[#EFF4FF]">History</h2>
           <WorkRecordsDisplay
             records={workRecords}
             inrRate={INR_TO_USD_RATE}
@@ -138,16 +138,16 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
           />
         </div>
 
-        <Card className="border-primary/15 bg-primary/5">
+        <Card className="border-[#6FFF00]/20 bg-gradient-to-br from-[#6FFF00]/10 to-transparent">
           <CardHeader>
-            <CardTitle className="text-base">Credit</CardTitle>
+            <CardTitle className="text-base text-[#EFF4FF]">Credit</CardTitle>
           </CardHeader>
           <CardContent className="flex items-center justify-between gap-4">
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">{eligibleCredit ? "Ready for credit" : "Build to unlock credit"}</p>
-              <p className="text-lg font-semibold">{eligibleCredit ? "Eligible" : "Build score"}</p>
+              <p className="font-mono text-sm text-[#EFF4FF]/75">{eligibleCredit ? "Ready for credit" : "Build to unlock credit"}</p>
+              <p className="font-grotesk text-lg font-semibold text-[#EFF4FF]">{eligibleCredit ? "Eligible" : "Build score"}</p>
             </div>
-            <Link href="/worker/credit" className="btn-accent">
+            <Link href="/worker/credit" className="rounded-full border border-[#6FFF00] px-5 py-2 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] bg-[#6FFF00]/10 transition-colors hover:bg-[#6FFF00]/20">
               Open credit
             </Link>
           </CardContent>
@@ -171,11 +171,11 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
           <div className="flex items-center justify-center h-64">
             {error ? (
               <div className="text-center space-y-2">
-                <p className="text-red-600 font-medium">Unable to load your profile</p>
-                <p className="text-sm text-muted-foreground">{formatErrorMessage(error)}</p>
+                <p className="font-grotesk font-medium text-red-400">Unable to load your profile</p>
+                <p className="font-mono text-sm text-[#EFF4FF]/75">{formatErrorMessage(error)}</p>
               </div>
             ) : (
-              <p className="text-muted-foreground">Loading...</p>
+              <p className="font-mono text-[#EFF4FF]/75">Loading...</p>
             )}
           </div>
         </SaasShell>

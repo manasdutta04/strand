@@ -125,3 +125,25 @@
 .wallet-adapter-button:hover {
   background: hsl(var(--primary) / 0.9) !important;
 }
+
+/* Enforce readable foreground color for text (avoid black text from vendor CSS) */
+:root {
+  --enforced-foreground: hsl(var(--foreground));
+}
+
+body, p, span, a, li, label, input, textarea, button, h1, h2, h3, h4, h5, h6, small, strong, em {
+  color: var(--enforced-foreground) !important;
+}
+
+/* Specific overrides for mobile-wallet-adapter embedded modal text */
+.mobile-wallet-adapter-embedded-modal-title,
+.mobile-wallet-adapter-embedded-modal-subtitle,
+.mobile-wallet-adapter-embedded-modal-qr-label,
+.mobile-wallet-adapter-embedded-modal-details-collapsible-content li {
+  color: var(--enforced-foreground) !important;
+}
+
+/* Preserve button contrast where background is dark */
+.mobile-wallet-adapter-embedded-modal-launch-action {
+  color: #FFFFFF !important;
+}

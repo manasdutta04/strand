@@ -28,5 +28,9 @@
     "ts-mocha": "^10.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@noble/curves": "^1.9.6",
+    "@noble/hashes": "^1.8.0"
   }
 }

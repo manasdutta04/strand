@@ -23,19 +23,19 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
   const isDemoRoute = pathname.startsWith("/worker/demo") || pathname.startsWith("/partner/demo");
 
   return (
-    <main className="min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#010828] px-4 py-6 text-[#EFF4FF] sm:px-6 lg:px-16">
       <div className="mx-auto max-w-7xl space-y-6">
-        <header className="panel flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
+        <header className="rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-sm flex flex-col gap-4 p-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Image src="/logo.svg" alt="Strand" width={16} height={16} className="rounded" style={{ width: "16px", height: "16px" }} />
-              <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{productLabel}</span>
+              <span className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">{productLabel}</span>
             </div>
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
-            <p className="max-w-2xl text-sm text-muted-foreground">{subtitle}</p>
+            <h1 className="font-grotesk text-2xl font-semibold tracking-tight text-[#EFF4FF] sm:text-3xl">{title}</h1>
+            <p className="font-mono max-w-2xl text-sm text-[#EFF4FF]/75">{subtitle}</p>
           </div>
           {isDemoRoute ? (
-            <div className="inline-flex h-10 items-center gap-2 rounded-md border border-primary/20 bg-primary/5 px-3 text-sm font-medium text-foreground">
+            <div className="inline-flex h-10 items-center gap-2 rounded-md border border-[#6FFF00]/20 bg-[#6FFF00]/5 px-3 text-sm font-medium text-[#EFF4FF]">
               <svg
                 aria-hidden="true"
                 viewBox="0 0 24 24"
@@ -67,7 +67,7 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
               <Link
                 key={item.href}
                 href={item.href}
-                className={active ? "btn-accent" : "btn-subtle"}
+                className={active ? "rounded-lg px-4 py-2 font-grotesk text-xs uppercase tracking-[0.22em] bg-[#6FFF00] text-[#010828] font-medium transition-colors" : "rounded-lg px-4 py-2 font-grotesk text-xs uppercase tracking-[0.22em] border border-white/15 text-[#EFF4FF] transition-colors hover:border-[#6FFF00] hover:text-[#6FFF00]"}
               >
                 {item.label}
               </Link>
