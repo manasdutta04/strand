@@ -14,7 +14,7 @@ export default function WhoPage() {
           <div className="mt-4 inline-flex items-center rounded-full border border-[#6FFF00]/20 bg-[#6FFF00]/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-[#6FFF00]">
             India gig workers • earnings PDFs • INR credit
           </div>
-          <h1 className="mt-4 max-w-3xl font-grotesk text-3xl font-semibold tracking-tight text-[#EFF4FF] sm:text-4xl">
+          <h1 className="strand-display mt-4 max-w-3xl text-3xl text-[#EFF4FF] sm:text-4xl">
             Portable reputation and credit for delivery riders and gig workers.
           </h1>
           <p className="mt-3 max-w-3xl font-mono text-sm sm:text-base text-[#EFF4FF]/75" style={{ color: "#EFF4FF" }}>
@@ -27,7 +27,7 @@ export default function WhoPage() {
           <div className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr] lg:items-end">
             <div>
               <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#6FFF00]">Demo mode</p>
-              <h2 className="mt-3 font-grotesk text-2xl font-semibold tracking-tight text-[#EFF4FF] sm:text-3xl">
+              <h2 className="strand-display mt-3 text-2xl text-[#EFF4FF] sm:text-3xl">
                 Open the product with a simulated worker profile.
               </h2>
               <p className="mt-3 max-w-2xl font-mono text-sm text-[#EFF4FF]/75">

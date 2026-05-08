@@ -88,7 +88,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
       <div className="mt-6 space-y-4 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-grotesk text-base font-semibold text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Add earnings</h2>
+            <h2 className="strand-display text-base text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Add earnings</h2>
           </div>
         </div>
 
@@ -113,7 +113,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
 
       <div className="space-y-8">
         <div>
-          <h2 className="font-grotesk mb-3 text-base font-semibold text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Score</h2>
+          <h2 className="strand-display mb-3 text-base text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Score</h2>
           {scoreComponents ? (
             <ScoreBreakdown
               components={scoreComponents}
@@ -130,7 +130,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
         </div>
 
         <div>
-          <h2 className="font-grotesk mb-3 text-base font-semibold text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>History</h2>
+          <h2 className="strand-display mb-3 text-base text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>History</h2>
           <WorkRecordsDisplay
             records={workRecords}
             inrRate={INR_TO_USD_RATE}

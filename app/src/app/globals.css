@@ -53,6 +53,14 @@
 }
 
 @layer components {
+  .strand-display {
+    font-family: "Anton", sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    line-height: 1.05;
+  }
+
   .saas-grid-bg {
     position: relative;
     isolation: isolate;

@@ -32,7 +32,7 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
               <Image src="/logo.svg" alt="Strand" width={16} height={16} className="rounded" style={{ width: "16px", height: "16px" }} />
                 <span className="saas-kicker">{productLabel}</span>
               </div>
-              <h1 className="font-grotesk text-2xl font-semibold tracking-tight text-[#EFF4FF] sm:text-3xl">{title}</h1>
+              <h1 className="strand-display text-2xl text-[#EFF4FF] sm:text-3xl">{title}</h1>
               <p className="font-mono max-w-2xl text-sm text-[#EFF4FF]/78">{subtitle}</p>
             </div>
             {isDemoRoute ? (
