@@ -431,7 +431,7 @@ export default function StrandLandingPage() {
               <div className="mt-5 space-y-4 font-mono text-[14px] text-[#EFF4FF]/60">
                 <a href="/docs" className="block transition-colors hover:text-[#EFF4FF]">Docs</a>
                 <a href="/help" className="block transition-colors hover:text-[#EFF4FF]">Help</a>
-                <a href="#home" className="block transition-colors hover:text-[#EFF4FF]">Home</a>
+                <a href="https://github.com/manasdutta04/strand#creators" className="block transition-colors hover:text-[#EFF4FF]">Creators</a>
               </div>
             </div>
 
@@ -448,8 +448,8 @@ export default function StrandLandingPage() {
           <div className="mt-14 border-t border-white/10 pt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="font-mono text-sm text-[#EFF4FF]/55">Strand © 2026 • Apache Licensed • Solana-based</p>
             <div className="flex items-center gap-4 font-mono text-[13px] uppercase tracking-[0.18em] text-[#EFF4FF]/55">
-              <span>Build For</span>
-              <span>India ❤️</span>
+              <span>Build For India</span>
+              <span>By Indians ❤️</span>
             </div>
           </div>
         </div>
