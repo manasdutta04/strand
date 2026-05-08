@@ -25,7 +25,7 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
   return (
     <main className="saas-grid-bg min-h-screen px-4 py-6 text-[#EFF4FF] sm:px-6 lg:px-16">
       <div className="mx-auto max-w-7xl space-y-6">
-        <header className="saas-panel rounded-[30px] p-5 sm:p-6">
+        <header className="saas-panel relative z-30 rounded-[30px] p-5 sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
@@ -78,7 +78,7 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
           </nav>
         </header>
 
-        <section className="saas-panel rounded-[28px] p-4 sm:p-6 lg:p-7">
+        <section className="saas-panel relative z-10 rounded-[28px] p-4 sm:p-6 lg:p-7">
           <div className="space-y-5">{children}</div>
         </section>
       </div>
