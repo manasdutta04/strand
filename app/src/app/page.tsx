@@ -27,25 +27,27 @@ const signalCards = [
     description: "Track earnings, skills, and score in one workspace."
   },
   {
-    title: "Client workflow",
-    description: "Review verified work before assigning or releasing payment."
+    title: "Partner workflow",
+    description: "Review verified work and manage credit lines."
   },
   {
-    title: "Partner workflow",
-    description: "Read score signals before opening or adjusting credit."
+    title: "Verified proof",
+    description: "All work history and scores live on-chain for instant access."
   }
 ] as const;
 
 const trustedUsers = [
-  "Gig workers",
-  "Freelancers",
-  "Delivery riders",
-  "Creators",
-  "Contractors",
-  "Small teams",
-  "Marketplaces",
+  "Zomato",
+  "Swiggy",
+  "Blinkit",
+  "Ola",
+  "Uber",
+  "Urban Company",
+  "Workers",
   "Partners"
 ] as const;
+
+const trustedUsersLoop = [...trustedUsers, ...trustedUsers];
 
 const pricingPlans = [
   {
@@ -126,15 +128,17 @@ export default function StrandLandingPage() {
           <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
             <div className="relative max-w-4xl lg:ml-28">
               <p className="mb-6 font-grotesk text-[11px] uppercase tracking-[0.35em] text-[#6FFF00] sm:text-xs">
-                Built on Solana • earnings and credit for gig workers
+                Built on Solana • worker and partner credit
               </p>
 
               <h1 className="max-w-4xl font-grotesk text-[42px] uppercase leading-[1.05] text-[#EFF4FF] sm:text-[60px] md:text-[75px] lg:text-[90px] lg:leading-[1]">
-                Work history,
+                Work,
                 <br />
-                score, and credit
-                <br />
-                <span className="font-condiment normal-case text-[#6FFF00]">for workers in India</span>
+                score,
+                <br/>
+                credit
+                <br/>
+                <span className="font-condiment normal-case text-[#6FFF00]">for India</span>
               </h1>
 
               
@@ -158,12 +162,15 @@ export default function StrandLandingPage() {
             Built for
           </p>
 
-            <div className="relative flex-1 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-            <div className="flex w-max animate-[marquee-left_28s_linear_infinite] gap-4 whitespace-nowrap">
-              {Array.from({ length: 2 }).flatMap(() => trustedUsers).map((label, index) => (
+          <div className="relative flex-1 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+            <div
+              className="flex w-max gap-4 whitespace-nowrap will-change-transform"
+              style={{ animation: "marquee-left 32s linear infinite" }}
+            >
+              {trustedUsersLoop.map((label, index) => (
                 <span
                   key={`${label}-${index}`}
-                  className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-[#EFF4FF]/80 sm:text-[12px]"
+                  className="rounded-full border border-white/10 bg-white/5 px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.2em] text-[#EFF4FF]/80 sm:px-6 sm:text-[12px]"
                 >
                   {label}
                 </span>
@@ -319,10 +326,10 @@ export default function StrandLandingPage() {
           </div>
 
           <h2 className="max-w-2xl font-grotesk text-[18px] uppercase leading-[1.1] text-[#EFF4FF] sm:text-[32px] md:text-[48px] lg:text-[60px]">
-            <span className="block mb-4 lg:mb-8">SOLANA WORK NFTs.</span>
-            <span className="block">STRAND SCORE.</span>
-            <span className="block">ORACLE-VERIFIED SKILLS.</span>
-            <span className="block">USDC CREDIT LAYER.</span>
+            <span className="block mb-4 lg:mb-8">Work NFTs.</span>
+            <span className="block">Score.</span>
+            <span className="block">Skills.</span>
+            <span className="block">Credit.</span>
           </h2>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -347,7 +354,7 @@ export default function StrandLandingPage() {
                 <span className="font-grotesk text-[18px] uppercase tracking-[0.08em] text-[#EFF4FF]">Strand</span>
               </div>
               <p className="mt-6 max-w-sm font-mono text-[14px] leading-relaxed text-[#EFF4FF]/65">
-                Portable work reputation for freelancers, teams, and lenders on Solana. Strand turns verified on-chain work into a product-grade signal and credit-ready proof.
+                Strand turns verified work into a simple score and credit signal for workers and partners.
               </p>
               
             </div>
