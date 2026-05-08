@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 
 function MobileMenuButton() {
   const [open, setOpen] = useState(false);
@@ -21,32 +22,37 @@ function MobileMenuButton() {
       </button>
 
       {open ? (
-        <div className="fixed inset-0 z-50 flex">
-          <div className="absolute inset-0 bg-black/60 z-40" onClick={() => setOpen(false)} />
-          <div className="ml-auto w-72 max-w-[80%] bg-[#010828] p-6 z-50">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img src="/logo.svg" alt="Strand" className="h-8 w-auto" />
-                <span className="font-grotesk text-[16px] uppercase text-[#EFF4FF]">Strand</span>
-              </div>
-              <button onClick={() => setOpen(false)} className="liquid-glass rounded-full px-2 py-1">
-                Close
-              </button>
-            </div>
+        typeof document !== "undefined"
+          ? createPortal(
+              <div className="fixed inset-0 z-[99999] flex" role="dialog" aria-modal="true">
+                <div className="absolute inset-0 bg-black/60 z-[99998]" onClick={() => setOpen(false)} />
+                <div className="ml-auto w-72 max-w-[80%] bg-[#010828] p-6 z-[99999] pointer-events-auto">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <img src="/logo.svg" alt="Strand" className="h-8 w-auto" />
+                      <span className="font-grotesk text-[16px] uppercase text-[#EFF4FF]">Strand</span>
+                    </div>
+                    <button onClick={() => setOpen(false)} className="liquid-glass rounded-full px-2 py-1">
+                      Close
+                    </button>
+                  </div>
 
-            <nav className="mt-6 flex flex-col gap-4">
-              <a href="#product" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Features</a>
-              <a href="#pricing" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Pricing</a>
-              <a href="/docs" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Docs</a>
-              <a href="/help" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Help</a>
-              <a href="https://github.com/manasdutta04/strand" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">GitHub</a>
+                  <nav className="mt-6 flex flex-col gap-4">
+                    <a href="#product" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Features</a>
+                    <a href="#pricing" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Pricing</a>
+                    <a href="/docs" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Docs</a>
+                    <a href="/help" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Help</a>
+                    <a href="https://github.com/manasdutta04/strand" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">GitHub</a>
 
-              <Link href="/who" onClick={() => setOpen(false)} className="mt-4 liquid-glass rounded-full px-6 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF]">
-                Get Started
-              </Link>
-            </nav>
-          </div>
-        </div>
+                    <Link href="/who" onClick={() => setOpen(false)} className="mt-4 liquid-glass rounded-full px-6 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF]">
+                      Get Started
+                    </Link>
+                  </nav>
+                </div>
+              </div>,
+              document.body
+            )
+          : null
       ) : null}
     </>
   );
