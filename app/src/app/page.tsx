@@ -22,8 +22,8 @@ function MobileMenuButton() {
 
       {open ? (
         <div className="fixed inset-0 z-50 flex">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-          <div className="ml-auto w-64 max-w-[80%] bg-[#010828] p-6">
+          <div className="absolute inset-0 bg-black/60 z-40" onClick={() => setOpen(false)} />
+          <div className="ml-auto w-72 max-w-[80%] bg-[#010828] p-6 z-50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <img src="/logo.svg" alt="Strand" className="h-8 w-auto" />
@@ -35,13 +35,13 @@ function MobileMenuButton() {
             </div>
 
             <nav className="mt-6 flex flex-col gap-4">
-              <a href="#product" className="font-grotesk uppercase text-[#EFF4FF]">Features</a>
-              <a href="#pricing" className="font-grotesk uppercase text-[#EFF4FF]">Pricing</a>
-              <a href="/docs" className="font-grotesk uppercase text-[#EFF4FF]">Docs</a>
-              <a href="/help" className="font-grotesk uppercase text-[#EFF4FF]">Help</a>
-              <a href="https://github.com/manasdutta04/strand" target="_blank" rel="noopener noreferrer" className="font-grotesk uppercase text-[#EFF4FF]">GitHub</a>
+              <a href="#product" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Features</a>
+              <a href="#pricing" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Pricing</a>
+              <a href="/docs" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Docs</a>
+              <a href="/help" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">Help</a>
+              <a href="https://github.com/manasdutta04/strand" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="font-grotesk uppercase text-[#EFF4FF]">GitHub</a>
 
-              <Link href="/who" className="mt-4 liquid-glass rounded-full px-6 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF]">
+              <Link href="/who" onClick={() => setOpen(false)} className="mt-4 liquid-glass rounded-full px-6 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF]">
                 Get Started
               </Link>
             </nav>
@@ -119,7 +119,7 @@ export default function StrandLandingPage() {
   return (
     <main className="bg-[#010828] overflow-hidden scroll-smooth">
       <div
-        className="fixed inset-0 z-50 pointer-events-none"
+        className="fixed inset-0 z-0 pointer-events-none"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' result='noise' /%3E%3CfeColorMatrix in='noise' type='saturate' values='0' /%3E%3C/filter%3E%3Crect width='400' height='400' fill='%23ffffff' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E")`,
           backgroundSize: "cover",
