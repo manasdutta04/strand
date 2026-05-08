@@ -168,3 +168,15 @@ At 100K active workers × average $1,000 credit, Strand can support meaningful t
 
 ## License
 Apache 2.0
+
+
+## Creators
+
+<table>
+  <tbody>
+    <tr>
+    <td align="center" valign="top" width="14.28%"><a href="https://github.com/manasdutta04"><img src="https://avatars.githubusercontent.com/u/122201926?v=4?s=100" width="100px;" alt="Manas Dutta"/><br /><sub><b>Manas Dutta</b></sub></a><br /></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/priya369-ps"><img src="https://avatars.githubusercontent.com/u/253213951?v=4?s=100" width="100px;" alt="Priya Kanta"/><br /><sub><b>Priya Kanta</b></sub></a><br /></td>
+    </tr>
+  </tbody>
+</table>
