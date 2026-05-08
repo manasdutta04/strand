@@ -115,9 +115,7 @@ export default function StrandLandingPage() {
               ))}
             </div>
 
-            <Link href="/who" className="liquid-glass rounded-full px-5 py-2 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] transition-colors hover:text-[#6FFF00]">
-              Get Started
-            </Link>
+          
           </nav>
         </header>
 
@@ -138,8 +136,11 @@ export default function StrandLandingPage() {
                 <span className="font-condiment normal-case text-[#6FFF00]">for India</span>
               </h1>
 
-              
-
+              <div className="mt-8 flex items-center">
+                <Link href="/who" className="liquid-glass rounded-full px-6 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] transition-colors hover:text-[#6FFF00]">
+                  Get Started
+                </Link>
+              </div>
               
 
             </div>
