@@ -61,8 +61,8 @@ export function CreditPanel({ creditLine, onBorrow, onRepay }: CreditPanelProps)
   if (!creditLine) {
     return (
       <section className="panel space-y-4 p-6">
-        <h3 className="text-lg font-semibold tracking-tight">No partner has opened a credit line for your score yet.</h3>
-        <p className="text-sm text-muted-foreground">
+        <h3 className="strand-display text-sm text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>No credit line available</h3>
+        <p className="text-sm text-[#EFF4FF]/75" style={{ color: "#EFF4FF" }}>
           Share your profile to attract partners. Your live score and work history make underwriting
           portable.
         </p>
@@ -76,20 +76,20 @@ export function CreditPanel({ creditLine, onBorrow, onRepay }: CreditPanelProps)
   return (
     <section className="panel space-y-5 p-6">
       <div>
-        <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Available</div>
-        <div className="text-3xl font-semibold tracking-tight text-foreground">
+        <div className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Available</div>
+        <div className="text-3xl font-semibold tracking-tight text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>
           ${available.toLocaleString()} USDC
         </div>
       </div>
 
       <div className="grid gap-3 text-sm sm:grid-cols-2">
-        <div className="rounded-lg border border-border bg-muted/30 p-3">
-          <div className="text-muted-foreground">APR</div>
-          <div className="mt-1 text-lg font-medium">{creditLine.apr.toFixed(1)}%</div>
+        <div className="rounded-lg border border-white/10 bg-white/5 p-3 backdrop-blur-sm">
+          <div className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>APR</div>
+          <div className="mt-2 text-lg font-semibold text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>{creditLine.apr.toFixed(1)}%</div>
         </div>
-        <div className="rounded-lg border border-border bg-muted/30 p-3">
-          <div className="text-muted-foreground">Current balance</div>
-          <div className="mt-1 text-lg font-medium">${creditLine.borrowedUsdc.toLocaleString()} borrowed</div>
+        <div className="rounded-lg border border-white/10 bg-white/5 p-3 backdrop-blur-sm">
+          <div className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Current balance</div>
+          <div className="mt-2 text-lg font-semibold text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>${creditLine.borrowedUsdc.toLocaleString()} borrowed</div>
         </div>
       </div>
 

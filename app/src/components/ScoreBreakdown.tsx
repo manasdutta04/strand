@@ -38,7 +38,7 @@ export function ScoreBreakdown({ components, totalScore, inrRate = 83 }: ScoreBr
     <div className="space-y-6">
       <Card className="border-white/10">
         <CardHeader className="pb-3">
-          <CardTitle className="font-grotesk text-sm font-medium uppercase tracking-[0.2em] text-[#EFF4FF]/60">
+          <CardTitle className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>
             Score
           </CardTitle>
         </CardHeader>
@@ -91,14 +91,14 @@ export function ScoreBreakdown({ components, totalScore, inrRate = 83 }: ScoreBr
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {componentData.map((component) => (
-          <Card key={component.label} className="border-border/60">
+          <Card key={component.label} className="border-white/10 bg-white/5">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">{component.label}</CardTitle>
+              <CardTitle className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>{component.label}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold">{component.value}</span>
-                <span className="text-xs text-muted-foreground">/ {component.max}</span>
+                <span className="text-2xl font-bold text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>{component.value}</span>
+                <span className="text-xs text-[#EFF4FF]/75" style={{ color: "#EFF4FF" }}>/ {component.max}</span>
               </div>
               <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                 <div

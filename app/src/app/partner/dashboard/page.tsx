@@ -34,33 +34,33 @@ export default function PartnerDashboardPage() {
         nav={NAV}
       >
         <div className="rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-sm p-6">
-          <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Total capital deployed</p>
-          <div className="mt-2 font-grotesk text-5xl font-semibold tracking-tight text-[#EFF4FF]">${isLoading ? "—" : totalExposure.toLocaleString()}</div>
+          <h2 className="strand-display text-sm text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Total capital deployed</h2>
+          <div className="mt-3 font-grotesk text-5xl font-semibold tracking-tight text-[#EFF4FF]">${isLoading ? "—" : totalExposure.toLocaleString()}</div>
           <p className="mt-2 font-mono text-sm text-[#EFF4FF]/75">Active lending portfolio • risk diversified</p>
         </div>
 
         <section className="grid gap-4 md:grid-cols-4">
           <article className="rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-sm p-4">
-            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Active Borrowers</p>
+            <p className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Active Borrowers</p>
             <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#EFF4FF]">{isLoading ? "—" : activeBorrowers}</p>
           </article>
           <article className="rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-sm p-4">
-            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Average APR</p>
+            <p className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Average APR</p>
             <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#EFF4FF]">{isLoading ? "—" : `${avgApr.toFixed(1)}%`}</p>
           </article>
           <article className="rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-sm p-4">
-            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Utilization Rate</p>
+            <p className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Utilization Rate</p>
             <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#EFF4FF]">{isLoading ? "—" : `${utilizationRate}%`}</p>
           </article>
           <article className="rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-sm p-4">
-            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Yield Generated</p>
+            <p className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Yield Generated</p>
             <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#6FFF00]">{isLoading ? "—" : `$${Math.round(totalExposure * (avgApr / 100) / 12).toLocaleString()}`}</p>
             <p className="mt-1 font-mono text-xs text-[#EFF4FF]/75">Monthly estimate</p>
           </article>
         </section>
 
         <section className="rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-sm p-4">
-          <h2 className="font-grotesk mb-3 text-lg font-semibold text-[#EFF4FF]">Live Loan Book</h2>
+          <h2 className="strand-display mb-4 text-sm text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Live Loan Book</h2>
           {error ? (
             <p className="font-mono text-sm text-red-400">
               {formatErrorMessage(error)}

@@ -5,21 +5,21 @@ export default function DocsPage() {
     <main className="min-h-screen bg-[#010828] px-4 py-24 text-[#EFF4FF] sm:px-6 lg:px-16">
       <div className="mx-auto max-w-4xl">
         <p className="font-grotesk text-xs uppercase tracking-[0.3em] text-[#6FFF00]">Docs</p>
-        <h1 className="mt-6 font-grotesk text-[42px] uppercase leading-none sm:text-[64px]">Product guide</h1>
+        <h1 className="strand-display mt-6 text-4xl sm:text-5xl" style={{ color: "#EFF4FF" }}>Product guide</h1>
         <p className="mt-6 font-mono text-[14px] leading-relaxed text-[#EFF4FF]/75 sm:text-[15px]">
           Strand turns earnings proofs into a worker score and partner-ready credit signal.
         </p>
 
         <div className="mt-12 space-y-10 font-mono text-[14px] leading-relaxed text-[#EFF4FF]/80 sm:text-[15px]">
           <section>
-            <h2 className="font-grotesk text-xl uppercase text-[#EFF4FF] mb-4">Overview</h2>
+            <h2 className="strand-display text-lg sm:text-xl text-[#EFF4FF] mb-4" style={{ color: "#EFF4FF" }}>Overview</h2>
             <p>
               Workers upload earnings PDFs or screenshots. Strand reads the proof, updates score, and shows credit readiness.
             </p>
           </section>
 
           <section>
-            <h2 className="font-grotesk text-xl uppercase text-[#EFF4FF] mb-4">Worker flow</h2>
+            <h2 className="strand-display text-lg sm:text-xl text-[#EFF4FF] mb-4" style={{ color: "#EFF4FF" }}>Worker flow</h2>
             <ul className="ml-4 list-disc space-y-2">
               <li>Add earnings from Zomato, Swiggy, Blinkit, Ola, Uber, or Urban Company</li>
               <li>Track work history, skills, and score in the worker dashboard</li>
@@ -28,7 +28,7 @@ export default function DocsPage() {
           </section>
 
           <section>
-            <h2 className="font-grotesk text-xl uppercase text-[#EFF4FF] mb-4">Partner flow</h2>
+            <h2 className="strand-display text-lg sm:text-xl text-[#EFF4FF] mb-4" style={{ color: "#EFF4FF" }}>Partner flow</h2>
             <ul className="ml-4 list-disc space-y-2">
               <li>Review worker score and verified work history</li>
               <li>Open or adjust credit from the partner dashboard</li>
@@ -37,7 +37,7 @@ export default function DocsPage() {
           </section>
 
           <section>
-            <h2 className="font-grotesk text-xl uppercase text-[#EFF4FF] mb-4">Core modules</h2>
+            <h2 className="strand-display text-lg sm:text-xl text-[#EFF4FF] mb-4" style={{ color: "#EFF4FF" }}>Core modules</h2>
             <ul className="ml-4 list-disc space-y-2">
               <li>Work history and score generation</li>
               <li>Oracle-backed verification</li>
@@ -46,7 +46,7 @@ export default function DocsPage() {
           </section>
 
           <section>
-            <h2 className="font-grotesk text-xl uppercase text-[#EFF4FF] mb-4">Need a quick start?</h2>
+            <h2 className="strand-display text-lg sm:text-xl text-[#EFF4FF] mb-4" style={{ color: "#EFF4FF" }}>Need a quick start?</h2>
             <p>
               Open <Link href="/who" className="text-[#6FFF00] hover:underline">demo mode</Link> to see the full product without connecting a wallet.
             </p>

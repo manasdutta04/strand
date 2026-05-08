@@ -61,26 +61,28 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
       <section className="grid gap-4 md:grid-cols-4">
         <Card className="border-white/10">
           <CardContent className="pt-6">
-            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Score</p>
+            <p className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Score</p>
             <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#EFF4FF]">{totalScore || "—"}</p>
           </CardContent>
         </Card>
         <Card className="border-white/10">
           <CardContent className="pt-6">
-            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Credit</p>
+            <p className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Credit</p>
             <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#6FFF00]">${estimatedCredit.toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card className="border-white/10">
           <CardContent className="pt-6">
-            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Records</p>
+            <p className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Records</p>
             <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#EFF4FF]">{workRecords.length || "—"}</p>
           </CardContent>
         </Card>
         <Card className="border-white/10">
           <CardContent className="pt-6">
-            <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Status</p>
-            <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#EFF4FF]">{eligibleCredit ? "Open" : "Build"}</p>
+            <p className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Status</p>
+            <p className="strand-display mt-2 text-sm text-[#EFF4FF] sm:text-base" style={{ color: "#EFF4FF" }}>
+              {eligibleCredit ? "Credit open" : "Build score"}
+            </p>
           </CardContent>
         </Card>
       </section>
@@ -88,7 +90,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
       <div className="mt-6 space-y-4 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="strand-display text-base text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Add earnings</h2>
+            <h2 className="strand-display text-sm text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Add earnings</h2>
           </div>
         </div>
 
@@ -113,7 +115,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
 
       <div className="space-y-8">
         <div>
-          <h2 className="strand-display mb-3 text-base text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Score</h2>
+          <h2 className="strand-display mb-4 text-sm text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Score</h2>
           {scoreComponents ? (
             <ScoreBreakdown
               components={scoreComponents}
@@ -130,7 +132,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
         </div>
 
         <div>
-          <h2 className="strand-display mb-3 text-base text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>History</h2>
+          <h2 className="strand-display mb-4 text-sm text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>History</h2>
           <WorkRecordsDisplay
             records={workRecords}
             inrRate={INR_TO_USD_RATE}

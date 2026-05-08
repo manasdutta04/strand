@@ -69,15 +69,15 @@ export default function WhoPage() {
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Market</p>
-              <p className="mt-2 font-grotesk text-lg font-semibold text-[#EFF4FF]">12M+ Indian gig workers</p>
+              <p className="strand-display mt-2 text-sm text-[#EFF4FF] sm:text-base" style={{ color: "#EFF4FF" }}>12M+ Indian gig workers</p>
             </div>
             <div>
               <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Input</p>
-              <p className="mt-2 font-grotesk text-lg font-semibold text-[#EFF4FF]">Earnings PDFs / screenshots</p>
+              <p className="strand-display mt-2 text-sm text-[#EFF4FF] sm:text-base" style={{ color: "#EFF4FF" }}>Earnings PDFs / screenshots</p>
             </div>
             <div>
               <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#EFF4FF]/60">Output</p>
-              <p className="mt-2 font-grotesk text-lg font-semibold text-[#EFF4FF]">Portable score + INR credit</p>
+              <p className="strand-display mt-2 text-sm text-[#EFF4FF] sm:text-base" style={{ color: "#EFF4FF" }}>Portable score + INR credit</p>
             </div>
           </div>
         </section>
