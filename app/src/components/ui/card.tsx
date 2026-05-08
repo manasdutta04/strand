@@ -12,7 +12,7 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col gap-4 overflow-hidden rounded-xl border border-white/10 bg-white/5 text-[#EFF4FF] shadow-sm has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
+        "group/card flex flex-col gap-4 overflow-hidden rounded-2xl border border-white/12 bg-[linear-gradient(150deg,rgba(255,255,255,0.11),rgba(255,255,255,0.03))] text-[#EFF4FF] shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_14px_32px_rgba(2,6,28,0.42)] backdrop-blur-md has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-2xl *:[img:last-child]:rounded-b-2xl",
         className
       )}
       {...props}
@@ -38,7 +38,7 @@ function CardTitle({ className, style, ...props }: React.ComponentProps<"div">) 
     <div
       data-slot="card-title"
       className={cn(
-        "text-base leading-snug font-grotesk font-medium tracking-tight text-[#EFF4FF] group-data-[size=sm]/card:text-sm",
+        "text-base leading-snug font-grotesk font-medium uppercase tracking-[0.08em] text-[#EFF4FF] group-data-[size=sm]/card:text-sm",
         className
       )}
       style={{ ...(style ?? {}), color: "#EFF4FF" }}
@@ -51,7 +51,7 @@ function CardDescription({ className, style, ...props }: React.ComponentProps<"d
   return (
     <div
       data-slot="card-description"
-      className={cn("text-sm font-mono text-[#EFF4FF]/75", className)}
+      className={cn("text-sm font-mono text-[#EFF4FF]/78", className)}
       style={{ ...(style ?? {}), color: "#EFF4FF" }}
       {...props}
     />
@@ -87,7 +87,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-footer"
       className={cn(
-        "flex items-center rounded-b-xl border-t border-border bg-muted/30 px-6 py-4 group-data-[size=sm]/card:px-4 group-data-[size=sm]/card:py-3",
+        "flex items-center rounded-b-2xl border-t border-white/10 bg-white/[0.03] px-6 py-4 group-data-[size=sm]/card:px-4 group-data-[size=sm]/card:py-3",
         className
       )}
       {...props}

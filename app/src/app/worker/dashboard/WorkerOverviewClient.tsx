@@ -88,7 +88,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
       <div className="mt-6 space-y-4 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-grotesk text-base font-semibold text-[#EFF4FF]">Add earnings</h2>
+            <h2 className="font-grotesk text-base font-semibold text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Add earnings</h2>
           </div>
         </div>
 
@@ -99,7 +99,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
               onClick={() => setSelectedPlatform(platform.name)}
               className={`rounded-lg px-4 py-2 font-grotesk text-sm font-medium whitespace-nowrap transition-colors ${
                 selectedPlatform === platform.name
-                  ? "bg-[#6FFF00] text-[#010828] shadow-sm"
+                  ? "bg-[#6FFF00]/20 text-[#EFF4FF] border border-[#6FFF00]/45 shadow-sm"
                   : "border border-white/15 bg-transparent text-[#EFF4FF] hover:border-[#6FFF00] hover:text-[#6FFF00]"
               }`}
             >
@@ -113,7 +113,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
 
       <div className="space-y-8">
         <div>
-          <h2 className="font-grotesk mb-3 text-base font-semibold text-[#EFF4FF]">Score</h2>
+          <h2 className="font-grotesk mb-3 text-base font-semibold text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Score</h2>
           {scoreComponents ? (
             <ScoreBreakdown
               components={scoreComponents}
@@ -130,7 +130,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
         </div>
 
         <div>
-          <h2 className="font-grotesk mb-3 text-base font-semibold text-[#EFF4FF]">History</h2>
+          <h2 className="font-grotesk mb-3 text-base font-semibold text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>History</h2>
           <WorkRecordsDisplay
             records={workRecords}
             inrRate={INR_TO_USD_RATE}

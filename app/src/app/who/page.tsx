@@ -17,7 +17,7 @@ export default function WhoPage() {
           <h1 className="mt-4 max-w-3xl font-grotesk text-3xl font-semibold tracking-tight text-[#EFF4FF] sm:text-4xl">
             Portable reputation and credit for delivery riders and gig workers.
           </h1>
-          <p className="mt-3 max-w-3xl font-mono text-sm sm:text-base text-[#EFF4FF]/75">
+          <p className="mt-3 max-w-3xl font-mono text-sm sm:text-base text-[#EFF4FF]/75" style={{ color: "#EFF4FF" }}>
             Upload earnings PDFs from Zomato, Swiggy, Blinkit, Ola, or Uber. Strand turns them into WorkRecords,
             updates score, and unlocks credit in INR and USDC.
           </p>
