@@ -142,40 +142,31 @@ export default function StrandLandingPage() {
 
               
 
-              <div className="mt-10 flex flex-wrap items-center gap-5">
-                <Link href="/who" className="liquid-glass rounded-full px-7 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] transition-colors hover:text-[#6FFF00]">
-                  Get Started
-                </Link>
-                
-              </div>
             </div>
           </div>
         </div>
       </section>
 
       <section className="relative border-y border-white/10 bg-[#010828] py-5">
-        <div className="mx-auto flex max-w-[1831px] flex-col gap-4 px-4 sm:px-6 lg:px-16 xl:flex-row xl:items-center xl:gap-8">
-          <p className="shrink-0 font-grotesk text-[11px] uppercase tracking-[0.3em] text-[#6FFF00] sm:text-xs">
-            Built for
+        <div className="mx-auto max-w-[1831px] px-4 sm:px-6 lg:px-16">
+          <p className="text-center font-grotesk text-[11px] uppercase tracking-[0.3em] text-[#6FFF00] sm:text-xs">
+            Built for People of
           </p>
 
-          <div className="grid flex-1 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 xl:gap-4">
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 xl:gap-4">
             {trustedUsers.map((brand) => (
-                <div
-                  key={brand.name}
-                  className="flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-3"
-                >
-                  <Image
-                    src={brand.src}
-                    alt={brand.name}
-                    width={brand.width}
-                    height={brand.height}
-                    className="h-7 w-auto select-none object-contain sm:h-8"
-                    draggable={false}
-                    priority={brand.name === "Zomato"}
-                  />
-                </div>
-              ))}
+              <div key={brand.name} className="flex items-center justify-center px-2 py-1">
+                <Image
+                  src={brand.src}
+                  alt={brand.name}
+                  width={brand.width}
+                  height={brand.height}
+                  className="h-7 w-auto select-none object-contain opacity-95 sm:h-8"
+                  draggable={false}
+                  priority={brand.name === "Zomato"}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </section>
