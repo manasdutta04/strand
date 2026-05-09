@@ -42,6 +42,7 @@ export async function GET() {
       `${SUPABASE_URL}/rest/v1/worker_records?order=created_at.desc&limit=50`,
       {
         method: "GET",
+        cache: "no-store",
         headers: supabaseHeaders()
       }
     );
@@ -74,7 +75,10 @@ export async function GET() {
       }))
       .slice(0, 50);
 
-    return NextResponse.json({ ok: true, approvals });
+    return NextResponse.json(
+      { ok: true, approvals },
+      { headers: { "Cache-Control": "no-store, max-age=0" } }
+    );
   } catch (err: unknown) {
     console.error("/api/partner/pending-approvals error", err);
     const message = err instanceof Error ? err.message : String(err);
