@@ -15,9 +15,10 @@ type ByokConfig = {
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onConnectionChange?: (connected: boolean) => void;
 }
 
-export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, onConnectionChange }: SettingsModalProps) {
   // Mounted state for portal rendering - must be before any conditional returns
   const [mounted, setMounted] = useState(false);
 
@@ -132,8 +133,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         throw new Error(errorMsg);
       }
       setStatus("✓ Saved to cloud successfully");
+      onConnectionChange?.(!!form.apiKey);
     } catch (err: any) {
       setStatus("✗ Error: " + (err?.message ?? err));
+      onConnectionChange?.(false);
     } finally {
       setBusy(false);
     }
@@ -181,8 +184,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       };
       setForm(next);
       setStatus("✓ Loaded from cloud successfully");
+      onConnectionChange?.(!!next.apiKey);
     } catch (err: any) {
       setStatus("✗ Error: " + (err?.message ?? err));
+      onConnectionChange?.(false);
     } finally {
       setBusy(false);
     }
@@ -222,6 +227,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       }
       setForm({ provider: "ollama", apiKey: "", baseUrl: "http://localhost:11434", model: "llama3.2-vision" });
       setStatus("✓ Cleared from cloud successfully");
+      onConnectionChange?.(false);
     } catch (err: any) {
       setStatus("✗ Error: " + (err?.message ?? err));
     } finally {

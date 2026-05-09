@@ -24,6 +24,7 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
   const pathname = usePathname();
   const isDemoRoute = pathname.startsWith("/worker/demo") || pathname.startsWith("/partner/demo");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [connected, setConnected] = useState(false);
 
   return (
     <main className="saas-grid-bg min-h-screen px-4 py-6 text-[#EFF4FF] sm:px-6 lg:px-16">
@@ -63,14 +64,15 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setSettingsOpen(true)}
-                  className="inline-flex items-center px-3 py-2 rounded-lg border border-transparent bg-[#0b1726]/50 text-sm hover:bg-[#0b1726]/70 transition"
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-transparent bg-[#0b1726]/50 text-sm hover:bg-[#0b1726]/70 transition"
                 >
+                  <span className={`inline-block w-2 h-2 rounded-full ${connected ? 'bg-[#6FFF00]' : 'bg-red-500'}`} />
                   Settings
                 </button>
                 <StrandWalletButton className="!h-10 !rounded-xl !text-sm" />
               </div>
             )}
-        <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+        <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} onConnectionChange={setConnected} />
           </div>
 
           <nav className="mt-5 flex flex-wrap gap-2">
