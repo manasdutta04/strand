@@ -26,6 +26,7 @@ type WorkerRecordRow = {
   extracted_confidence?: "high" | "medium" | "low";
   extraction_status?: "pending" | "verified" | "failed" | "rejected";
   extraction_reason?: string | null;
+  extracted_text?: string | null;
   created_at: string;
 };
 
@@ -61,7 +62,10 @@ export async function GET() {
         const isTrustedByConfidence = confidence === "high" || confidence === "medium";
         const isTrustedByHeuristic =
           Number(record.earning_amount_usdc || 0) >= 100 || Number(record.delivery_count || 0) >= 50;
-        return (status === "pending" || status === "verified") && validMetrics && (isTrustedByConfidence || isTrustedByHeuristic);
+        const isManualEntry =
+          String(record.extracted_text ?? "").includes("\"source\":\"manual-entry\"") ||
+          record.file_name === "manual-entry";
+        return (status === "pending" || status === "verified") && validMetrics && (isManualEntry || isTrustedByConfidence || isTrustedByHeuristic);
       })
       .map((record) => ({
         recordId: record.id,

@@ -16,6 +16,7 @@ type WorkerRecord = {
   extraction_status?: "pending" | "verified" | "failed" | "rejected";
   extracted_confidence?: "high" | "medium" | "low";
   extraction_reason?: string | null;
+  extracted_text?: string | null;
 };
 
 function isTrustedRecord(row: WorkerRecord): boolean {
@@ -23,6 +24,11 @@ function isTrustedRecord(row: WorkerRecord): boolean {
   const deliveries = Number(row.delivery_count || 0);
   if (earnings <= 0 || deliveries <= 0) {
     return false;
+  }
+
+  const sourceText = String((row as unknown as { extracted_text?: string }).extracted_text ?? "");
+  if (sourceText.includes("\"source\":\"manual-entry\"") || row.file_name === "manual-entry") {
+    return true;
   }
 
   const confidence = row.extracted_confidence;
