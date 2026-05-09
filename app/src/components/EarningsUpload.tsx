@@ -29,7 +29,6 @@ export function EarningsUpload({
   const [trips, setTrips] = useState("");
   const [rating, setRating] = useState("");
   const [accepted, setAccepted] = useState("");
-  const [notes, setNotes] = useState("");
 
   async function handleSave(): Promise<void> {
     if (!publicKey) {
@@ -66,7 +65,6 @@ export function EarningsUpload({
       form.append("manualDate", workDate);
       if (rating.trim()) form.append("manualRating", rating.trim());
       if (accepted.trim()) form.append("manualAccepted", accepted.trim());
-      if (notes.trim()) form.append("manualNotes", notes.trim());
 
       const resp = await fetch("/api/worker/upload", {
         method: "POST",
@@ -83,7 +81,6 @@ export function EarningsUpload({
       setTrips("");
       setRating("");
       setAccepted("");
-      setNotes("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
     } finally {
@@ -136,35 +133,21 @@ export function EarningsUpload({
           <div className="grid gap-4 md:grid-cols-3">
             <label className="block">
               <div className={`${labelClass} mb-2`}>Earnings (INR)</div>
-              <input type="number" min="1" step="1" value={earningsInr} onChange={(e) => setEarningsInr(e.target.value)} placeholder="28540" disabled={isLoading} className={inputClass} />
+              <input type="number" min="1" step="1" value={earningsInr} onChange={(e) => setEarningsInr(e.target.value)} placeholder="Enter your today's earnings" disabled={isLoading} className={inputClass} />
             </label>
             <label className="block">
               <div className={`${labelClass} mb-2`}>Trips / Orders</div>
-              <input type="number" min="1" step="1" value={trips} onChange={(e) => setTrips(e.target.value)} placeholder="342" disabled={isLoading} className={inputClass} />
+              <input type="number" min="1" step="1" value={trips} onChange={(e) => setTrips(e.target.value)} placeholder="Enter your today's trips" disabled={isLoading} className={inputClass} />
             </label>
             <label className="block">
               <div className={`${labelClass} mb-2`}>Rating (optional)</div>
-              <input type="number" min="0" max="5" step="0.01" value={rating} onChange={(e) => setRating(e.target.value)} placeholder="4.82" disabled={isLoading} className={inputClass} />
+              <input type="number" min="0" max="5" step="0.01" value={rating} onChange={(e) => setRating(e.target.value)} placeholder="Enter your today's rating" disabled={isLoading} className={inputClass} />
             </label>
             <label className="block md:col-span-2">
               <div className={`${labelClass} mb-2`}>Accepted jobs (optional)</div>
-              <input type="number" min="0" step="1" value={accepted} onChange={(e) => setAccepted(e.target.value)} placeholder="336" disabled={isLoading} className={inputClass} />
+              <input type="number" min="0" step="1" value={accepted} onChange={(e) => setAccepted(e.target.value)} placeholder="Enter your today's accepted jobs" disabled={isLoading} className={inputClass} />
             </label>
           </div>
-        </div>
-
-        <div className="rounded-xl border border-white/10 bg-[#081136]/40 p-4 sm:p-5">
-          <label className="block">
-            <div className={`${labelClass} mb-2`}>Notes (optional)</div>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Bonuses, settlement notes, payout details..."
-              disabled={isLoading}
-              rows={4}
-              className="w-full rounded-md border border-white/20 bg-[#050b2b] px-3 py-2.5 text-[#EFF4FF] font-mono text-sm hover:border-white/30 focus:border-[#6FFF00] focus:outline-none transition"
-            />
-          </label>
         </div>
 
         <div className="rounded-xl border border-white/10 bg-[#081136]/40 p-4 sm:p-5">
