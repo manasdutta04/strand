@@ -76,6 +76,7 @@ export default function WorkerSkillsPage() {
         title="Build Your Reputation"
         subtitle="Verified skills and attestations — trusted expertise signals."
         nav={NAV}
+        showSettings={true}
       >
         <section className="panel p-4">
           {error ? (

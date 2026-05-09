@@ -77,6 +77,7 @@ export default function WorkerDemoDashboardPage() {
       title="Dashboard"
       subtitle="Explore the product with simulated worker data."
       nav={NAV}
+      showSettings={true}
     >
       <div className="mb-6 rounded-2xl border border-[#6FFF00]/20 bg-[linear-gradient(135deg,rgba(111,255,0,0.14),rgba(255,255,255,0.03))] px-4 py-4 text-sm text-[#EFF4FF]/75 shadow-[0_0_0_1px_rgba(111,255,0,0.08),0_12px_30px_rgba(0,0,0,0.18)]">
         <div className="flex flex-wrap items-center justify-between gap-3">

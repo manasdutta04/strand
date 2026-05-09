@@ -27,6 +27,7 @@ export default function WorkerWorkHistoryPage() {
          title="Build Your Reputation"
          subtitle="Your work history — verified earnings and delivery quality."
         nav={NAV}
+        showSettings={true}
       >
         <Card>
           <CardContent className="p-6">

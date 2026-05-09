@@ -32,6 +32,7 @@ export default function WorkerCreditPage() {
           title="Credit Access"
           subtitle={hasErrors ? "There was a problem loading credit information" : "Loading credit information..."}
           nav={NAV}
+          showSettings={true}
         >
           <div className="flex items-center justify-center h-64">
             {hasErrors ? (
