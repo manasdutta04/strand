@@ -19,11 +19,13 @@ interface SaasShellProps {
   subtitle: string;
   nav: NavItem[];
   children: React.ReactNode;
+  showSettings?: boolean;
 }
 
-export function SaasShell({ productLabel, title, subtitle, nav, children }: SaasShellProps) {
+export function SaasShell({ productLabel, title, subtitle, nav, children, showSettings = false }: SaasShellProps) {
   const pathname = usePathname();
   const isDemoRoute = pathname.startsWith("/worker/demo") || pathname.startsWith("/partner/demo");
+  const isPartnerRoute = pathname.startsWith("/partner");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { settings: aiSettings } = useAISettings();
   const [connected, setConnected] = useState<boolean>(() => !!(aiSettings && aiSettings.connected));
@@ -69,17 +71,19 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setSettingsOpen(true)}
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-transparent bg-[#0b1726]/50 text-sm hover:bg-[#0b1726]/70 transition"
-                >
-                  <span className={`inline-block w-2 h-2 rounded-full ${connected ? 'bg-[#6FFF00]' : 'bg-red-500'}`} />
-                  Settings
-                </button>
+                {showSettings && !isPartnerRoute && (
+                  <button
+                    onClick={() => setSettingsOpen(true)}
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-transparent bg-[#0b1726]/50 text-sm hover:bg-[#0b1726]/70 transition"
+                  >
+                    <span className={`inline-block w-2 h-2 rounded-full ${connected ? 'bg-[#6FFF00]' : 'bg-red-500'}`} />
+                    Settings
+                  </button>
+                )}
                 <StrandWalletButton className="!h-10 !rounded-xl !text-sm" />
               </div>
             )}
-        <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} onConnectionChange={setConnected} />
+        {showSettings && !isPartnerRoute && <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} onConnectionChange={setConnected} />}
           </div>
 
           <nav className="mt-5 flex flex-wrap gap-2">

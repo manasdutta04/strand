@@ -6,7 +6,6 @@ import { PublicKey } from "@solana/web3.js";
 import { getAssociatedTokenAddress, ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { SaasShell } from "../../../../components/SaasShell";
 import { RequireWallet } from "../../../../components/RequireWallet";
-import { listOpenJobEscrows } from "../../../../lib/data-access";
 import { DEVNET_USDC_MINT } from "../../../../lib/constants";
 import { executeOpenCreditLine } from "../../../../lib/tx-helpers";
 import { formatErrorMessage } from "../../../../lib/error-formatter";
@@ -46,14 +45,19 @@ export default function PartnerQueuePage() {
       setIsLoading(true);
       setError(null);
       try {
-        const openJobs = await listOpenJobEscrows();
+        const resp = await fetch("/api/partner/pending-approvals");
+        if (!resp.ok) {
+          const j = await resp.json();
+          throw new Error(j?.error ?? "Failed to load pending approvals");
+        }
+        const data = await resp.json();
         if (!cancelled) {
           setRequests(
-            openJobs.slice(0, 6).map((job) => ({
-              jobId: job.jobId,
-              worker: job.worker,
-              amountUsdc: job.amountUsdc,
-              createdAt: job.createdAt,
+            (data.approvals || []).map((approval: any) => ({
+              jobId: approval.jobId,
+              worker: approval.worker,
+              amountUsdc: approval.amountUsdc,
+              createdAt: approval.createdAt,
               status: "pending"
             }))
           );

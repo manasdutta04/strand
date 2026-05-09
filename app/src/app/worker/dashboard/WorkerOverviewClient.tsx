@@ -53,6 +53,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
       title="Dashboard"
       subtitle={demoMode ? "Demo data. No wallet needed." : "Track earnings and unlock credit."}
       nav={NAV}
+      showSettings={true}
     >
       {demoMode && (
         <div className="mb-6 flex flex-wrap items-center gap-2 rounded-2xl border border-[#6FFF00]/20 bg-[#6FFF00]/5 px-4 py-3 text-sm text-[#EFF4FF]/75 font-mono">
@@ -177,6 +178,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
           title="Overview"
           subtitle={error ? "There was a problem loading your data" : "Loading your data..."}
           nav={NAV}
+          showSettings={true}
         >
           <div className="flex items-center justify-center h-64">
             {error ? (
