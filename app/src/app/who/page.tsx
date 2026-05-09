@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { WhoDemoDialog } from "./WhoDemoDialog";
 
 export default function WhoPage() {
   return (
@@ -26,17 +25,15 @@ export default function WhoPage() {
         <section className="rounded-[32px] border border-[#6FFF00]/20 bg-gradient-to-br from-[#6FFF00]/10 to-transparent p-6 sm:p-8">
           <div className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr] lg:items-end">
             <div>
-              <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#6FFF00]">Demo mode</p>
+              <p className="font-grotesk text-xs uppercase tracking-[0.2em] text-[#6FFF00]">Live mode</p>
               <h2 className="strand-display mt-3 text-2xl text-[#EFF4FF] sm:text-3xl">
-                Open the product with a simulated worker profile.
+                Open the live worker and partner workspaces.
               </h2>
               <p className="mt-3 max-w-2xl font-mono text-sm text-[#EFF4FF]/75">
-                The demo shows the real SaaS flow: upload earnings PDFs, watch the score update, and see INR / USDC
-                credit readiness. No seeded blockchain data required.
+                Use the live app with wallet-connected identity and Supabase-backed records.
               </p>
 
               <div className="mt-6 flex flex-wrap gap-3">
-                <WhoDemoDialog />
                 <Link className="rounded-full border border-white/15 px-5 py-2 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] transition-colors hover:border-[#6FFF00] hover:text-[#6FFF00]" href="/login/worker">
                   Worker Workspace
                 </Link>
