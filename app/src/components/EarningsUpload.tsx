@@ -59,6 +59,9 @@ export function EarningsUpload({ platform, onUploadStart, onUploadComplete }: Ea
 
       const uploadedName = payload?.row?.file_name ?? file.name;
       setSuccessMessage(`Upload processed and saved to cloud: \"${uploadedName}\"`);
+      
+      // Wait 1 second to allow Supabase to process the insert before refreshing dashboard
+      await new Promise(resolve => setTimeout(resolve, 1000));
       onUploadComplete?.(uploadedName);
       event.target.value = "";
     } catch (err) {

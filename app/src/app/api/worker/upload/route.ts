@@ -28,40 +28,86 @@ function extractMetricsFromText(text: string, platform: string): {
   deliveries: number;
   confidence: "high" | "medium" | "low";
 } {
-  const compact = text.replace(/\s+/g, " ");
+  if (!text || text.trim().length === 0) {
+    // No text extracted - use fallback
+    const fallbackByPlatform: Record<string, { amountInr: number; deliveries: number }> = {
+      zomato: { amountInr: 2200, deliveries: 14 },
+      swiggy: { amountInr: 2100, deliveries: 13 },
+      blinkit: { amountInr: 1800, deliveries: 11 },
+      ola: { amountInr: 2500, deliveries: 8 },
+      uber: { amountInr: 2600, deliveries: 9 },
+      urban_company: { amountInr: 3000, deliveries: 5 }
+    };
+    const fallback = fallbackByPlatform[platform] ?? { amountInr: 2000, deliveries: 10 };
+    return { amountInr: fallback.amountInr, deliveries: fallback.deliveries, confidence: "low" };
+  }
 
-  const amountPatterns = [
-    /(?:total\s+earnings?|earnings?|payout|amount\s+credited|net\s+pay)\D{0,30}(?:rs\.?|inr|₹)\s*([0-9][0-9,]*(?:\.\d{1,2})?)/gi,
-    /(?:rs\.?|inr|₹)\s*([0-9][0-9,]*(?:\.\d{1,2})?)/gi
-  ];
+  // Preserve some structure by replacing multiple spaces with single space, but keep newlines
+  const singleSpaced = text.replace(/ {2,}/g, " ");
+  const compact = singleSpaced.replace(/\s+/g, " ");
+  const lower = compact.toLowerCase();
 
-  const deliveryPatterns = [
-    /(?:deliver(?:y|ies)|orders?|trips?|rides?)\D{0,20}(\d{1,5})/gi,
-    /(\d{1,5})\D{0,20}(?:deliver(?:y|ies)|orders?|trips?|rides?)/gi
-  ];
+  console.log(`[PDF Extract Debug] Text length: ${text.length}, Compact length: ${compact.length}`);
 
-  const amountCandidates: number[] = [];
-  for (const pattern of amountPatterns) {
-    let match: RegExpExecArray | null;
-    while ((match = pattern.exec(compact)) !== null) {
-      const value = parseNumeric(match[1]);
-      if (value !== null && value > 0) {
-        amountCandidates.push(value);
+  // First try: Look for explicit "TOTAL EARNINGS" / "TOTAL DELIVERIES" headers
+  const explicitEarningsMatch = compact.match(/TOTAL\s+EARNINGS[\s\D]{0,50}(?:rs\.?|inr|₹)\s*([0-9][0-9,]*(?:\.\d{1,2})?)/i);
+  const explicitDeliveriesMatch = compact.match(/TOTAL\s+DELIVER(?:Y|IES)[\s\D]{0,30}(\d{1,5})/i);
+
+  let amountInr: number | null = null;
+  let deliveries: number | null = null;
+
+  if (explicitEarningsMatch) {
+    amountInr = parseNumeric(explicitEarningsMatch[1]);
+  }
+  if (explicitDeliveriesMatch) {
+    deliveries = parseNumeric(explicitDeliveriesMatch[1]);
+  }
+
+  // Second try: Look for large numbers with currency (3+ digits after thousands separator or 4+ standalone)
+  if (amountInr === null) {
+    const currencyPatterns = [
+      /(?:rs\.?|inr|₹)\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{1,2})?|\d{4,})/gi  // Amounts with optional commas
+    ];
+    const amounts: number[] = [];
+    for (const pattern of currencyPatterns) {
+      let match: RegExpExecArray | null;
+      while ((match = pattern.exec(compact)) !== null) {
+        const value = parseNumeric(match[1]);
+        if (value !== null && value > 500) { // Realistic earnings
+          amounts.push(value);
+        }
       }
+    }
+    if (amounts.length > 0) {
+      amountInr = Math.max(...amounts);
     }
   }
 
-  const deliveryCandidates: number[] = [];
-  for (const pattern of deliveryPatterns) {
-    let match: RegExpExecArray | null;
-    while ((match = pattern.exec(compact)) !== null) {
-      const value = parseNumeric(match[1]);
-      if (value !== null && value >= 0) {
-        deliveryCandidates.push(Math.trunc(value));
+  // Third try: Look for large standalone numbers (likely total delivery count)
+  if (deliveries === null) {
+    const largeNumberMatterns = [
+      /\D(\d{2,5})\D(?:delivery|deliveries|order|orders|trip|trips|ride|rides)/gi,
+      /(?:delivery|deliveries|order|orders|trip|trips|ride|rides)\D(\d{2,5})/gi,
+      /\D([2-9]\d{2,4})\D/g  // Any large number between boundaries (3-5 digits, >= 200)
+    ];
+    const deliveryCounts: number[] = [];
+    for (const pattern of largeNumberPatterns) {
+      let match: RegExpExecArray | null;
+      while ((match = pattern.exec(compact)) !== null) {
+        const value = parseNumeric(match[1]);
+        if (value !== null && value >= 10 && value <= 99999) {
+          deliveryCounts.push(Math.trunc(value));
+        }
       }
+    }
+    if (deliveryCounts.length > 0) {
+      // Filter out outliers and get the most reasonable value
+      deliveryCounts.sort((a, b) => b - a); // Sort descending
+      deliveries = deliveryCounts[0]; // Take the largest (usually total)
     }
   }
 
+  // Use fallback if still not found
   const fallbackByPlatform: Record<string, { amountInr: number; deliveries: number }> = {
     zomato: { amountInr: 2200, deliveries: 14 },
     swiggy: { amountInr: 2100, deliveries: 13 },
@@ -70,23 +116,48 @@ function extractMetricsFromText(text: string, platform: string): {
     uber: { amountInr: 2600, deliveries: 9 },
     urban_company: { amountInr: 3000, deliveries: 5 }
   };
-
   const fallback = fallbackByPlatform[platform] ?? { amountInr: 2000, deliveries: 10 };
 
-  const amountInr = amountCandidates.length > 0 ? Math.max(...amountCandidates) : fallback.amountInr;
-  const deliveries = deliveryCandidates.length > 0 ? Math.max(...deliveryCandidates) : fallback.deliveries;
+  const finalAmount = amountInr ?? fallback.amountInr;
+  const finalDeliveries = deliveries ?? fallback.deliveries;
 
+  // Determine confidence
   const confidence: "high" | "medium" | "low" =
-    amountCandidates.length > 0 && deliveryCandidates.length > 0
+    amountInr !== null && deliveries !== null
       ? "high"
-      : amountCandidates.length > 0 || deliveryCandidates.length > 0
+      : amountInr !== null || deliveries !== null
       ? "medium"
       : "low";
 
-  return { amountInr, deliveries, confidence };
+  console.log(`[PDF Extract] Platform: ${platform}, Amount: ₹${finalAmount}, Deliveries: ${finalDeliveries}, Confidence: ${confidence}, Extracted: amount=${amountInr}, deliveries=${deliveries}`);
+
+  return { amountInr: finalAmount, deliveries: finalDeliveries, confidence };
 }
 
 export async function POST(req: Request) {
+  const url = new URL(req.url);
+  
+  // Test endpoint for validating extraction logic
+  if (url.searchParams.get("test") === "true") {
+    const sampleZomatoText = `
+      JANUARY 2024
+      TOTAL DELIVERIES
+      342
+      TOTAL EARNINGS
+      ₹28,540
+      Payment Status: Completed
+    `;
+
+    const result = extractMetricsFromText(sampleZomatoText, "zomato");
+    console.log("[Test Result]", result);
+    return NextResponse.json({
+      test: "extraction",
+      input: sampleZomatoText.trim(),
+      output: result,
+      success: result.deliveries === 342 && result.amountInr === 28540
+    });
+  }
+
   try {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
       return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
@@ -155,3 +226,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: String(err?.message ?? err) }, { status: 500 });
   }
 }
+
+// Test function: Validate extraction works with sample Zomato text
+// Access at /api/worker/upload?test=true
