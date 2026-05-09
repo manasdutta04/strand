@@ -122,6 +122,7 @@ export async function GET(req: Request) {
         wallet
       )}&order=created_at.desc`,
       {
+        cache: "no-store",
         headers: {
           apikey: SUPABASE_SERVICE_KEY,
           Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`
@@ -162,6 +163,41 @@ export async function GET(req: Request) {
     });
   } catch (err: unknown) {
     console.error("/api/worker/profile error", err);
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const wallet = new URL(req.url).searchParams.get("wallet")?.trim() ?? "";
+    if (!wallet) {
+      return NextResponse.json({ error: "wallet is required" }, { status: 400 });
+    }
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+      return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
+    }
+
+    const resp = await fetch(
+      `${SUPABASE_URL}/rest/v1/worker_records?wallet=eq.${encodeURIComponent(wallet)}`,
+      {
+        method: "DELETE",
+        cache: "no-store",
+        headers: {
+          apikey: SUPABASE_SERVICE_KEY,
+          Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`
+        }
+      }
+    );
+
+    if (!resp.ok) {
+      const txt = await resp.text();
+      throw new Error(`worker_records delete failed: ${resp.status} ${txt}`);
+    }
+
+    return NextResponse.json({ ok: true, wallet });
+  } catch (err: unknown) {
+    console.error("/api/worker/profile DELETE error", err);
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
   }
