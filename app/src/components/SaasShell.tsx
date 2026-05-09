@@ -3,7 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { StrandWalletButton } from "./WalletProvider";
+import { SettingsModal } from "./SettingsModal";
 
 interface NavItem {
   label: string;
@@ -21,6 +23,7 @@ interface SaasShellProps {
 export function SaasShell({ productLabel, title, subtitle, nav, children }: SaasShellProps) {
   const pathname = usePathname();
   const isDemoRoute = pathname.startsWith("/worker/demo") || pathname.startsWith("/partner/demo");
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
     <main className="saas-grid-bg min-h-screen px-4 py-6 text-[#EFF4FF] sm:px-6 lg:px-16">
@@ -58,10 +61,16 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Link href="/settings" className="inline-flex items-center px-3 py-2 rounded-lg border border-transparent bg-[#0b1726]/50 text-sm">Settings</Link>
+                <button
+                  onClick={() => setSettingsOpen(true)}
+                  className="inline-flex items-center px-3 py-2 rounded-lg border border-transparent bg-[#0b1726]/50 text-sm hover:bg-[#0b1726]/70 transition"
+                >
+                  Settings
+                </button>
                 <StrandWalletButton className="!h-10 !rounded-xl !text-sm" />
               </div>
             )}
+        <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
           </div>
 
           <nav className="mt-5 flex flex-wrap gap-2">
