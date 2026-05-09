@@ -175,7 +175,7 @@ export function useWorkerProfile(wallet: string | null, demoMode = false, refres
     fetchProfile(true);
     const pollTimer = setInterval(() => {
       void fetchProfile(false);
-    }, 10000);
+    }, 3000);
 
     return () => {
       cancelled = true;

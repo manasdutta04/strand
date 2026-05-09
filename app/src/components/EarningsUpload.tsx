@@ -75,7 +75,8 @@ export function EarningsUpload({
         throw new Error(payload?.error ?? "Failed to save record");
       }
 
-      setSuccessMessage("Saved successfully.");
+      setSuccessMessage("Saved. AI analysis in progress...");
+      await new Promise((resolve) => setTimeout(resolve, 1200));
       onUploadComplete?.(payload?.row?.id ?? "manual-record");
       setEarningsInr("");
       setTrips("");

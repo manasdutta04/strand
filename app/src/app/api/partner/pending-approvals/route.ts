@@ -58,14 +58,7 @@ export async function GET() {
         const status = record.extraction_status ?? "pending";
         const validMetrics =
           Number(record.earning_amount_usdc || 0) > 0 && Number(record.delivery_count || 0) > 0;
-        const confidence = record.extracted_confidence;
-        const isTrustedByConfidence = confidence === "high" || confidence === "medium";
-        const isTrustedByHeuristic =
-          Number(record.earning_amount_usdc || 0) >= 100 || Number(record.delivery_count || 0) >= 50;
-        const isManualEntry =
-          String(record.extracted_text ?? "").includes("\"source\":\"manual-entry\"") ||
-          record.file_name === "manual-entry";
-        return (status === "pending" || status === "verified") && validMetrics && (isManualEntry || isTrustedByConfidence || isTrustedByHeuristic);
+        return (status === "pending" || status === "verified") && validMetrics;
       })
       .map((record) => ({
         recordId: record.id,

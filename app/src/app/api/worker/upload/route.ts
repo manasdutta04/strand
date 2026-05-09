@@ -319,14 +319,57 @@ export async function POST(req: Request) {
       extraction_reason: reason ?? null
     };
 
-    let insertResp = await fetch(`${SUPABASE_URL}/rest/v1/worker_records`, {
-      method: "POST",
-      headers: {
-        ...supabaseHeaders(),
-        Prefer: "return=representation"
-      },
-      body: JSON.stringify(extendedPayload)
-    });
+    // For manual entries, update same wallet+platform+date row instead of duplicating.
+    let insertResp: Response;
+    if (hasManualOverride) {
+      const existingResp = await fetch(
+        `${SUPABASE_URL}/rest/v1/worker_records?wallet=eq.${encodeURIComponent(
+          wallet
+        )}&platform=eq.${encodeURIComponent(platform)}&created_at=eq.${encodeURIComponent(
+          normalizedDate
+        )}&select=id&limit=1`,
+        {
+          method: "GET",
+          headers: supabaseHeaders()
+        }
+      );
+      if (!existingResp.ok) {
+        const txt = await existingResp.text();
+        throw new Error(`worker_records lookup failed: ${existingResp.status} ${txt}`);
+      }
+      const existingRows = (await existingResp.json()) as Array<{ id: string }>;
+      if (existingRows.length > 0) {
+        insertResp = await fetch(
+          `${SUPABASE_URL}/rest/v1/worker_records?id=eq.${encodeURIComponent(existingRows[0].id)}`,
+          {
+            method: "PATCH",
+            headers: {
+              ...supabaseHeaders(),
+              Prefer: "return=representation"
+            },
+            body: JSON.stringify(extendedPayload)
+          }
+        );
+      } else {
+        insertResp = await fetch(`${SUPABASE_URL}/rest/v1/worker_records`, {
+          method: "POST",
+          headers: {
+            ...supabaseHeaders(),
+            Prefer: "return=representation"
+          },
+          body: JSON.stringify(extendedPayload)
+        });
+      }
+    } else {
+      insertResp = await fetch(`${SUPABASE_URL}/rest/v1/worker_records`, {
+        method: "POST",
+        headers: {
+          ...supabaseHeaders(),
+          Prefer: "return=representation"
+        },
+        body: JSON.stringify(extendedPayload)
+      });
+    }
 
     if (!insertResp.ok) {
       const firstErrorText = await insertResp.text();
