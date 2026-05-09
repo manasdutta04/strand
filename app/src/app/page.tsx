@@ -66,7 +66,7 @@ function MobileMenu() {
 const featureCards = [
   {
     title: "Work history",
-    description: "Verified proof of completed work that travels with the wallet.",
+    description: "Portable proof of completed work that stays with the wallet.",
     eyebrow: "Verified"
   },
   {
@@ -76,8 +76,8 @@ const featureCards = [
   },
   {
     title: "Credit access",
-    description: "Partners underwrite from on-chain reputation and issue USDC credit.",
-    eyebrow: "USDC-ready"
+    description: "Partners underwrite from wallet reputation and live work records.",
+    eyebrow: "Credit-ready"
   }
 ] as const;
 
@@ -115,7 +115,7 @@ const pricingPlans = [
   },
   {
     name: "Pro",
-    price: "$9/month",
+    price: "₹299/month",
     description: "Key provided. Coming soon for teams that want managed access.",
     cta: "Coming soon",
     featured: true
@@ -190,7 +190,7 @@ export default function StrandLandingPage() {
           <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
             <div className="relative max-w-4xl lg:ml-28">
               <p className="mb-6 font-grotesk text-[11px] uppercase tracking-[0.35em] text-[#6FFF00] sm:text-xs">
-                Built on Solana • worker and partner credit
+                Built on Solana | worker and partner credit
               </p>
 
               <h1 className="max-w-4xl font-grotesk text-[42px] uppercase leading-[1.05] text-[#EFF4FF] sm:text-[60px] md:text-[75px] lg:text-[90px] lg:leading-[1]">
@@ -332,7 +332,7 @@ export default function StrandLandingPage() {
             </div>
 
             <p className="max-w-md font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF]/80 sm:text-[16px] lg:text-right">
-              Free starts with your own key. Pro is key-provided and is coming soon at $9 per month.
+              Free starts with your own key. Pro is key-provided and coming soon with INR pricing.
             </p>
           </div>
 
@@ -456,7 +456,7 @@ export default function StrandLandingPage() {
           </div>
 
           <div className="mt-14 border-t border-white/10 pt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="font-mono text-sm text-[#EFF4FF]/55">Strand © 2026 • Apache Licensed • Solana-based</p>
+            <p className="font-mono text-sm text-[#EFF4FF]/55">Strand (c) 2026 | Apache Licensed | Solana-based</p>
             <div className="flex items-center gap-4 font-mono text-[13px] uppercase tracking-[0.18em] text-[#EFF4FF]/55">
               <span>Build For India</span>
               <span>By Indians ❤️</span>

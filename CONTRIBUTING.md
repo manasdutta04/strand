@@ -86,6 +86,13 @@ npm run test:anchor
 npm run lint
 ```
 
+## Product Surface Notes
+
+- `/` is the public landing page.
+- `/who` is the role chooser (Worker / Partner).
+- Non-demo worker and partner views should remain data-driven from Supabase-backed APIs.
+- Avoid adding seeded/static fallback earnings values to non-demo routes.
+
 ## Styleguides
 
 ### Git Commit Messages

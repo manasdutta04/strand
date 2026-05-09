@@ -7,7 +7,7 @@ export default function HelpPage() {
         <p className="font-grotesk text-xs uppercase tracking-[0.3em] text-[#6FFF00]">Help</p>
         <h1 className="strand-display mt-6 text-4xl sm:text-5xl" style={{ color: "#EFF4FF" }}>Help center</h1>
         <p className="mt-6 font-mono text-[14px] leading-relaxed text-[#EFF4FF]/75 sm:text-[15px]">
-          Short answers for workers, partners, and demo users.
+          Short answers for workers and partners.
         </p>
 
         <div className="mt-12 space-y-8 font-mono text-[14px] leading-relaxed text-[#EFF4FF]/80 sm:text-[15px]">
@@ -20,7 +20,7 @@ export default function HelpPage() {
               </div>
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: Can I try it first?</h3>
-                <p className="ml-4">A: Yes. Use demo mode to explore worker and partner views without connecting a wallet.</p>
+                <p className="ml-4">A: Yes. Open workspace selection, pick Worker or Partner, and connect a wallet to start.</p>
               </div>
             </div>
           </section>
@@ -30,7 +30,7 @@ export default function HelpPage() {
             <div className="space-y-5">
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: What can I upload?</h3>
-                <p className="ml-4">A: Earnings PDFs or screenshots from Zomato, Swiggy, Blinkit, Ola, Uber, or Urban Company.</p>
+                <p className="ml-4">A: Add a manual work record with platform, work date, earnings (INR), and trips/orders.</p>
               </div>
               <div>
                 <h3 className="font-grotesk text-sm uppercase text-[#6FFF00] mb-2">Q: What changes after upload?</h3>

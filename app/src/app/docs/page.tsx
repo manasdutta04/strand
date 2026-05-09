@@ -14,16 +14,16 @@ export default function DocsPage() {
           <section>
             <h2 className="strand-display text-lg sm:text-xl text-[#EFF4FF] mb-4" style={{ color: "#EFF4FF" }}>Overview</h2>
             <p>
-              Workers upload earnings PDFs or screenshots. Strand reads the proof, updates score, and shows credit readiness.
+              Workers add verified work records. Strand stores each record in Supabase, updates score components, and shows credit readiness.
             </p>
           </section>
 
           <section>
             <h2 className="strand-display text-lg sm:text-xl text-[#EFF4FF] mb-4" style={{ color: "#EFF4FF" }}>Worker flow</h2>
             <ul className="ml-4 list-disc space-y-2">
-              <li>Add earnings from Zomato, Swiggy, Blinkit, Ola, Uber, or Urban Company</li>
+              <li>Add work records for Zomato, Swiggy, Blinkit, Ola, Uber, or Urban Company</li>
               <li>Track work history, skills, and score in the worker dashboard</li>
-              <li>Use the demo routes to preview the full experience without a wallet</li>
+              <li>All worker pages read live non-demo data from the same backend record set</li>
             </ul>
           </section>
 
@@ -48,7 +48,7 @@ export default function DocsPage() {
           <section>
             <h2 className="strand-display text-lg sm:text-xl text-[#EFF4FF] mb-4" style={{ color: "#EFF4FF" }}>Need a quick start?</h2>
             <p>
-              Open <Link href="/who" className="text-[#6FFF00] hover:underline">demo mode</Link> to see the full product without connecting a wallet.
+              Open <Link href="/who" className="text-[#6FFF00] hover:underline">workspace selection</Link>, choose Worker or Partner, then connect your wallet.
             </p>
           </section>
 
