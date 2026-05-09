@@ -33,28 +33,6 @@ const nextConfig = {
       "@noble/curves/secp256k1": path.resolve(root, "node_modules/@noble/curves/secp256k1.js")
     };
 
-    // Fix for pdfjs-dist webpack bundling issues
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      path: false,
-      crypto: false,
-    };
-
-    // Handle pdfjs-dist specifically - exclude from bundling
-    config.externals = config.externals || [];
-    config.externals.push({
-      'pdfjs-dist': 'commonjs pdfjs-dist'
-    });
-
-    // Ignore problematic modules in pdfjs-dist
-    config.plugins = config.plugins || [];
-    config.plugins.push(
-      new config.webpack.IgnorePlugin({
-        resourceRegExp: /pdfjs-dist\/legacy\/build\/pdf\.worker\.js$/,
-      })
-    );
-
     return config;
   }
 };
