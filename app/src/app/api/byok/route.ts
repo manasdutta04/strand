@@ -28,7 +28,16 @@ async function upsertRow(wallet: string, payload: Record<string, any>) {
     const txt = await resp.text();
     throw new Error(`Supabase upsert failed: ${resp.status} ${txt}`);
   }
-  return resp.json();
+  // Supabase upsert may return empty body; safely handle it
+  try {
+    const txt = await resp.text();
+    if (!txt) {
+      return { ok: true };
+    }
+    return JSON.parse(txt);
+  } catch {
+    return { ok: true };
+  }
 }
 
 function verifySignedRequest(params: {

@@ -121,8 +121,16 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         })
       });
 
-      const j = await resp.json();
-      if (!resp.ok) throw new Error(j?.error ?? "save failed");
+      let errorMsg = "save failed";
+      if (!resp.ok) {
+        try {
+          const j = await resp.json();
+          errorMsg = j?.error ?? `HTTP ${resp.status}`;
+        } catch {
+          errorMsg = `HTTP ${resp.status}: ${resp.statusText || "Server error"}`;
+        }
+        throw new Error(errorMsg);
+      }
       setStatus("✓ Saved to cloud successfully");
     } catch (err: any) {
       setStatus("✗ Error: " + (err?.message ?? err));
@@ -148,8 +156,19 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         timestamp: String(auth.timestamp)
       });
       const resp = await fetch(`/api/byok?${qs.toString()}`);
+      
+      let errorMsg = "load failed";
+      if (!resp.ok) {
+        try {
+          const j = await resp.json();
+          errorMsg = j?.error ?? `HTTP ${resp.status}`;
+        } catch {
+          errorMsg = `HTTP ${resp.status}: ${resp.statusText || "Server error"}`;
+        }
+        throw new Error(errorMsg);
+      }
+      
       const j = await resp.json();
-      if (!resp.ok) throw new Error(j?.error ?? "load failed");
       if (!j.row) {
         setStatus("No config found for this wallet");
         return;
@@ -191,8 +210,16 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         })
       });
 
-      const j = await resp.json();
-      if (!resp.ok) throw new Error(j?.error ?? "clear failed");
+      let errorMsg = "clear failed";
+      if (!resp.ok) {
+        try {
+          const j = await resp.json();
+          errorMsg = j?.error ?? `HTTP ${resp.status}`;
+        } catch {
+          errorMsg = `HTTP ${resp.status}: ${resp.statusText || "Server error"}`;
+        }
+        throw new Error(errorMsg);
+      }
       setForm({ provider: "ollama", apiKey: "", baseUrl: "http://localhost:11434", model: "llama3.2-vision" });
       setStatus("✓ Cleared from cloud successfully");
     } catch (err: any) {
