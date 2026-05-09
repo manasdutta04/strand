@@ -57,7 +57,10 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
                 Demo wallet
               </div>
             ) : (
-              <StrandWalletButton className="!h-10 !rounded-xl !text-sm" />
+              <div className="flex items-center gap-3">
+                <Link href="/settings" className="inline-flex items-center px-3 py-2 rounded-lg border border-transparent bg-[#0b1726]/50 text-sm">Settings</Link>
+                <StrandWalletButton className="!h-10 !rounded-xl !text-sm" />
+              </div>
             )}
           </div>
 

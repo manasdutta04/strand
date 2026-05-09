@@ -51,6 +51,17 @@ export default function DocsPage() {
               Open <Link href="/who" className="text-[#6FFF00] hover:underline">demo mode</Link> to see the full product without connecting a wallet.
             </p>
           </section>
+
+          <section>
+            <h2 className="strand-display text-lg sm:text-xl text-[#EFF4FF] mb-4" style={{ color: "#EFF4FF" }}>BYOK Cloud Setup (Supabase)</h2>
+            <ul className="ml-4 list-disc space-y-2">
+              <li>Open <Link href="/settings" className="text-[#6FFF00] hover:underline">Settings</Link> and connect your wallet.</li>
+              <li>Choose `provider`, `api key`, `base URL`, and `model`.</li>
+              <li>Use <strong>Save Cloud</strong> to store per-wallet config in Supabase via signed wallet auth.</li>
+              <li>Use <strong>Load Cloud</strong> to restore config on any device after connecting the same wallet.</li>
+              <li>Wallet connection is enough for this flow. No extra email/password sign-in is required.</li>
+            </ul>
+          </section>
         </div>
 
         <Link href="/" className="mt-12 inline-flex rounded-full border border-white/15 px-6 py-3 font-grotesk text-xs uppercase tracking-[0.22em] text-[#EFF4FF] hover:border-[#6FFF00] hover:text-[#6FFF00] transition-colors">

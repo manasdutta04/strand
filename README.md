@@ -131,6 +131,23 @@ Why: the oracle is a long-running event listener (Solana websocket subscriber), 
 	- `NEXT_PUBLIC_STRAND_SCORE_PROGRAM_ID`
 	- `NEXT_PUBLIC_STRAND_CREDIT_PROGRAM_ID`
 	- `NEXT_PUBLIC_USDC_MINT`
+	- `SUPABASE_URL` (server env for `/api/byok`)
+	- `SUPABASE_SERVICE_KEY` (server env, keep secret)
+
+### Enable BYOK cloud storage with Supabase
+1. Create a Supabase project.
+2. Open SQL editor and run `app/supabase/create_byok_table.sql`.
+3. In Vercel project settings, add:
+	- `SUPABASE_URL=https://<your-project>.supabase.co`
+	- `SUPABASE_SERVICE_KEY=<service-role-key>`
+4. Redeploy frontend.
+5. In the app, open `/settings`, connect wallet, and use **Save Cloud** / **Load Cloud**.
+
+Notes:
+- Wallet connection is the only sign-in needed for BYOK.
+- BYOK cloud load/save/delete is wallet-signature protected, so users can access only their own row.
+- The current schema stores `api_key` as plain text. For production hardening, encrypt the key at rest and restrict database access.
+
 
 ### Deploy oracle separately (Render/Railway/Fly/VM)
 1. Deploy from `oracle/` with start command `npm run start` (after build).
