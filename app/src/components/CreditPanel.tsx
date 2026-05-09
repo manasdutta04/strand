@@ -12,9 +12,10 @@ interface CreditPanelProps {
   creditLine: CreditLineView | null;
   onBorrow: (amount: number) => Promise<void>;
   onRepay: (amount: number) => Promise<void>;
+  inrRate?: number;
 }
 
-export function CreditPanel({ creditLine, onBorrow, onRepay }: CreditPanelProps) {
+export function CreditPanel({ creditLine, onBorrow, onRepay, inrRate = 83 }: CreditPanelProps) {
   const [borrowInput, setBorrowInput] = useState("200");
   const [repayInput, setRepayInput] = useState("100");
   const [status, setStatus] = useState<string | null>(null);
@@ -78,7 +79,7 @@ export function CreditPanel({ creditLine, onBorrow, onRepay }: CreditPanelProps)
       <div>
         <div className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Available</div>
         <div className="text-3xl font-semibold tracking-tight text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>
-          ${available.toLocaleString()} USDC
+          ₹{Math.round(available * inrRate).toLocaleString()}
         </div>
       </div>
 
@@ -89,7 +90,7 @@ export function CreditPanel({ creditLine, onBorrow, onRepay }: CreditPanelProps)
         </div>
         <div className="rounded-lg border border-white/10 bg-white/5 p-3 backdrop-blur-sm">
           <div className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Current balance</div>
-          <div className="mt-2 text-lg font-semibold text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>${creditLine.borrowedUsdc.toLocaleString()} borrowed</div>
+          <div className="mt-2 text-lg font-semibold text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>₹{Math.round(creditLine.borrowedUsdc * inrRate).toLocaleString()} borrowed</div>
         </div>
       </div>
 
@@ -102,7 +103,7 @@ export function CreditPanel({ creditLine, onBorrow, onRepay }: CreditPanelProps)
           placeholder="Borrow amount"
         />
         <button className="btn-accent" type="submit" disabled={Number(borrowInput) > available}>
-          Borrow USDC
+          Borrow
         </button>
       </form>
 

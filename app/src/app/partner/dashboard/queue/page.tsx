@@ -91,6 +91,7 @@ export default function PartnerQueuePage() {
     () => requests.filter((request) => request.status !== "pending").length,
     [requests]
   );
+  const INR_RATE = 83;
 
   async function updateRequestStatus(
     recordId: string,
@@ -147,7 +148,7 @@ export default function PartnerQueuePage() {
                   <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm">
                     <span>{request.recordId.slice(0, 8)}</span>
                     <span>{request.worker.slice(0, 6)}...{request.worker.slice(-4)}</span>
-                    <span>${request.amountUsdc.toLocaleString()}</span>
+                    <span>₹{Math.round(request.amountUsdc * INR_RATE).toLocaleString()}</span>
                     <span className="text-xs text-muted-foreground">
                       {new Date(request.createdAt).toLocaleDateString()}
                     </span>

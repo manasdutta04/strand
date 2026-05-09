@@ -213,27 +213,63 @@ export async function POST(req: Request) {
     const form = await req.formData();
     const wallet = String(form.get("wallet") ?? "").trim();
     const platform = String(form.get("platform") ?? "").trim().toLowerCase();
+    const manualAmountInrRaw = String(form.get("manualAmountInr") ?? "").trim();
+    const manualDeliveriesRaw = String(form.get("manualDeliveries") ?? "").trim();
+    const manualDateRaw = String(form.get("manualDate") ?? "").trim();
+    const manualRatingRaw = String(form.get("manualRating") ?? "").trim();
+    const manualAcceptedRaw = String(form.get("manualAccepted") ?? "").trim();
+    const manualNotesRaw = String(form.get("manualNotes") ?? "").trim();
     const file = form.get("file");
 
     if (!wallet || !platform) {
       return NextResponse.json({ error: "wallet and platform are required" }, { status: 400 });
     }
-    if (!(file instanceof File)) {
-      return NextResponse.json({ error: "file is required" }, { status: 400 });
+
+    const manualAmountInr = manualAmountInrRaw ? parseNumeric(manualAmountInrRaw) : null;
+    const manualDeliveries = manualDeliveriesRaw ? parseNumeric(manualDeliveriesRaw) : null;
+    const manualRating = manualRatingRaw ? parseNumeric(manualRatingRaw) : null;
+    const manualAccepted = manualAcceptedRaw ? parseNumeric(manualAcceptedRaw) : null;
+    const hasManualOverride =
+      manualAmountInr !== null && manualAmountInr > 0 && manualDeliveries !== null && manualDeliveries > 0;
+
+    if (!hasManualOverride && !(file instanceof File)) {
+      return NextResponse.json(
+        { ok: false, reason: "validation_failed", error: "Enter earnings and trips, or attach a file." },
+        { status: 400 }
+      );
     }
 
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const normalizedDate = manualDateRaw
+      ? `${manualDateRaw}T12:00:00.000Z`
+      : new Date().toISOString();
 
     let text = "";
     let parseError: string | null = null;
-    if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
-      const parsed = await extractPdfText(buffer);
-      text = parsed.text;
-      parseError = parsed.parseError;
+    if (!hasManualOverride && file instanceof File) {
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
+        const parsed = await extractPdfText(buffer);
+        text = parsed.text;
+        parseError = parsed.parseError;
+      }
     }
 
-    const { amountInr, deliveries, confidence, reason } = extractMetricsFromText(text, platform);
+    const parsedResult = extractMetricsFromText(text, platform);
+    const amountInr = hasManualOverride ? manualAmountInr : parsedResult.amountInr;
+    const deliveries = hasManualOverride ? manualDeliveries : parsedResult.deliveries;
+    const confidence = hasManualOverride ? "high" : parsedResult.confidence;
+    const reason = hasManualOverride ? "Manual override provided by user input." : parsedResult.reason;
+    const fileName = file instanceof File ? file.name : "manual-entry";
+    const manualDetails = hasManualOverride
+      ? JSON.stringify({
+          source: "manual-entry",
+          workDate: manualDateRaw || null,
+          rating: manualRating,
+          acceptedJobs: manualAccepted,
+          notes: manualNotesRaw || null
+        })
+      : null;
     const validationErrors: string[] = [];
     if (amountInr === null || amountInr <= 0) {
       validationErrors.push("Could not extract a valid earnings amount.");
@@ -270,12 +306,12 @@ export async function POST(req: Request) {
     const basePayload = {
       wallet,
       platform,
-      file_name: file.name,
+      file_name: fileName,
       earning_amount_usdc: earningAmountUsdc,
       delivery_count: deliveries,
       extracted_confidence: confidence,
-      extracted_text: text.slice(0, 8000),
-      created_at: new Date().toISOString()
+      extracted_text: (manualDetails ?? text).slice(0, 8000),
+      created_at: normalizedDate
     };
     const extendedPayload = {
       ...basePayload,

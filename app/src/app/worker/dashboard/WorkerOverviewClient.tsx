@@ -74,7 +74,7 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
         <Card className="border-white/10">
           <CardContent className="pt-6">
             <p className="strand-display text-xs text-[#EFF4FF]" style={{ color: "#EFF4FF" }}>Credit</p>
-            <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#6FFF00]">${estimatedCredit.toLocaleString()}</p>
+            <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#6FFF00]">₹{Math.round(estimatedCredit * INR_TO_USD_RATE).toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card className="border-white/10">
@@ -100,21 +100,20 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
           </div>
         </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {PLATFORMS.map((platform) => (
-            <button
-              key={platform.name}
-              onClick={() => setSelectedPlatform(platform.name)}
-              className={`rounded-lg px-4 py-2 font-grotesk text-sm font-medium whitespace-nowrap transition-colors ${
-                selectedPlatform === platform.name
-                  ? "bg-[#6FFF00]/20 text-[#EFF4FF] border border-[#6FFF00]/45 shadow-sm"
-                  : "border border-white/15 bg-transparent text-[#EFF4FF] hover:border-[#6FFF00] hover:text-[#6FFF00]"
-              }`}
-            >
-              {platform.label}
-            </button>
-          ))}
-        </div>
+        <label className="block max-w-sm">
+          <div className="mb-2 text-xs font-mono text-[#EFF4FF]/75">Company</div>
+          <select
+            value={selectedPlatform}
+            onChange={(e) => setSelectedPlatform(e.target.value)}
+            className="w-full rounded-lg border border-white/20 bg-[#050b2b] px-4 py-3 text-[#EFF4FF] font-mono text-sm hover:border-white/30 focus:border-[#6FFF00] focus:outline-none transition"
+          >
+            {PLATFORMS.map((platform) => (
+              <option key={platform.name} value={platform.name}>
+                {platform.label}
+              </option>
+            ))}
+          </select>
+        </label>
 
         <EarningsUpload
           platform={selectedPlatform}

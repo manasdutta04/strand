@@ -53,8 +53,8 @@ export function WorkRecordsDisplay({ records, inrRate = 83, isLoading }: WorkRec
             <CardTitle className="font-grotesk text-sm font-medium uppercase tracking-[0.2em] text-[#EFF4FF]/60">Earnings</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="font-grotesk text-3xl font-bold tracking-tight text-[#EFF4FF]">${totalEarnings.toLocaleString()}</div>
-            <p className="font-mono text-sm text-[#EFF4FF]/75">₹{Math.round(totalEarnings * inrRate).toLocaleString()}</p>
+            <div className="font-grotesk text-3xl font-bold tracking-tight text-[#EFF4FF]">₹{Math.round(totalEarnings * inrRate).toLocaleString()}</div>
+            <p className="font-mono text-sm text-[#EFF4FF]/75">INR</p>
           </CardContent>
         </Card>
         <Card className="border-white/10">
@@ -117,8 +117,8 @@ export function WorkRecordsDisplay({ records, inrRate = 83, isLoading }: WorkRec
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-right font-medium text-[#6FFF00]">
-                        ${record.earning_amount_usdc.toLocaleString()}
-                        <div className="text-xs text-[#EFF4FF]/75">₹{Math.round(record.earning_amount_usdc * inrRate).toLocaleString()}</div>
+                        ₹{Math.round(record.earning_amount_usdc * inrRate).toLocaleString()}
+                        <div className="text-xs text-[#EFF4FF]/75">INR</div>
                       </td>
                       <td className="px-4 py-3 text-center">{record.delivery_count}</td>
                     </tr>

@@ -22,8 +22,7 @@ interface ScoreBreakdownProps {
 export function ScoreBreakdown({ components, totalScore, inrRate = 83 }: ScoreBreakdownProps) {
   const maxScore = 1000;
   const creditEligible = totalScore >= 400;
-  const creditLimitUsdc = creditEligible ? (totalScore - 400) * 10 : 0;
-  const creditLimitInr = Math.round(creditLimitUsdc * inrRate);
+  const creditLimitInr = creditEligible ? Math.round((totalScore - 400) * 10 * inrRate) : 0;
 
   const componentData = [
     { label: "Delivery Volume", value: components.delivery_volume, max: 200, color: "bg-blue-500" },
@@ -77,10 +76,7 @@ export function ScoreBreakdown({ components, totalScore, inrRate = 83 }: ScoreBr
 
             <div className="flex flex-wrap gap-2 pt-2">
               {creditEligible ? (
-                <>
-                  <Badge variant="outline">${creditLimitUsdc.toLocaleString()} USDC</Badge>
-                  <Badge variant="outline">₹{creditLimitInr.toLocaleString()}</Badge>
-                </>
+                <Badge variant="outline">₹{creditLimitInr.toLocaleString()} credit</Badge>
               ) : (
                 <Badge variant="secondary">{400 - totalScore} more points needed</Badge>
               )}

@@ -68,6 +68,7 @@ export default function PartnerDashboardPage() {
     () => approvals.reduce((sum, item) => sum + Number(item.amountUsdc || 0), 0),
     [approvals]
   );
+  const INR_RATE = 83;
   const activeBorrowers = approvals.length;
   const avgApr = activeBorrowers > 0 ? 14.5 : 0;
   const utilizationRate = activeBorrowers > 0 ? 42 : 0;
@@ -88,7 +89,7 @@ export default function PartnerDashboardPage() {
             Total capital deployed
           </h2>
           <div className="mt-3 font-grotesk text-5xl font-semibold tracking-tight text-[#EFF4FF]">
-            ${isLoading ? "-" : totalExposure.toLocaleString()}
+            ₹{isLoading ? "-" : Math.round(totalExposure * INR_RATE).toLocaleString()}
           </div>
           <p className="mt-2 font-mono text-sm text-[#EFF4FF]/75">Active lending portfolio</p>
         </div>
@@ -123,7 +124,7 @@ export default function PartnerDashboardPage() {
               Yield Generated
             </p>
             <p className="mt-2 font-grotesk text-3xl font-semibold tracking-tight text-[#6FFF00]">
-              {isLoading ? "-" : `$${Math.round((totalExposure * avgApr) / 1200).toLocaleString()}`}
+              {isLoading ? "-" : `₹${Math.round(((totalExposure * INR_RATE) * avgApr) / 1200).toLocaleString()}`}
             </p>
             <p className="mt-1 font-mono text-xs text-[#EFF4FF]/75">Monthly estimate</p>
           </article>

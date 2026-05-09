@@ -55,10 +55,13 @@ export async function GET() {
     const approvals = records
       .filter((record) => {
         const status = record.extraction_status ?? "pending";
-        const confidence = record.extracted_confidence ?? "low";
         const validMetrics =
           Number(record.earning_amount_usdc || 0) > 0 && Number(record.delivery_count || 0) > 0;
-        return (status === "pending" || status === "verified") && confidence !== "low" && validMetrics;
+        const confidence = record.extracted_confidence;
+        const isTrustedByConfidence = confidence === "high" || confidence === "medium";
+        const isTrustedByHeuristic =
+          Number(record.earning_amount_usdc || 0) >= 100 || Number(record.delivery_count || 0) >= 50;
+        return (status === "pending" || status === "verified") && validMetrics && (isTrustedByConfidence || isTrustedByHeuristic);
       })
       .map((record) => ({
         recordId: record.id,
