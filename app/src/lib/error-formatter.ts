@@ -1,10 +1,16 @@
 /**
  * Format technical error messages into user-friendly text
  */
-export function formatErrorMessage(error: string | null): string {
+export function formatErrorMessage(error: string | null | Error | unknown): string {
   if (!error) return "";
 
-  const lowerError = error.toLowerCase();
+  // Convert non-string errors to string
+  let errorStr = error;
+  if (typeof errorStr !== 'string') {
+    errorStr = errorStr instanceof Error ? errorStr.message : String(errorStr);
+  }
+
+  const lowerError = errorStr.toLowerCase();
 
   // Network errors
   if (lowerError.includes("network") || lowerError.includes("failed to fetch")) {
@@ -49,9 +55,9 @@ export function formatErrorMessage(error: string | null): string {
   }
 
   // Generic fallback - truncate if too long
-  if (error.length > 80) {
+  if (errorStr.length > 80) {
     return "Something went wrong. Please try again in a moment.";
   }
 
-  return error;
+  return errorStr;
 }

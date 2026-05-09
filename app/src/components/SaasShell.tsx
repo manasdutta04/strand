@@ -3,9 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StrandWalletButton } from "./WalletProvider";
 import { SettingsModal } from "./SettingsModal";
+import { useAISettings } from "./AISettingsProvider";
 
 interface NavItem {
   label: string;
@@ -24,7 +25,13 @@ export function SaasShell({ productLabel, title, subtitle, nav, children }: Saas
   const pathname = usePathname();
   const isDemoRoute = pathname.startsWith("/worker/demo") || pathname.startsWith("/partner/demo");
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [connected, setConnected] = useState(false);
+  const { settings: aiSettings } = useAISettings();
+  const [connected, setConnected] = useState<boolean>(() => !!(aiSettings && aiSettings.connected));
+
+  // keep header dot in sync with settings
+  useEffect(() => {
+    setConnected(!!(aiSettings && aiSettings.connected));
+  }, [aiSettings]);
 
   return (
     <main className="saas-grid-bg min-h-screen px-4 py-6 text-[#EFF4FF] sm:px-6 lg:px-16">

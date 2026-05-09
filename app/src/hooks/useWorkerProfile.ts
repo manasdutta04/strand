@@ -17,7 +17,7 @@ export interface ScoreComponents {
   repayment: number;
 }
 
-export function useWorkerProfile(wallet: string | null, demoMode = false) {
+export function useWorkerProfile(wallet: string | null, demoMode = false, refreshToken = 0) {
   const [workRecords, setWorkRecords] = useState<WorkRecord[]>([]);
   const [scoreComponents, setScoreComponents] = useState<ScoreComponents | null>(null);
   const [totalScore, setTotalScore] = useState(0);
@@ -32,78 +32,116 @@ export function useWorkerProfile(wallet: string | null, demoMode = false) {
       return;
     }
 
-    const fetchProfile = async () => {
-      setIsLoading(true);
+    let cancelled = false;
+
+    const applyProfile = (payload: {
+      workRecords?: WorkRecord[];
+      scoreComponents?: ScoreComponents | null;
+      totalScore?: number;
+    }) => {
+      if (cancelled) {
+        return;
+      }
+      setWorkRecords(payload.workRecords ?? []);
+      setScoreComponents(payload.scoreComponents ?? null);
+      setTotalScore(payload.totalScore ?? 0);
+    };
+
+    const fetchProfile = async (initialLoad = false) => {
+      if (initialLoad) {
+        setIsLoading(true);
+      }
       setError(null);
 
       try {
-        // In a real implementation, this would fetch from the Solana blockchain.
-        // Demo mode keeps the product explorable without seeded on-chain data.
-        const mockRecords: WorkRecord[] = demoMode
-          ? [
-              {
-                id: "demo-record-1",
-                earning_amount_usdc: 45.5,
-                delivery_count: 12,
-                platform: "zomato",
-                created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-              },
-              {
-                id: "demo-record-2",
-                earning_amount_usdc: 38.2,
-                delivery_count: 8,
-                platform: "swiggy",
-                created_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
-              },
-              {
-                id: "demo-record-3",
-                earning_amount_usdc: 52.75,
-                delivery_count: 15,
-                platform: "zomato",
-                created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-              },
-              {
-                id: "demo-record-4",
-                earning_amount_usdc: 31.4,
-                delivery_count: 6,
-                platform: "blinkit",
-                created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-              }
-            ]
-          : [];
-
-        const mockComponents: ScoreComponents | null = demoMode
-          ? {
-              delivery_volume: 167,
-              earnings_consistency: 120,
-              tenure: 45,
-              rating_points: 187,
-              cross_platform: 90,
-              repayment: 0
+        if (demoMode) {
+          const mockRecords: WorkRecord[] = [
+            {
+              id: "demo-record-1",
+              earning_amount_usdc: 45.5,
+              delivery_count: 12,
+              platform: "zomato",
+              created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+            },
+            {
+              id: "demo-record-2",
+              earning_amount_usdc: 38.2,
+              delivery_count: 8,
+              platform: "swiggy",
+              created_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
+            },
+            {
+              id: "demo-record-3",
+              earning_amount_usdc: 52.75,
+              delivery_count: 15,
+              platform: "zomato",
+              created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+            },
+            {
+              id: "demo-record-4",
+              earning_amount_usdc: 31.4,
+              delivery_count: 6,
+              platform: "blinkit",
+              created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
             }
-          : null;
+          ];
 
-        setWorkRecords(mockRecords);
-        setScoreComponents(mockComponents);
-        setTotalScore(
-          mockComponents
-            ? mockComponents.delivery_volume +
+          const mockComponents: ScoreComponents = {
+            delivery_volume: 167,
+            earnings_consistency: 120,
+            tenure: 45,
+            rating_points: 187,
+            cross_platform: 90,
+            repayment: 0
+          };
+
+          applyProfile({
+            workRecords: mockRecords,
+            scoreComponents: mockComponents,
+            totalScore:
+              mockComponents.delivery_volume +
               mockComponents.earnings_consistency +
               mockComponents.tenure +
               mockComponents.rating_points +
               mockComponents.cross_platform +
               mockComponents.repayment
-            : 0
-        );
+          });
+          return;
+        }
+
+        const resp = await fetch(`/api/worker/profile?wallet=${encodeURIComponent(wallet ?? "")}`);
+        const payload = await resp.json();
+
+        if (!resp.ok) {
+          throw new Error(payload?.error ?? "Failed to fetch worker profile");
+        }
+
+        applyProfile({
+          workRecords: payload.workRecords ?? [],
+          scoreComponents: payload.scoreComponents ?? null,
+          totalScore: payload.totalScore ?? 0
+        });
       } catch (err) {
-        setError(err instanceof Error ? err : new Error("Failed to fetch profile"));
+        if (!cancelled) {
+          setError(err instanceof Error ? err : new Error("Failed to fetch profile"));
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled && initialLoad) {
+          setIsLoading(false);
+        }
       }
     };
 
-    fetchProfile();
-  }, [demoMode, wallet]);
+    fetchProfile(true);
+    const pollTimer = setInterval(() => {
+      void fetchProfile(false);
+    }, 10000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(pollTimer);
+    };
+  }, [demoMode, wallet, refreshToken]);
 
   return {
     workRecords,

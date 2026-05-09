@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useWallet } from "@solana/wallet-adapter-react";
 import Link from "next/link";
+import { useAISettings } from "./AISettingsProvider";
 
 type ByokConfig = {
   provider?: "ollama" | "openai" | "groq" | "gemini" | "claude";
@@ -32,6 +33,21 @@ export function SettingsModal({ isOpen, onClose, onConnectionChange }: SettingsM
     baseUrl: "http://localhost:11434",
     model: "llama3.2-vision"
   });
+  const { settings: aiSettings, setSettings: setAiSettings, clearSettings: clearAiSettings } = useAISettings();
+
+  // Initialize form from persisted AI settings and react to changes
+  useEffect(() => {
+    if (aiSettings && aiSettings.provider) {
+      setForm({
+        provider: (aiSettings.provider as any) || "ollama",
+        apiKey: aiSettings.apiKey ?? "",
+        baseUrl: aiSettings.provider === "ollama" ? "http://localhost:11434" : "",
+        model: aiSettings.provider === "ollama" ? "llama3.2-vision" : ""
+      });
+      onConnectionChange?.(!!aiSettings.apiKey);
+    }
+  }, [aiSettings]);
+
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [ollamaModels, setOllamaModels] = useState<string[]>([]);
@@ -134,6 +150,9 @@ export function SettingsModal({ isOpen, onClose, onConnectionChange }: SettingsM
       }
       setStatus("✓ Saved to cloud successfully");
       onConnectionChange?.(!!form.apiKey);
+      try {
+        setAiSettings({ provider: form.provider ?? "", apiKey: form.apiKey ?? "", connected: !!form.apiKey });
+      } catch (_) {}
     } catch (err: any) {
       setStatus("✗ Error: " + (err?.message ?? err));
       onConnectionChange?.(false);
@@ -185,6 +204,9 @@ export function SettingsModal({ isOpen, onClose, onConnectionChange }: SettingsM
       setForm(next);
       setStatus("✓ Loaded from cloud successfully");
       onConnectionChange?.(!!next.apiKey);
+      try {
+        setAiSettings({ provider: next.provider ?? "", apiKey: next.apiKey ?? "", connected: !!next.apiKey });
+      } catch (_) {}
     } catch (err: any) {
       setStatus("✗ Error: " + (err?.message ?? err));
       onConnectionChange?.(false);
@@ -228,6 +250,9 @@ export function SettingsModal({ isOpen, onClose, onConnectionChange }: SettingsM
       setForm({ provider: "ollama", apiKey: "", baseUrl: "http://localhost:11434", model: "llama3.2-vision" });
       setStatus("✓ Cleared from cloud successfully");
       onConnectionChange?.(false);
+      try {
+        clearAiSettings();
+      } catch (_) {}
     } catch (err: any) {
       setStatus("✗ Error: " + (err?.message ?? err));
     } finally {

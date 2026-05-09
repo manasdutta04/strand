@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { WalletProvider } from "../components/WalletProvider";
+import { AISettingsProvider } from "../components/AISettingsProvider";
 
 export const metadata: Metadata = {
   title: "Strand",
@@ -24,9 +25,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <WalletProvider>
-          {children}
-        </WalletProvider>
+        <AISettingsProvider>
+          <WalletProvider>
+            {children}
+          </WalletProvider>
+        </AISettingsProvider>
       </body>
     </html>
   );

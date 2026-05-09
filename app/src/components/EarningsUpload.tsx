@@ -14,8 +14,7 @@ export function EarningsUpload({ platform, onUploadStart, onUploadComplete }: Ea
   const { publicKey } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -26,24 +25,42 @@ export function EarningsUpload({ platform, onUploadStart, onUploadComplete }: Ea
 
     setIsLoading(true);
     setError(null);
-    setSuccess(false);
+    setSuccessMessage(null);
     onUploadStart?.();
 
     try {
-      // Create filename in format: {pubkey}_{platform}_{timestamp}.pdf
-      const timestamp = Date.now();
-      const formattedFileName = `${publicKey.toBase58()}_${platform}_${timestamp}.pdf`;
+      const form = new FormData();
+      form.append("file", file);
+      form.append("wallet", publicKey.toBase58());
+      form.append("platform", platform);
 
-      // In a real app, you would upload to oracle service or IPFS here
-      // For now, we'll just simulate the upload
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const resp = await fetch("/api/worker/upload", {
+        method: "POST",
+        body: form
+      });
 
-      setFileName(formattedFileName);
-      setSuccess(true);
-      onUploadComplete?.(formattedFileName);
+      const contentType = resp.headers.get("content-type") ?? "";
+      let payload: any = null;
 
-      // Reset success message after 3 seconds
-      setTimeout(() => setSuccess(false), 3000);
+      if (contentType.includes("application/json")) {
+        payload = await resp.json();
+      } else {
+        const text = await resp.text();
+        if (!resp.ok) {
+          throw new Error(text || `Upload failed (${resp.status})`);
+        }
+        // Non-JSON but successful response — fall back to original filename
+        payload = { row: { file_name: file.name } };
+      }
+
+      if (!resp.ok) {
+        throw new Error(payload?.error ?? "Upload failed");
+      }
+
+      const uploadedName = payload?.row?.file_name ?? file.name;
+      setSuccessMessage(`Upload processed and saved to cloud: \"${uploadedName}\"`);
+      onUploadComplete?.(uploadedName);
+      event.target.value = "";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -80,22 +97,21 @@ export function EarningsUpload({ platform, onUploadStart, onUploadComplete }: Ea
               />
             </svg>
             <p className="mt-2 text-sm font-medium">
-              {isLoading ? "Uploading..." : "Drag and drop your earnings PDF or click to select"}
+              {isLoading ? "Uploading and analyzing..." : "Drag and drop your earnings PDF or click to select"}
             </p>
             <p className="text-xs text-muted-foreground mt-1">PNG, JPG, PDF up to 10MB</p>
           </div>
         </div>
 
-        {success && fileName && (
+        {successMessage && (
           <div className="bg-green-500/10 border border-green-500/20 rounded p-3">
-            <p className="text-sm text-green-700 dark:text-green-400">
-              ✓ Upload queued! Oracle will process "{fileName}" within 1-5 minutes.
-            </p>
+            <p className="text-sm text-green-700 dark:text-green-400">✓ {successMessage}</p>
           </div>
         )}
+
         {error && (
           <div className="bg-red-500/10 border border-red-500/20 rounded p-3">
-            <p className="mt-1 text-xs text-muted-foreground">PNG, JPG, PDF up to 10MB</p>
+            <p className="text-sm text-red-700 dark:text-red-400">✗ {error}</p>
           </div>
         )}
 

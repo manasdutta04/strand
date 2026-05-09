@@ -34,8 +34,13 @@ const INR_TO_USD_RATE = parseInt(process.env.NEXT_PUBLIC_INR_TO_USD_RATE || "83"
 export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoMode: boolean }) {
   const { publicKey } = useWallet();
   const [demoMode] = useState(initialDemoMode);
+  const [refreshToken, setRefreshToken] = useState(0);
   const wallet = publicKey?.toBase58() ?? null;
-  const { workRecords, scoreComponents, totalScore, isLoading, error } = useWorkerProfile(wallet, demoMode);
+  const { workRecords, scoreComponents, totalScore, isLoading, error } = useWorkerProfile(
+    wallet,
+    demoMode,
+    refreshToken
+  );
   const [selectedPlatform, setSelectedPlatform] = useState(PLATFORMS[0].name);
 
   const shouldRequireWallet = !demoMode;
@@ -110,7 +115,10 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
           ))}
         </div>
 
-        <EarningsUpload platform={selectedPlatform} />
+        <EarningsUpload
+          platform={selectedPlatform}
+          onUploadComplete={() => setRefreshToken((v) => v + 1)}
+        />
       </div>
 
       <div className="space-y-8">
