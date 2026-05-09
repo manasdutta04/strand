@@ -1,13 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
-import { getAssociatedTokenAddress, ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { SaasShell } from "../../../../components/SaasShell";
 import { RequireWallet } from "../../../../components/RequireWallet";
-import { DEVNET_USDC_MINT } from "../../../../lib/constants";
-import { executeOpenCreditLine } from "../../../../lib/tx-helpers";
 import { formatErrorMessage } from "../../../../lib/error-formatter";
 
 const NAV = [
@@ -15,21 +11,30 @@ const NAV = [
   { label: "Underwriting Queue", href: "/partner/dashboard/queue" }
 ];
 
+interface ApprovalItem {
+  recordId: string;
+  worker: string;
+  amountUsdc: number;
+  createdAt: string;
+  status: "pending" | "approved" | "declined";
+}
+
+interface ApprovalApiItem {
+  recordId: string;
+  worker: string;
+  amountUsdc: number;
+  createdAt: string;
+  status: "pending" | "approved";
+}
+
 export default function PartnerQueuePage() {
-  const { publicKey, sendTransaction } = useWallet();
-  const { connection } = useConnection();
+  const { publicKey } = useWallet();
   const wallet = publicKey?.toBase58() ?? null;
-  const [requests, setRequests] = useState<Array<{
-    jobId: number;
-    worker: string;
-    amountUsdc: number;
-    createdAt: string;
-    status: "pending" | "approved" | "declined";
-  }>>([]);
+  const [requests, setRequests] = useState<ApprovalItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [processingJob, setProcessingJob] = useState<number | null>(null);
-  const [actionErrors, setActionErrors] = useState<Record<number, string>>({});
+  const [processingRecordId, setProcessingRecordId] = useState<string | null>(null);
+  const [actionErrors, setActionErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!wallet) {
@@ -53,18 +58,19 @@ export default function PartnerQueuePage() {
         const data = await resp.json();
         if (!cancelled) {
           setRequests(
-            (data.approvals || []).map((approval: any) => ({
-              jobId: approval.jobId,
+            ((data.approvals || []) as ApprovalApiItem[]).map((approval) => ({
+              recordId: approval.recordId,
               worker: approval.worker,
               amountUsdc: approval.amountUsdc,
               createdAt: approval.createdAt,
-              status: "pending"
+              status: approval.status === "approved" ? "approved" : "pending"
             }))
           );
         }
       } catch (err) {
         if (!cancelled) {
-          const errorMessage = err instanceof Error ? err.message : "Failed to load underwriting queue";
+          const errorMessage =
+            err instanceof Error ? err.message : "Failed to load underwriting queue";
           setError(errorMessage);
           setRequests([]);
         }
@@ -86,68 +92,37 @@ export default function PartnerQueuePage() {
     [requests]
   );
 
-  async function approveRequest(jobId: number): Promise<void> {
-    if (!publicKey || !sendTransaction) return;
-
-    setProcessingJob(jobId);
-    setActionErrors((prev) => ({ ...prev, [jobId]: "" }));
-
-    const request = requests.find((r) => r.jobId === jobId);
-    if (!request) {
-      setProcessingJob(null);
-      return;
-    }
+  async function updateRequestStatus(
+    recordId: string,
+    status: "approved" | "rejected"
+  ): Promise<void> {
+    setProcessingRecordId(recordId);
+    setActionErrors((prev) => ({ ...prev, [recordId]: "" }));
 
     try {
-      const lenderTokenAccount = await getAssociatedTokenAddress(
-        DEVNET_USDC_MINT,
-        publicKey,
-        false,
-        TOKEN_PROGRAM_ID,
-        ASSOCIATED_TOKEN_PROGRAM_ID
-      );
-
-      await executeOpenCreditLine(
-        {
-          connection,
-          walletPublicKey: publicKey,
-          sendTransaction
-        },
-        {
-          lender: publicKey,
-          worker: new PublicKey(request.worker),
-          lenderTokenAccount,
-          maxUsdc: request.amountUsdc,
-          annualRateBps: 1200,
-          minScoreRequired: 100
-        }
-      );
+      const resp = await fetch(`/api/partner/approvals/${encodeURIComponent(recordId)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+      const payload = await resp.json();
+      if (!resp.ok) {
+        throw new Error(payload?.error ?? "Failed to update approval status");
+      }
 
       setRequests((current) =>
         current.map((item) =>
-          item.jobId === jobId ? { ...item, status: "approved" } : item
+          item.recordId === recordId
+            ? { ...item, status: status === "approved" ? "approved" : "declined" }
+            : item
         )
       );
-      setActionErrors((prev) => ({ ...prev, [jobId]: "" }));
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err);
-      setActionErrors((prev) => ({ ...prev, [jobId]: errorMsg }));
-      setRequests((current) =>
-        current.map((item) =>
-          item.jobId === jobId ? { ...item, status: "pending" } : item
-        )
-      );
+      setActionErrors((prev) => ({ ...prev, [recordId]: errorMsg }));
     } finally {
-      setProcessingJob(null);
+      setProcessingRecordId(null);
     }
-  }
-
-  function declineRequest(jobId: number): void {
-    setRequests((current) =>
-      current.map((item) =>
-        item.jobId === jobId ? { ...item, status: "declined" } : item
-      )
-    );
   }
 
   return (
@@ -160,47 +135,45 @@ export default function PartnerQueuePage() {
       >
         <section className="panel p-4">
           {error ? (
-            <p className="text-sm text-destructive">
-              {formatErrorMessage(error)}
-            </p>
+            <p className="text-sm text-destructive">{formatErrorMessage(error)}</p>
           ) : isLoading ? (
             <p className="text-sm text-muted-foreground">Loading underwriting queue...</p>
           ) : requests.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No open escrow requests available for underwriting.</p>
+            <p className="text-sm text-muted-foreground">No pending records available.</p>
           ) : (
             <div className="space-y-2">
               {requests.map((request) => (
-                <div key={request.jobId} className="space-y-1">
-                  <div
-                    className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm"
-                  >
-                    <span>JOB-{request.jobId}</span>
-                    <span>{request.worker.slice(0, 6)}…{request.worker.slice(-4)}</span>
+                <div key={request.recordId} className="space-y-1">
+                  <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm">
+                    <span>{request.recordId.slice(0, 8)}</span>
+                    <span>{request.worker.slice(0, 6)}...{request.worker.slice(-4)}</span>
                     <span>${request.amountUsdc.toLocaleString()}</span>
-                    <span className="text-xs text-muted-foreground">{new Date(request.createdAt).toLocaleDateString()}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(request.createdAt).toLocaleDateString()}
+                    </span>
                     <div className="flex gap-2">
                       <button
                         className="btn-subtle !px-3 !py-1.5 !text-xs"
-                        disabled={request.status !== "pending" || processingJob === request.jobId}
-                        onClick={() => declineRequest(request.jobId)}
+                        disabled={request.status !== "pending" || processingRecordId === request.recordId}
+                        onClick={() => updateRequestStatus(request.recordId, "rejected")}
                       >
                         {request.status === "declined" ? "Declined" : "Decline"}
                       </button>
                       <button
                         className="btn-accent !px-3 !py-1.5 !text-xs"
-                        disabled={request.status !== "pending" || processingJob === request.jobId}
-                        onClick={() => approveRequest(request.jobId)}
+                        disabled={request.status !== "pending" || processingRecordId === request.recordId}
+                        onClick={() => updateRequestStatus(request.recordId, "approved")}
                       >
-                        {processingJob === request.jobId
-                          ? "Approving…"
+                        {processingRecordId === request.recordId
+                          ? "Updating..."
                           : request.status === "approved"
-                            ? "Approved"
-                            : "Approve"}
+                          ? "Approved"
+                          : "Approve"}
                       </button>
                     </div>
                   </div>
-                  {actionErrors[request.jobId] ? (
-                    <p className="px-3 text-xs text-destructive">{actionErrors[request.jobId]}</p>
+                  {actionErrors[request.recordId] ? (
+                    <p className="px-3 text-xs text-destructive">{actionErrors[request.recordId]}</p>
                   ) : null}
                 </div>
               ))}
@@ -209,7 +182,7 @@ export default function PartnerQueuePage() {
         </section>
         {actionCount > 0 ? (
           <div className="mt-4 rounded-xl border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
-            {actionCount} underwriting action{actionCount === 1 ? "" : "s"} taken locally in this session.
+            {actionCount} underwriting action{actionCount === 1 ? "" : "s"} taken in this session.
           </div>
         ) : null}
       </SaasShell>

@@ -6,6 +6,9 @@ export interface WorkRecord {
   delivery_count: number;
   platform: string;
   created_at: string;
+  extraction_status?: "pending" | "verified" | "failed" | "rejected";
+  extracted_confidence?: "high" | "medium" | "low";
+  extraction_reason?: string | null;
 }
 
 export interface ScoreComponents {
@@ -17,12 +20,31 @@ export interface ScoreComponents {
   repayment: number;
 }
 
+export interface WorkerSkill {
+  name: string;
+  confidence: number;
+}
+
+export interface CreditSummary {
+  eligible: boolean;
+  maxUsdc: number;
+  apr: number | null;
+  borrowedUsdc: number;
+}
+
 export function useWorkerProfile(wallet: string | null, demoMode = false, refreshToken = 0) {
   const [workRecords, setWorkRecords] = useState<WorkRecord[]>([]);
   const [scoreComponents, setScoreComponents] = useState<ScoreComponents | null>(null);
   const [totalScore, setTotalScore] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [skills, setSkills] = useState<WorkerSkill[]>([]);
+  const [creditSummary, setCreditSummary] = useState<CreditSummary>({
+    eligible: false,
+    maxUsdc: 0,
+    apr: null,
+    borrowedUsdc: 0
+  });
 
   useEffect(() => {
     if (!wallet && !demoMode) {
@@ -38,6 +60,8 @@ export function useWorkerProfile(wallet: string | null, demoMode = false, refres
       workRecords?: WorkRecord[];
       scoreComponents?: ScoreComponents | null;
       totalScore?: number;
+      skills?: WorkerSkill[];
+      creditSummary?: CreditSummary;
     }) => {
       if (cancelled) {
         return;
@@ -45,6 +69,10 @@ export function useWorkerProfile(wallet: string | null, demoMode = false, refres
       setWorkRecords(payload.workRecords ?? []);
       setScoreComponents(payload.scoreComponents ?? null);
       setTotalScore(payload.totalScore ?? 0);
+      setSkills(payload.skills ?? []);
+      setCreditSummary(
+        payload.creditSummary ?? { eligible: false, maxUsdc: 0, apr: null, borrowedUsdc: 0 }
+      );
     };
 
     const fetchProfile = async (initialLoad = false) => {
@@ -104,7 +132,12 @@ export function useWorkerProfile(wallet: string | null, demoMode = false, refres
               mockComponents.tenure +
               mockComponents.rating_points +
               mockComponents.cross_platform +
-              mockComponents.repayment
+              mockComponents.repayment,
+            skills: [
+              { name: "zomato operations", confidence: 88 },
+              { name: "swiggy operations", confidence: 72 }
+            ],
+            creditSummary: { eligible: true, maxUsdc: 640, apr: 14.2, borrowedUsdc: 0 }
           });
           return;
         }
@@ -119,7 +152,14 @@ export function useWorkerProfile(wallet: string | null, demoMode = false, refres
         applyProfile({
           workRecords: payload.workRecords ?? [],
           scoreComponents: payload.scoreComponents ?? null,
-          totalScore: payload.totalScore ?? 0
+          totalScore: payload.totalScore ?? 0,
+          skills: payload.skills ?? [],
+          creditSummary: payload.creditSummary ?? {
+            eligible: false,
+            maxUsdc: 0,
+            apr: null,
+            borrowedUsdc: 0
+          }
         });
       } catch (err) {
         if (!cancelled) {
@@ -147,6 +187,8 @@ export function useWorkerProfile(wallet: string | null, demoMode = false, refres
     workRecords,
     scoreComponents,
     totalScore,
+    skills,
+    creditSummary,
     isLoading,
     error
   };

@@ -13,6 +13,9 @@ type WorkerRecord = {
   earning_amount_usdc: number;
   delivery_count: number;
   created_at: string;
+  extraction_status?: "pending" | "verified" | "failed" | "rejected";
+  extracted_confidence?: "high" | "medium" | "low";
+  extraction_reason?: string | null;
 };
 
 function clamp(value: number, min: number, max: number): number {
@@ -29,12 +32,9 @@ function calculateScore(records: WorkerRecord[]) {
 
   const totalDeliveries = records.reduce((sum, row) => sum + Number(row.delivery_count || 0), 0);
   const totalEarnings = records.reduce((sum, row) => sum + Number(row.earning_amount_usdc || 0), 0);
-
   const earliestTs = Math.min(...records.map((row) => new Date(row.created_at).getTime()));
   const daysActive = Math.max(1, Math.floor((Date.now() - earliestTs) / (1000 * 60 * 60 * 24)) + 1);
-
   const platforms = new Set(records.map((row) => row.platform));
-
   const avgEarnings = totalEarnings / Math.max(1, records.length);
   const variance =
     records.reduce((sum, row) => {
@@ -50,7 +50,6 @@ function calculateScore(records: WorkerRecord[]) {
   const rating_points = clamp(120 + Math.round(Math.min(records.length, 40) * 2), 0, 200);
   const cross_platform = clamp(platforms.size * 30, 0, 150);
   const repayment = 0;
-
   const totalScore =
     delivery_volume +
     earnings_consistency +
@@ -72,6 +71,35 @@ function calculateScore(records: WorkerRecord[]) {
   };
 }
 
+function deriveSkills(records: WorkerRecord[]) {
+  const byPlatform = new Map<string, { trips: number; earnings: number }>();
+  for (const record of records) {
+    const curr = byPlatform.get(record.platform) ?? { trips: 0, earnings: 0 };
+    curr.trips += Number(record.delivery_count || 0);
+    curr.earnings += Number(record.earning_amount_usdc || 0);
+    byPlatform.set(record.platform, curr);
+  }
+
+  return Array.from(byPlatform.entries())
+    .map(([platform, stats]) => ({
+      name: `${platform.replace(/_/g, " ")} operations`,
+      confidence: clamp(Math.round(Math.min(stats.trips * 2 + stats.earnings, 100)), 1, 100)
+    }))
+    .sort((a, b) => b.confidence - a.confidence);
+}
+
+function deriveCreditSummary(totalScore: number, records: WorkerRecord[]) {
+  const totalEarnings = records.reduce((sum, row) => sum + Number(row.earning_amount_usdc || 0), 0);
+  const eligible = totalScore >= 400;
+  const maxUsdc = eligible ? Math.round(Math.max(200, totalEarnings * 0.35)) : 0;
+  return {
+    eligible,
+    maxUsdc,
+    apr: eligible ? Number((24 - Math.min(12, totalScore / 1000) * 12).toFixed(1)) : null,
+    borrowedUsdc: 0
+  };
+}
+
 export async function GET(req: Request) {
   try {
     const wallet = new URL(req.url).searchParams.get("wallet")?.trim() ?? "";
@@ -83,7 +111,9 @@ export async function GET(req: Request) {
     }
 
     const resp = await fetch(
-      `${SUPABASE_URL}/rest/v1/worker_records?wallet=eq.${encodeURIComponent(wallet)}&order=created_at.desc`,
+      `${SUPABASE_URL}/rest/v1/worker_records?wallet=eq.${encodeURIComponent(
+        wallet
+      )}&order=created_at.desc`,
       {
         headers: {
           apikey: SUPABASE_SERVICE_KEY,
@@ -94,28 +124,35 @@ export async function GET(req: Request) {
 
     if (!resp.ok) {
       const txt = await resp.text();
-      // If table doesn't exist yet, return empty records instead of error
       if (resp.status === 404 && txt.includes("PGRST205")) {
-        console.warn("worker_records table not created yet; returning empty profile");
         return NextResponse.json({
           workRecords: [],
           scoreComponents: null,
-          totalScore: 0
+          totalScore: 0,
+          skills: [],
+          creditSummary: { eligible: false, maxUsdc: 0, apr: null, borrowedUsdc: 0 }
         });
       }
       throw new Error(`worker_records fetch failed: ${resp.status} ${txt}`);
     }
 
-    const records = (await resp.json()) as WorkerRecord[];
-    const { scoreComponents, totalScore } = calculateScore(records);
+    const allRecords = (await resp.json()) as WorkerRecord[];
+    const usableRecords = allRecords.filter((row) => row.extraction_status !== "rejected");
+    const scoringRecords = usableRecords.filter((row) => row.extraction_status !== "failed");
+    const { scoreComponents, totalScore } = calculateScore(scoringRecords);
+    const skills = deriveSkills(scoringRecords);
+    const creditSummary = deriveCreditSummary(totalScore, scoringRecords);
 
     return NextResponse.json({
-      workRecords: records,
+      workRecords: usableRecords,
       scoreComponents,
-      totalScore
+      totalScore,
+      skills,
+      creditSummary
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("/api/worker/profile error", err);
-    return NextResponse.json({ error: String(err?.message ?? err) }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

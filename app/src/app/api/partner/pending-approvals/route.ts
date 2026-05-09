@@ -17,7 +17,19 @@ function supabaseHeaders(): Record<string, string> {
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: Request) {
+type WorkerRecordRow = {
+  id: string;
+  wallet: string;
+  earning_amount_usdc: number;
+  delivery_count: number;
+  platform: string;
+  extracted_confidence?: "high" | "medium" | "low";
+  extraction_status?: "pending" | "verified" | "failed" | "rejected";
+  extraction_reason?: string | null;
+  created_at: string;
+};
+
+export async function GET() {
   try {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
       return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
@@ -38,28 +50,31 @@ export async function GET(req: Request) {
       throw new Error(`Supabase fetch failed: ${resp.status} ${txt}`);
     }
 
-    const records = await resp.json();
+    const records = (await resp.json()) as WorkerRecordRow[];
 
-    // Map Supabase records to partner queue format
     const approvals = records
-      .filter((record: any) => record.extraction_status !== "rejected") // Show all non-rejected
-      .map((record: any, idx: number) => ({
+      .filter((record) => {
+        const status = record.extraction_status ?? "pending";
+        return status === "pending" || status === "verified";
+      })
+      .map((record) => ({
         recordId: record.id,
-        jobId: idx + 1, // use index as jobId for compatibility
         worker: record.wallet,
         amountUsdc: record.earning_amount_usdc,
         deliveryCount: record.delivery_count,
         platform: record.platform,
         confidence: record.extracted_confidence || "low",
-        extractedText: record.extracted_text,
+        extractionStatus: record.extraction_status ?? "pending",
+        extractionReason: record.extraction_reason ?? null,
         createdAt: record.created_at,
-        status: "pending" as const
+        status: record.extraction_status === "verified" ? "approved" : "pending"
       }))
-      .slice(0, 20); // Limit to 20 for partner review
+      .slice(0, 50);
 
     return NextResponse.json({ ok: true, approvals });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("/api/partner/pending-approvals error", err);
-    return NextResponse.json({ error: String(err?.message ?? err) }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

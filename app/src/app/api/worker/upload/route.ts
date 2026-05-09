@@ -24,37 +24,35 @@ function parseNumeric(raw: string): number | null {
 }
 
 function extractMetricsFromText(text: string, platform: string): {
-  amountInr: number;
-  deliveries: number;
+  amountInr: number | null;
+  deliveries: number | null;
   confidence: "high" | "medium" | "low";
+  reason?: string;
 } {
   if (!text || text.trim().length === 0) {
-    // No text extracted - use fallback
-    const fallbackByPlatform: Record<string, { amountInr: number; deliveries: number }> = {
-      zomato: { amountInr: 2200, deliveries: 14 },
-      swiggy: { amountInr: 2100, deliveries: 13 },
-      blinkit: { amountInr: 1800, deliveries: 11 },
-      ola: { amountInr: 2500, deliveries: 8 },
-      uber: { amountInr: 2600, deliveries: 9 },
-      urban_company: { amountInr: 3000, deliveries: 5 }
+    return {
+      amountInr: null,
+      deliveries: null,
+      confidence: "low",
+      reason: "No extractable PDF text found."
     };
-    const fallback = fallbackByPlatform[platform] ?? { amountInr: 2000, deliveries: 10 };
-    return { amountInr: fallback.amountInr, deliveries: fallback.deliveries, confidence: "low" };
   }
 
-  // Preserve some structure by replacing multiple spaces with single space, but keep newlines
   const singleSpaced = text.replace(/ {2,}/g, " ");
   const compact = singleSpaced.replace(/\s+/g, " ");
-  const lower = compact.toLowerCase();
-
-  console.log(`[PDF Extract Debug] Text length: ${text.length}, Compact length: ${compact.length}`);
-
-  // First try: Look for explicit "TOTAL EARNINGS" / "TOTAL DELIVERIES" headers
-  const explicitEarningsMatch = compact.match(/TOTAL\s+EARNINGS[\s\D]{0,50}(?:rs\.?|inr|₹)\s*([0-9][0-9,]*(?:\.\d{1,2})?)/i);
-  const explicitDeliveriesMatch = compact.match(/TOTAL\s+DELIVER(?:Y|IES)[\s\D]{0,30}(\d{1,5})/i);
+  console.log(
+    `[PDF Extract Debug] Platform: ${platform}, Text length: ${text.length}, Compact length: ${compact.length}`
+  );
 
   let amountInr: number | null = null;
   let deliveries: number | null = null;
+
+  const explicitEarningsMatch = compact.match(
+    /TOTAL\s+EARNINGS[\s\D]{0,120}(?:rs\.?|inr|₹|â‚¹)?\s*([0-9][0-9,]*(?:\.\d{1,2})?)/i
+  );
+  const explicitDeliveriesMatch = compact.match(
+    /TOTAL\s+(?:DELIVER(?:Y|IES)|ORDERS?|TRIPS?|RIDES?)[\s\D]{0,60}(\d{1,6})/i
+  );
 
   if (explicitEarningsMatch) {
     amountInr = parseNumeric(explicitEarningsMatch[1]);
@@ -63,17 +61,16 @@ function extractMetricsFromText(text: string, platform: string): {
     deliveries = parseNumeric(explicitDeliveriesMatch[1]);
   }
 
-  // Second try: Look for large numbers with currency (3+ digits after thousands separator or 4+ standalone)
   if (amountInr === null) {
     const currencyPatterns = [
-      /(?:rs\.?|inr|₹)\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{1,2})?|\d{4,})/gi  // Amounts with optional commas
+      /(?:rs\.?|inr|₹|â‚¹)\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{1,2})?|\d{4,})/gi
     ];
     const amounts: number[] = [];
     for (const pattern of currencyPatterns) {
       let match: RegExpExecArray | null;
       while ((match = pattern.exec(compact)) !== null) {
         const value = parseNumeric(match[1]);
-        if (value !== null && value > 500) { // Realistic earnings
+        if (value !== null && value > 100) {
           amounts.push(value);
         }
       }
@@ -83,45 +80,34 @@ function extractMetricsFromText(text: string, platform: string): {
     }
   }
 
-  // Third try: Look for large standalone numbers (likely total delivery count)
   if (deliveries === null) {
-    const largeNumberMatterns = [
-      /\D(\d{2,5})\D(?:delivery|deliveries|order|orders|trip|trips|ride|rides)/gi,
-      /(?:delivery|deliveries|order|orders|trip|trips|ride|rides)\D(\d{2,5})/gi,
-      /\D([2-9]\d{2,4})\D/g  // Any large number between boundaries (3-5 digits, >= 200)
+    const deliveryPatterns = [
+      /\b(?:delivery|deliveries|order|orders|trip|trips|ride|rides)\D{0,20}(\d{1,6})\b/gi,
+      /\b(\d{1,6})\D{0,20}(?:delivery|deliveries|order|orders|trip|trips|ride|rides)\b/gi
     ];
     const deliveryCounts: number[] = [];
-    for (const pattern of largeNumberPatterns) {
+    for (const pattern of deliveryPatterns) {
       let match: RegExpExecArray | null;
       while ((match = pattern.exec(compact)) !== null) {
         const value = parseNumeric(match[1]);
-        if (value !== null && value >= 10 && value <= 99999) {
+        if (value !== null && value >= 1 && value <= 999999) {
           deliveryCounts.push(Math.trunc(value));
         }
       }
     }
+    const standaloneTotals = compact.match(/\b(\d{2,6})\b/g) ?? [];
+    for (const raw of standaloneTotals) {
+      const value = parseNumeric(raw);
+      if (value !== null && value >= 50 && value <= 999999) {
+        deliveryCounts.push(Math.trunc(value));
+      }
+    }
     if (deliveryCounts.length > 0) {
-      // Filter out outliers and get the most reasonable value
-      deliveryCounts.sort((a, b) => b - a); // Sort descending
-      deliveries = deliveryCounts[0]; // Take the largest (usually total)
+      deliveryCounts.sort((a, b) => b - a);
+      deliveries = deliveryCounts[0];
     }
   }
 
-  // Use fallback if still not found
-  const fallbackByPlatform: Record<string, { amountInr: number; deliveries: number }> = {
-    zomato: { amountInr: 2200, deliveries: 14 },
-    swiggy: { amountInr: 2100, deliveries: 13 },
-    blinkit: { amountInr: 1800, deliveries: 11 },
-    ola: { amountInr: 2500, deliveries: 8 },
-    uber: { amountInr: 2600, deliveries: 9 },
-    urban_company: { amountInr: 3000, deliveries: 5 }
-  };
-  const fallback = fallbackByPlatform[platform] ?? { amountInr: 2000, deliveries: 10 };
-
-  const finalAmount = amountInr ?? fallback.amountInr;
-  const finalDeliveries = deliveries ?? fallback.deliveries;
-
-  // Determine confidence
   const confidence: "high" | "medium" | "low" =
     amountInr !== null && deliveries !== null
       ? "high"
@@ -129,35 +115,21 @@ function extractMetricsFromText(text: string, platform: string): {
       ? "medium"
       : "low";
 
-  console.log(`[PDF Extract] Platform: ${platform}, Amount: ₹${finalAmount}, Deliveries: ${finalDeliveries}, Confidence: ${confidence}, Extracted: amount=${amountInr}, deliveries=${deliveries}`);
+  const reason =
+    confidence === "high"
+      ? undefined
+      : confidence === "medium"
+      ? "Only one key metric extracted from statement."
+      : "Could not reliably extract earnings and delivery totals.";
 
-  return { amountInr: finalAmount, deliveries: finalDeliveries, confidence };
+  console.log(
+    `[PDF Extract] Platform: ${platform}, Amount INR: ${amountInr ?? "null"}, Deliveries: ${deliveries ?? "null"}, Confidence: ${confidence}`
+  );
+
+  return { amountInr, deliveries, confidence, reason };
 }
 
 export async function POST(req: Request) {
-  const url = new URL(req.url);
-  
-  // Test endpoint for validating extraction logic
-  if (url.searchParams.get("test") === "true") {
-    const sampleZomatoText = `
-      JANUARY 2024
-      TOTAL DELIVERIES
-      342
-      TOTAL EARNINGS
-      ₹28,540
-      Payment Status: Completed
-    `;
-
-    const result = extractMetricsFromText(sampleZomatoText, "zomato");
-    console.log("[Test Result]", result);
-    return NextResponse.json({
-      test: "extraction",
-      input: sampleZomatoText.trim(),
-      output: result,
-      success: result.deliveries === 342 && result.amountInr === 28540
-    });
-  }
-
   try {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
       return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
@@ -182,22 +154,50 @@ export async function POST(req: Request) {
     let text = "";
     if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
       try {
-        // Use dynamic import with error handling for pdfjs-dist webpack issues
         const pdfParseModule = await import("pdf-parse");
-        const pdfParseFn: any = pdfParseModule?.default ?? pdfParseModule;
+        const pdfParseFn = (pdfParseModule?.default ?? pdfParseModule) as (
+          input: Buffer
+        ) => Promise<{ text?: string }>;
         const parsed = await pdfParseFn(buffer);
         text = String(parsed.text ?? "");
-      } catch (e: any) {
-        console.warn("pdf parse failed", e?.message || e);
-        // If pdf-parse fails due to webpack issues, log and continue with empty text
-        // The extractMetricsFromText function will use fallback values
-        text = "";
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        console.warn("pdf parse failed", message);
       }
     }
 
-    const { amountInr, deliveries, confidence } = extractMetricsFromText(text, platform);
-    const inrToUsdRate = Number(process.env.INR_TO_USD_RATE ?? process.env.NEXT_PUBLIC_INR_TO_USD_RATE ?? "83");
-    const earningAmountUsdc = Number((amountInr / Math.max(1, inrToUsdRate)).toFixed(2));
+    const { amountInr, deliveries, confidence, reason } = extractMetricsFromText(text, platform);
+    const validationErrors: string[] = [];
+    if (amountInr === null || amountInr <= 0) {
+      validationErrors.push("Could not extract a valid earnings amount.");
+    }
+    if (deliveries === null || deliveries <= 0) {
+      validationErrors.push("Could not extract a valid delivery/order/trip count.");
+    }
+    if (confidence === "low") {
+      validationErrors.push("Extraction confidence is too low.");
+    }
+
+    if (validationErrors.length > 0) {
+      return NextResponse.json(
+        {
+          ok: false,
+          reason: confidence === "low" ? "extraction_failed" : "validation_failed",
+          error: validationErrors.join(" "),
+          details: {
+            confidence,
+            extractionReason: reason,
+            textSnippet: text.slice(0, 500)
+          }
+        },
+        { status: 422 }
+      );
+    }
+
+    const inrToUsdRate = Number(
+      process.env.INR_TO_USD_RATE ?? process.env.NEXT_PUBLIC_INR_TO_USD_RATE ?? "83"
+    );
+    const earningAmountUsdc = Number(((amountInr as number) / Math.max(1, inrToUsdRate)).toFixed(2));
 
     const insertResp = await fetch(`${SUPABASE_URL}/rest/v1/worker_records`, {
       method: "POST",
@@ -211,7 +211,9 @@ export async function POST(req: Request) {
         file_name: file.name,
         earning_amount_usdc: earningAmountUsdc,
         delivery_count: deliveries,
+        extraction_status: "pending",
         extracted_confidence: confidence,
+        extraction_reason: reason ?? null,
         extracted_text: text.slice(0, 8000),
         created_at: new Date().toISOString()
       })
@@ -224,11 +226,12 @@ export async function POST(req: Request) {
 
     const inserted = await insertResp.json();
     return NextResponse.json({ ok: true, row: inserted?.[0] ?? null });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("/api/worker/upload error", err);
-    return NextResponse.json({ error: String(err?.message ?? err) }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json(
+      { ok: false, reason: "validation_failed", error: message },
+      { status: 500 }
+    );
   }
 }
-
-// Test function: Validate extraction works with sample Zomato text
-// Access at /api/worker/upload?test=true
