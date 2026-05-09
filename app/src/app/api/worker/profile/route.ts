@@ -19,17 +19,20 @@ type WorkerRecord = {
 };
 
 function isTrustedRecord(row: WorkerRecord): boolean {
-  const confidence = row.extracted_confidence ?? "low";
-  if (confidence === "low") {
+  const earnings = Number(row.earning_amount_usdc || 0);
+  const deliveries = Number(row.delivery_count || 0);
+  if (earnings <= 0 || deliveries <= 0) {
     return false;
   }
-  if (Number(row.earning_amount_usdc || 0) <= 0) {
-    return false;
+
+  const confidence = row.extracted_confidence;
+  if (confidence === "high" || confidence === "medium") {
+    return true;
   }
-  if (Number(row.delivery_count || 0) <= 0) {
-    return false;
-  }
-  return true;
+
+  // Backward-compat: if confidence metadata is missing, keep clearly real rows.
+  // This excludes legacy fallback-looking data like 14 trips / $26.
+  return earnings >= 100 || deliveries >= 50;
 }
 
 function clamp(value: number, min: number, max: number): number {
