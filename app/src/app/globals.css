@@ -218,11 +218,15 @@
   }
 
   .btn-accent {
-    @apply btn bg-primary text-[#EFF4FF] hover:bg-primary/90;
+    @apply btn bg-primary text-black hover:bg-primary/90;
   }
 
   .btn-subtle {
-    @apply btn border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground;
+    @apply btn border border-white/30 bg-white/5 text-[#EFF4FF] hover:bg-white/15 hover:border-white/50;
+  }
+
+  .btn-ghost {
+    @apply btn border border-white/20 bg-transparent text-[#6FFF00] hover:bg-white/5 hover:border-white/40;
   }
 }
 

@@ -47,6 +47,13 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     }
   }, [isOllama, isOpen]);
 
+  // Clear model when switching away from Ollama (cloud providers infer model from API key)
+  useEffect(() => {
+    if (isCloudProvider && form.model) {
+      setForm((s) => ({ ...s, model: "" }));
+    }
+  }, [isCloudProvider]);
+
   async function fetchOllamaModels() {
     setLoadingModels(true);
     try {
@@ -282,32 +289,38 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </label>
             )}
 
-            <label className="block">
-              <div className="text-sm font-medium font-mono mb-2">
-                Model Name
-                {isOllama && loadingModels && <span className="text-[#6FFF00] text-xs ml-2">(discovering...)</span>}
-                {isOllama && !loadingModels && ollamaModels.length > 0 && <span className="text-[#6FFF00] text-xs ml-2">({ollamaModels.length} found)</span>}
+            {isOllama ? (
+              <label className="block">
+                <div className="text-sm font-medium font-mono mb-2">
+                  Model Name
+                  {loadingModels && <span className="text-[#6FFF00] text-xs ml-2">(discovering...)</span>}
+                  {!loadingModels && ollamaModels.length > 0 && <span className="text-[#6FFF00] text-xs ml-2">({ollamaModels.length} found)</span>}
+                </div>
+                {ollamaModels.length > 0 ? (
+                  <select
+                    value={form.model || ""}
+                    onChange={(e) => update("model", e.target.value)}
+                    className="w-full rounded-lg border border-white/20 bg-[#050b2b] px-4 py-3 text-[#EFF4FF] font-mono text-sm hover:border-white/30 focus:border-[#6FFF00] focus:outline-none transition"
+                  >
+                    <option value="">Select a model...</option>
+                    {ollamaModels.map((model) => (
+                      <option key={model} value={model}>{model}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    value={form.model || ""}
+                    onChange={(e) => update("model", e.target.value)}
+                    placeholder="llama3.2-vision"
+                    className="w-full rounded-lg border border-white/20 bg-[#050b2b] px-4 py-3 text-[#EFF4FF] font-mono text-sm hover:border-white/30 focus:border-[#6FFF00] focus:outline-none transition"
+                  />
+                )}
+              </label>
+            ) : (
+              <div className="text-sm font-mono text-[#EFF4FF]/75">
+                <strong>Model:</strong> This provider determines the model from your API key. No model input is required.
               </div>
-              {isOllama && ollamaModels.length > 0 ? (
-                <select
-                  value={form.model || ""}
-                  onChange={(e) => update("model", e.target.value)}
-                  className="w-full rounded-lg border border-white/20 bg-[#050b2b] px-4 py-3 text-[#EFF4FF] font-mono text-sm hover:border-white/30 focus:border-[#6FFF00] focus:outline-none transition"
-                >
-                  <option value="">Select a model...</option>
-                  {ollamaModels.map((model) => (
-                    <option key={model} value={model}>{model}</option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  value={form.model || ""}
-                  onChange={(e) => update("model", e.target.value)}
-                  placeholder={isOllama ? "llama3.2-vision" : "gpt-4o-mini"}
-                  className="w-full rounded-lg border border-white/20 bg-[#050b2b] px-4 py-3 text-[#EFF4FF] font-mono text-sm hover:border-white/30 focus:border-[#6FFF00] focus:outline-none transition"
-                />
-              )}
-            </label>
+            )}
           </div>
 
           {/* Action Section */}
