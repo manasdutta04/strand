@@ -23,6 +23,83 @@ function parseNumeric(raw: string): number | null {
   return Number.isFinite(value) ? value : null;
 }
 
+async function extractPdfText(buffer: Buffer): Promise<{ text: string; parseError: string | null }> {
+  const errors: string[] = [];
+
+  const tryParse = async (
+    factory: () => Promise<{
+      getText: () => Promise<{ text?: string }>;
+      destroy: () => Promise<void>;
+    }>
+  ): Promise<string | null> => {
+    try {
+      const parser = await factory();
+      const parsed = await parser.getText();
+      await parser.destroy();
+      return String(parsed.text ?? "");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      errors.push(message);
+      return null;
+    }
+  };
+
+  // Attempt 1: root export.
+  const rootText = await tryParse(async () => {
+    const mod = (await import("pdf-parse")) as {
+      PDFParse?: new (args: { data: Buffer }) => {
+        getText: () => Promise<{ text?: string }>;
+        destroy: () => Promise<void>;
+      };
+      default?: {
+        PDFParse?: new (args: { data: Buffer }) => {
+          getText: () => Promise<{ text?: string }>;
+          destroy: () => Promise<void>;
+        };
+      };
+    };
+    const Ctor = mod.PDFParse ?? mod.default?.PDFParse;
+    if (!Ctor) {
+      throw new Error("PDFParse export not found in root export.");
+    }
+    return new Ctor({ data: buffer });
+  });
+  if (rootText !== null) {
+    return { text: rootText, parseError: null };
+  }
+
+  // Attempt 2: runtime require fallback.
+  try {
+    const runtimeRequire = eval("require") as unknown as NodeRequire;
+    const mod = runtimeRequire("pdf-parse") as {
+      PDFParse?: new (args: { data: Buffer }) => {
+        getText: () => Promise<{ text?: string }>;
+        destroy: () => Promise<void>;
+      };
+      default?: {
+        PDFParse?: new (args: { data: Buffer }) => {
+          getText: () => Promise<{ text?: string }>;
+          destroy: () => Promise<void>;
+        };
+      };
+    };
+    const Ctor = mod.PDFParse ?? mod.default?.PDFParse;
+    if (!Ctor) {
+      throw new Error("PDFParse export not found in runtime require fallback.");
+    }
+    const parser = new Ctor({ data: buffer });
+    const parsed = await parser.getText();
+    await parser.destroy();
+    return { text: String(parsed.text ?? ""), parseError: null };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    errors.push(message);
+    const parseError = errors.join(" | ");
+    console.warn("pdf parse failed", parseError);
+    return { text: "", parseError };
+  }
+}
+
 function extractMetricsFromText(text: string, platform: string): {
   amountInr: number | null;
   deliveries: number | null;
@@ -38,73 +115,71 @@ function extractMetricsFromText(text: string, platform: string): {
     };
   }
 
-  const singleSpaced = text.replace(/ {2,}/g, " ");
-  const compact = singleSpaced.replace(/\s+/g, " ");
+  const compact = text.replace(/ {2,}/g, " ").replace(/\s+/g, " ");
   console.log(
-    `[PDF Extract Debug] Platform: ${platform}, Text length: ${text.length}, Compact length: ${compact.length}`
+    `[PDF Extract Debug] platform=${platform} textLength=${text.length} compactLength=${compact.length}`
   );
 
   let amountInr: number | null = null;
   let deliveries: number | null = null;
+  const earningsCandidates: number[] = [];
+  const deliveriesCandidates: number[] = [];
 
-  const explicitEarningsMatch = compact.match(
-    /TOTAL\s+EARNINGS[\s\D]{0,120}(?:rs\.?|inr|₹|â‚¹)?\s*([0-9][0-9,]*(?:\.\d{1,2})?)/i
-  );
-  const explicitDeliveriesMatch = compact.match(
-    /TOTAL\s+(?:DELIVER(?:Y|IES)|ORDERS?|TRIPS?|RIDES?)[\s\D]{0,60}(\d{1,6})/i
-  );
-
-  if (explicitEarningsMatch) {
-    amountInr = parseNumeric(explicitEarningsMatch[1]);
-  }
-  if (explicitDeliveriesMatch) {
-    deliveries = parseNumeric(explicitDeliveriesMatch[1]);
-  }
-
-  if (amountInr === null) {
-    const currencyPatterns = [
-      /(?:rs\.?|inr|₹|â‚¹)\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{1,2})?|\d{4,})/gi
-    ];
-    const amounts: number[] = [];
-    for (const pattern of currencyPatterns) {
-      let match: RegExpExecArray | null;
-      while ((match = pattern.exec(compact)) !== null) {
-        const value = parseNumeric(match[1]);
-        if (value !== null && value > 100) {
-          amounts.push(value);
-        }
+  const earningsPatterns = [
+    /TOTAL\s+EARNINGS[\s\S]{0,140}(?:₹|â‚¹|rs\.?|inr)\s*([0-9][0-9,]*(?:\.\d{1,2})?)/gi,
+    /TOTAL[\s\S]{0,140}(?:₹|â‚¹|rs\.?|inr)\s*([0-9][0-9,]*(?:\.\d{1,2})?)/gi,
+    /(?:₹|â‚¹|rs\.?|inr)\s*([0-9]{1,3}(?:,[0-9]{3})+(?:\.\d{1,2})?)/gi
+  ];
+  for (const pattern of earningsPatterns) {
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(compact)) !== null) {
+      const value = parseNumeric(match[1]);
+      if (value !== null && value > 100) {
+        earningsCandidates.push(value);
       }
     }
-    if (amounts.length > 0) {
-      amountInr = Math.max(...amounts);
+  }
+
+  const deliveryPatterns = [
+    /based\s+on\s+([0-9][0-9,]*)\s+(?:orders?|deliver(?:y|ies)|trips?|rides?)/gi,
+    /([0-9][0-9,]*)\s+total\s+deliver(?:y|ies)/gi,
+    /total\s+deliver(?:y|ies)\D{0,30}([0-9][0-9,]*)/gi,
+    /total\s+orders?\D{0,30}([0-9][0-9,]*)/gi
+  ];
+  for (const pattern of deliveryPatterns) {
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(compact)) !== null) {
+      const value = parseNumeric(match[1]);
+      if (value !== null && value >= 1 && value <= 999999) {
+        deliveriesCandidates.push(Math.trunc(value));
+      }
     }
+  }
+
+  if (earningsCandidates.length > 0) {
+    amountInr = Math.max(...earningsCandidates);
+  }
+  if (deliveriesCandidates.length > 0) {
+    deliveries = Math.max(...deliveriesCandidates);
   }
 
   if (deliveries === null) {
-    const deliveryPatterns = [
-      /\b(?:delivery|deliveries|order|orders|trip|trips|ride|rides)\D{0,20}(\d{1,6})\b/gi,
-      /\b(\d{1,6})\D{0,20}(?:delivery|deliveries|order|orders|trip|trips|ride|rides)\b/gi
+    const loosePatterns = [
+      /\b(?:delivery|deliveries|order|orders|trip|trips|ride|rides)\D{0,20}([0-9][0-9,]*)\b/gi,
+      /\b([0-9][0-9,]*)\D{0,20}(?:delivery|deliveries|order|orders|trip|trips|ride|rides)\b/gi
     ];
-    const deliveryCounts: number[] = [];
-    for (const pattern of deliveryPatterns) {
+    const loose: number[] = [];
+    for (const pattern of loosePatterns) {
       let match: RegExpExecArray | null;
       while ((match = pattern.exec(compact)) !== null) {
         const value = parseNumeric(match[1]);
         if (value !== null && value >= 1 && value <= 999999) {
-          deliveryCounts.push(Math.trunc(value));
+          loose.push(Math.trunc(value));
         }
       }
     }
-    const standaloneTotals = compact.match(/\b(\d{2,6})\b/g) ?? [];
-    for (const raw of standaloneTotals) {
-      const value = parseNumeric(raw);
-      if (value !== null && value >= 50 && value <= 999999) {
-        deliveryCounts.push(Math.trunc(value));
-      }
-    }
-    if (deliveryCounts.length > 0) {
-      deliveryCounts.sort((a, b) => b - a);
-      deliveries = deliveryCounts[0];
+    if (loose.length > 0) {
+      deliveries = Math.max(...loose);
     }
   }
 
@@ -123,7 +198,7 @@ function extractMetricsFromText(text: string, platform: string): {
       : "Could not reliably extract earnings and delivery totals.";
 
   console.log(
-    `[PDF Extract] Platform: ${platform}, Amount INR: ${amountInr ?? "null"}, Deliveries: ${deliveries ?? "null"}, Confidence: ${confidence}`
+    `[PDF Extract] platform=${platform} amountInr=${amountInr ?? "null"} deliveries=${deliveries ?? "null"} confidence=${confidence}`
   );
 
   return { amountInr, deliveries, confidence, reason };
@@ -143,7 +218,6 @@ export async function POST(req: Request) {
     if (!wallet || !platform) {
       return NextResponse.json({ error: "wallet and platform are required" }, { status: 400 });
     }
-
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "file is required" }, { status: 400 });
     }
@@ -152,18 +226,11 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(arrayBuffer);
 
     let text = "";
+    let parseError: string | null = null;
     if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
-      try {
-        const pdfParseModule = await import("pdf-parse");
-        const pdfParseFn = (pdfParseModule?.default ?? pdfParseModule) as (
-          input: Buffer
-        ) => Promise<{ text?: string }>;
-        const parsed = await pdfParseFn(buffer);
-        text = String(parsed.text ?? "");
-      } catch (e: unknown) {
-        const message = e instanceof Error ? e.message : String(e);
-        console.warn("pdf parse failed", message);
-      }
+      const parsed = await extractPdfText(buffer);
+      text = parsed.text;
+      parseError = parsed.parseError;
     }
 
     const { amountInr, deliveries, confidence, reason } = extractMetricsFromText(text, platform);
@@ -187,6 +254,7 @@ export async function POST(req: Request) {
           details: {
             confidence,
             extractionReason: reason,
+            parseError,
             textSnippet: text.slice(0, 500)
           }
         },
@@ -199,25 +267,52 @@ export async function POST(req: Request) {
     );
     const earningAmountUsdc = Number(((amountInr as number) / Math.max(1, inrToUsdRate)).toFixed(2));
 
-    const insertResp = await fetch(`${SUPABASE_URL}/rest/v1/worker_records`, {
+    const basePayload = {
+      wallet,
+      platform,
+      file_name: file.name,
+      earning_amount_usdc: earningAmountUsdc,
+      delivery_count: deliveries,
+      extracted_confidence: confidence,
+      extracted_text: text.slice(0, 8000),
+      created_at: new Date().toISOString()
+    };
+    const extendedPayload = {
+      ...basePayload,
+      extraction_status: "pending",
+      extraction_reason: reason ?? null
+    };
+
+    let insertResp = await fetch(`${SUPABASE_URL}/rest/v1/worker_records`, {
       method: "POST",
       headers: {
         ...supabaseHeaders(),
         Prefer: "return=representation"
       },
-      body: JSON.stringify({
-        wallet,
-        platform,
-        file_name: file.name,
-        earning_amount_usdc: earningAmountUsdc,
-        delivery_count: deliveries,
-        extraction_status: "pending",
-        extracted_confidence: confidence,
-        extraction_reason: reason ?? null,
-        extracted_text: text.slice(0, 8000),
-        created_at: new Date().toISOString()
-      })
+      body: JSON.stringify(extendedPayload)
     });
+
+    if (!insertResp.ok) {
+      const firstErrorText = await insertResp.text();
+      const missingColumn =
+        insertResp.status === 400 &&
+        (firstErrorText.includes("PGRST204") ||
+          firstErrorText.includes("extraction_reason") ||
+          firstErrorText.includes("extraction_status"));
+
+      if (missingColumn) {
+        insertResp = await fetch(`${SUPABASE_URL}/rest/v1/worker_records`, {
+          method: "POST",
+          headers: {
+            ...supabaseHeaders(),
+            Prefer: "return=representation"
+          },
+          body: JSON.stringify(basePayload)
+        });
+      } else {
+        throw new Error(`worker_records insert failed: ${insertResp.status} ${firstErrorText}`);
+      }
+    }
 
     if (!insertResp.ok) {
       const txt = await insertResp.text();
@@ -229,9 +324,6 @@ export async function POST(req: Request) {
   } catch (err: unknown) {
     console.error("/api/worker/upload error", err);
     const message = err instanceof Error ? err.message : String(err);
-    return NextResponse.json(
-      { ok: false, reason: "validation_failed", error: message },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, reason: "validation_failed", error: message }, { status: 500 });
   }
 }
