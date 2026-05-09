@@ -182,12 +182,15 @@ export async function POST(req: Request) {
     let text = "";
     if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
       try {
+        // Use dynamic import with error handling for pdfjs-dist webpack issues
         const pdfParseModule = await import("pdf-parse");
         const pdfParseFn: any = pdfParseModule?.default ?? pdfParseModule;
         const parsed = await pdfParseFn(buffer);
         text = String(parsed.text ?? "");
-      } catch (e) {
-        console.warn("pdf parse failed", e);
+      } catch (e: any) {
+        console.warn("pdf parse failed", e?.message || e);
+        // If pdf-parse fails due to webpack issues, log and continue with empty text
+        // The extractMetricsFromText function will use fallback values
         text = "";
       }
     }
