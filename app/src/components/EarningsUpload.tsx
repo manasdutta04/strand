@@ -6,11 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 interface EarningsUploadProps {
   platform: string;
+  platforms?: Array<{ name: string; label: string }>;
+  onPlatformChange?: (platform: string) => void;
   onUploadStart?: () => void;
   onUploadComplete?: (fileName: string) => void;
 }
 
-export function EarningsUpload({ platform, onUploadStart, onUploadComplete }: EarningsUploadProps) {
+export function EarningsUpload({
+  platform,
+  platforms = [],
+  onPlatformChange,
+  onUploadStart,
+  onUploadComplete
+}: EarningsUploadProps) {
   const { publicKey } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,106 +91,98 @@ export function EarningsUpload({ platform, onUploadStart, onUploadComplete }: Ea
     }
   }
 
+  const inputClass =
+    "h-11 w-full rounded-md border border-white/20 bg-[#050b2b] px-3 text-[#EFF4FF] font-mono text-sm hover:border-white/30 focus:border-[#6FFF00] focus:outline-none transition";
+  const labelClass = "text-xs font-mono uppercase tracking-[0.08em] text-[#EFF4FF]/75";
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Add work record</CardTitle>
+    <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
+      <CardHeader className="pb-2">
+        <CardTitle className="strand-display text-lg text-[#EFF4FF]">Add Work Record</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">Work date</label>
-            <input
-              type="date"
-              value={workDate}
-              onChange={(e) => setWorkDate(e.target.value)}
-              disabled={isLoading}
-              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">Earnings (INR)</label>
-            <input
-              type="number"
-              min="1"
-              step="1"
-              value={earningsInr}
-              onChange={(e) => setEarningsInr(e.target.value)}
-              placeholder="28540"
-              disabled={isLoading}
-              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">Trips / Orders</label>
-            <input
-              type="number"
-              min="1"
-              step="1"
-              value={trips}
-              onChange={(e) => setTrips(e.target.value)}
-              placeholder="342"
-              disabled={isLoading}
-              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">Rating (optional)</label>
-            <input
-              type="number"
-              min="0"
-              max="5"
-              step="0.01"
-              value={rating}
-              onChange={(e) => setRating(e.target.value)}
-              placeholder="4.82"
-              disabled={isLoading}
-              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">Accepted jobs (optional)</label>
-            <input
-              type="number"
-              min="0"
-              step="1"
-              value={accepted}
-              onChange={(e) => setAccepted(e.target.value)}
-              placeholder="336"
-              disabled={isLoading}
-              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none"
-            />
+      <CardContent className="space-y-5">
+        <div className="rounded-xl border border-white/10 bg-[#081136]/40 p-4 sm:p-5">
+          <div className="grid gap-4 md:grid-cols-3">
+            <label className="block md:col-span-1">
+              <div className={`${labelClass} mb-2`}>Company</div>
+              <select
+                value={platform}
+                onChange={(e) => onPlatformChange?.(e.target.value)}
+                disabled={isLoading}
+                className={inputClass}
+              >
+                {(platforms.length > 0 ? platforms : [{ name: platform, label: platform }]).map((p) => (
+                  <option key={p.name} value={p.name}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block md:col-span-1">
+              <div className={`${labelClass} mb-2`}>Work date</div>
+              <input
+                type="date"
+                value={workDate}
+                onChange={(e) => setWorkDate(e.target.value)}
+                disabled={isLoading}
+                className={inputClass}
+              />
+            </label>
+            <div className="hidden md:block" />
           </div>
         </div>
 
-        <div className="space-y-1">
-          <label className="text-xs text-muted-foreground">Notes (optional)</label>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Bonuses, settlement notes, payout details..."
-            disabled={isLoading}
-            rows={3}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none"
-          />
+        <div className="rounded-xl border border-white/10 bg-[#081136]/40 p-4 sm:p-5">
+          <div className="grid gap-4 md:grid-cols-3">
+            <label className="block">
+              <div className={`${labelClass} mb-2`}>Earnings (INR)</div>
+              <input type="number" min="1" step="1" value={earningsInr} onChange={(e) => setEarningsInr(e.target.value)} placeholder="28540" disabled={isLoading} className={inputClass} />
+            </label>
+            <label className="block">
+              <div className={`${labelClass} mb-2`}>Trips / Orders</div>
+              <input type="number" min="1" step="1" value={trips} onChange={(e) => setTrips(e.target.value)} placeholder="342" disabled={isLoading} className={inputClass} />
+            </label>
+            <label className="block">
+              <div className={`${labelClass} mb-2`}>Rating (optional)</div>
+              <input type="number" min="0" max="5" step="0.01" value={rating} onChange={(e) => setRating(e.target.value)} placeholder="4.82" disabled={isLoading} className={inputClass} />
+            </label>
+            <label className="block md:col-span-2">
+              <div className={`${labelClass} mb-2`}>Accepted jobs (optional)</div>
+              <input type="number" min="0" step="1" value={accepted} onChange={(e) => setAccepted(e.target.value)} placeholder="336" disabled={isLoading} className={inputClass} />
+            </label>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={isLoading || !publicKey}
-            className="rounded-md border border-[#6FFF00]/60 bg-[#6FFF00]/10 px-4 py-2 text-sm font-medium text-[#EAF2FF] hover:bg-[#6FFF00]/20 disabled:opacity-60"
-          >
-            {isLoading ? "Saving..." : "Save"}
-          </button>
-          {!publicKey ? (
-            <p className="text-xs text-yellow-400">Connect wallet to save records.</p>
-          ) : null}
+        <div className="rounded-xl border border-white/10 bg-[#081136]/40 p-4 sm:p-5">
+          <label className="block">
+            <div className={`${labelClass} mb-2`}>Notes (optional)</div>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Bonuses, settlement notes, payout details..."
+              disabled={isLoading}
+              rows={4}
+              className="w-full rounded-md border border-white/20 bg-[#050b2b] px-3 py-2.5 text-[#EFF4FF] font-mono text-sm hover:border-white/30 focus:border-[#6FFF00] focus:outline-none transition"
+            />
+          </label>
         </div>
 
-        {successMessage ? <p className="text-sm text-green-400">{successMessage}</p> : null}
-        {error ? <p className="text-sm text-red-400">{error}</p> : null}
+        <div className="rounded-xl border border-white/10 bg-[#081136]/40 p-4 sm:p-5">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={isLoading || !publicKey}
+              className="rounded-md border border-[#6FFF00]/65 bg-[#6FFF00]/12 px-4 py-2 font-grotesk text-sm font-medium text-[#EFF4FF] transition hover:bg-[#6FFF00]/20 disabled:opacity-60"
+            >
+              {isLoading ? "Saving..." : "Save Record"}
+            </button>
+            {!publicKey ? <p className="text-xs font-mono text-yellow-400">Connect wallet to save records.</p> : null}
+          </div>
+        </div>
+
+        {successMessage ? <div className="rounded-lg border border-[#6FFF00]/30 bg-[#6FFF00]/10 px-4 py-3 font-mono text-sm text-[#6FFF00]">{successMessage}</div> : null}
+        {error ? <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 font-mono text-sm text-red-400">{error}</div> : null}
       </CardContent>
     </Card>
   );

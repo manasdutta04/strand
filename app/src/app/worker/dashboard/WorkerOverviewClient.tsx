@@ -100,23 +100,10 @@ export default function WorkerOverviewClient({ initialDemoMode }: { initialDemoM
           </div>
         </div>
 
-        <label className="block max-w-sm">
-          <div className="mb-2 text-xs font-mono text-[#EFF4FF]/75">Company</div>
-          <select
-            value={selectedPlatform}
-            onChange={(e) => setSelectedPlatform(e.target.value)}
-            className="w-full rounded-lg border border-white/20 bg-[#050b2b] px-4 py-3 text-[#EFF4FF] font-mono text-sm hover:border-white/30 focus:border-[#6FFF00] focus:outline-none transition"
-          >
-            {PLATFORMS.map((platform) => (
-              <option key={platform.name} value={platform.name}>
-                {platform.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
         <EarningsUpload
           platform={selectedPlatform}
+          platforms={PLATFORMS}
+          onPlatformChange={setSelectedPlatform}
           onUploadComplete={() => setRefreshToken((v) => v + 1)}
         />
       </div>
