@@ -18,6 +18,20 @@ type WorkerRecord = {
   extraction_reason?: string | null;
 };
 
+function isTrustedRecord(row: WorkerRecord): boolean {
+  const confidence = row.extracted_confidence ?? "low";
+  if (confidence === "low") {
+    return false;
+  }
+  if (Number(row.earning_amount_usdc || 0) <= 0) {
+    return false;
+  }
+  if (Number(row.delivery_count || 0) <= 0) {
+    return false;
+  }
+  return true;
+}
+
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
@@ -137,14 +151,17 @@ export async function GET(req: Request) {
     }
 
     const allRecords = (await resp.json()) as WorkerRecord[];
-    const usableRecords = allRecords.filter((row) => row.extraction_status !== "rejected");
-    const scoringRecords = usableRecords.filter((row) => row.extraction_status !== "failed");
+    const usableRecords = allRecords.filter(
+      (row) => row.extraction_status !== "rejected" && row.extraction_status !== "failed"
+    );
+    const trustedRecords = usableRecords.filter(isTrustedRecord);
+    const scoringRecords = trustedRecords;
     const { scoreComponents, totalScore } = calculateScore(scoringRecords);
     const skills = deriveSkills(scoringRecords);
     const creditSummary = deriveCreditSummary(totalScore, scoringRecords);
 
     return NextResponse.json({
-      workRecords: usableRecords,
+      workRecords: trustedRecords,
       scoreComponents,
       totalScore,
       skills,
