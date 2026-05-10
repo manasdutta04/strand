@@ -376,6 +376,83 @@ export default function StrandLandingPage() {
         </div>
       </section>
 
+      <section id="showcase" className="relative w-full bg-[#010828] py-24">
+        <div className="mx-auto max-w-[1831px] px-4 sm:px-6 lg:px-16">
+          <div className="mb-16 grid gap-12 lg:grid-cols-2 lg:items-end">
+            <div>
+              <h2 className="font-grotesk text-[36px] uppercase leading-[1.1] text-[#EFF4FF] sm:text-[48px] md:text-[58px] lg:text-[60px]">
+                See it in
+                <br />
+                <span className="font-condiment normal-case text-[#6FFF00]">action</span>
+              </h2>
+            </div>
+
+            <p className="max-w-md font-mono text-[14px] uppercase leading-relaxed text-[#EFF4FF]/80 sm:text-[16px] lg:justify-self-end">
+              Watch how workers and partners use Strand to build verified credit history and access opportunities.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            <article className="group overflow-hidden rounded-[24px] border border-white/10 bg-white/5 hover:border-[#6FFF00]/30 transition-all duration-300">
+              <div className="relative aspect-video overflow-hidden bg-black">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260331_053923_22c0a6a5-313c-474c-85ff-3b50d25e944a.mp4"
+                />
+              </div>
+              <div className="p-4">
+                <p className="font-grotesk text-xs uppercase tracking-[0.22em] text-[#6FFF00]">Workers</p>
+                <p className="mt-2 font-mono text-sm uppercase leading-relaxed text-[#EFF4FF]/80">
+                  Track earnings and build your verified work history on chain.
+                </p>
+              </div>
+            </article>
+
+            <article className="group overflow-hidden rounded-[24px] border border-white/10 bg-white/5 hover:border-[#6FFF00]/30 transition-all duration-300">
+              <div className="relative aspect-video overflow-hidden bg-black">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260331_054411_511c1b7a-fb2f-42ef-bf6c-32c0b1a06e79.mp4"
+                />
+              </div>
+              <div className="p-4">
+                <p className="font-grotesk text-xs uppercase tracking-[0.22em] text-[#6FFF00]">Score</p>
+                <p className="mt-2 font-mono text-sm uppercase leading-relaxed text-[#EFF4FF]/80">
+                  Automatic scoring based on work records and consistency.
+                </p>
+              </div>
+            </article>
+
+            <article className="group overflow-hidden rounded-[24px] border border-white/10 bg-white/5 hover:border-[#6FFF00]/30 transition-all duration-300">
+              <div className="relative aspect-video overflow-hidden bg-black">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260331_055427_ac7035b5-9f3b-4289-86fc-941b2432317d.mp4"
+                />
+              </div>
+              <div className="p-4">
+                <p className="font-grotesk text-xs uppercase tracking-[0.22em] text-[#6FFF00]">Credit</p>
+                <p className="mt-2 font-mono text-sm uppercase leading-relaxed text-[#EFF4FF]/80">
+                  Unlock credit access based on verified work and score.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="stack" className="relative w-full overflow-hidden py-24 min-h-screen">
         <video
           autoPlay
